@@ -3,8 +3,8 @@ import { changeQuantity,filterProducts,allProducts } from './catalog';
 describe('Product discovery',()=>{
  it('finds Vietnamese names without accents',()=>expect(filterProducts('ca rot','Tất cả','featured').map(p=>p.id)).toEqual(['carrot']));
  it('combines region and keyword filtering',()=>expect(filterProducts('ca rot','Đà Lạt','featured')).toHaveLength(1));
- it('does not invent matches for empty categories',()=>expect(filterProducts('','Rau ăn lá','featured')).toEqual([]));
- it('sorts by actual numeric price',()=>expect(filterProducts('','Tất cả','price-asc').map(p=>p.price)).toEqual([15000,19000,26000,38000]));
+ it('does not invent matches for empty categories',()=>expect(filterProducts('','Thịt cá','featured')).toEqual([]));
+ it('sorts by actual numeric price',()=>expect(filterProducts('','Tất cả','price-asc').map(p=>p.price)).toEqual([15000,16000,18000,19000,22000,24000,26000,38000]));
  it('provides source imagery for every item',()=>expect(allProducts.every(p=>p.image.startsWith('https://'))).toBe(true));
 });
 describe('Cart quantities',()=>{
