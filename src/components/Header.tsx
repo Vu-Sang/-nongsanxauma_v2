@@ -14,25 +14,53 @@ import {
   Gift,
   Flame,
   ShieldCheck,
+  LogOut,
+  User,
+  Truck,
+  CheckCircle2,
 } from 'lucide-react';
-import { useState, useRef, type FormEvent } from 'react';
+import { useState, useRef, useEffect, type FormEvent } from 'react';
+import type { AuthUser } from '../pages/AuthPage';
 import freshPromoImg from '../assets/fresh-veg-promo.png';
 import mysteryPromoImg from '../assets/mystery-box-promo.png';
 
 interface HeaderProps {
   route: string;
   count: number;
+  user?: AuthUser | null;
+  onLogout?: () => void;
   onSearch: (s: string) => void;
   onCart: () => void;
   onInfo: (s: string) => void;
 }
 
-export default function Header({ route, count, onSearch, onCart, onInfo }: HeaderProps) {
+export default function Header({
+  route,
+  count,
+  user,
+  onLogout,
+  onSearch,
+  onCart,
+  onInfo,
+}: HeaderProps) {
   const [query, setQuery] = useState('');
   const [openMobile, setOpenMobile] = useState(false);
   const [mobileSubMenu, setMobileSubMenu] = useState<'fresh' | 'combo' | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<'fresh' | 'combo' | null>(null);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const timeoutRef = useRef<number | null>(null);
+  const accountRef = useRef<HTMLDivElement | null>(null);
+
+  // Close account menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleMouseEnter = (menu: 'fresh' | 'combo') => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -49,6 +77,7 @@ export default function Header({ route, count, onSearch, onCart, onInfo }: Heade
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveDropdown(null);
     setOpenMobile(false);
+    setAccountMenuOpen(false);
   };
 
   const handleSelectCategory = (term: string, targetPath: string = '/nong-san-tuoi') => {
@@ -72,7 +101,25 @@ export default function Header({ route, count, onSearch, onCart, onInfo }: Heade
   const isComboActive = route.startsWith('/combo-tui-mu');
   const isAiActive = route.startsWith('/cong-nghe-ai');
   const isFarmerActive = route.startsWith('/cau-chuyen-nong-dan');
+  const isAuthActive = route.startsWith('/dang-nhap') || route.startsWith('/dang-ky') || route.startsWith('/login') || route.startsWith('/register');
   const isHomeActive = route === '/' || route === '';
+
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case 'buyer':
+        return { label: 'Khách Mua', bg: 'bg-[#eaf5e1] text-[#2c5f11]', border: 'border-[#b9e49c]' };
+      case 'shop':
+        return { label: 'Nhà Vườn', bg: 'bg-[#fdf3e7] text-[#824413]', border: 'border-[#f3cc9f]' };
+      case 'shipper':
+        return { label: 'Tài Xế', bg: 'bg-[#e9f6f7] text-[#195962]', border: 'border-[#b1dfe4]' };
+      case 'admin':
+        return { label: 'Admin', bg: 'bg-[#f9edf9] text-[#79247d]', border: 'border-[#ebc5eb]' };
+      case 'staff':
+        return { label: 'Staff', bg: 'bg-[#eef2f8] text-[#2c4772]', border: 'border-[#cddbf0]' };
+      default:
+        return { label: 'Thành viên', bg: 'bg-[#eaf5e1] text-[#2c5f11]', border: 'border-[#b9e49c]' };
+    }
+  };
 
   return (
     <header className="site-header relative z-50">
@@ -109,12 +156,18 @@ export default function Header({ route, count, onSearch, onCart, onInfo }: Heade
         </form>
 
         {/* Header Actions */}
-        <div className="header-actions">
-          <button className="btn btn-gold vendor-button hidden sm:inline-flex" onClick={() => onInfo('Đăng ký nhà vườn')}>
+        <div className="header-actions flex items-center gap-2">
+          {/* Vendor Button / Direct Registration for Shop */}
+          <a
+            href="#/dang-ky?role=shop"
+            className="btn btn-gold vendor-button hidden sm:inline-flex"
+            onClick={closeDropdown}
+          >
             <Store size={16} />
             <span>Bán nông sản</span>
-          </button>
+          </a>
 
+          {/* Cart Trigger */}
           <button
             className="icon-button cart-trigger"
             aria-label={`Giỏ hàng, ${count} sản phẩm`}
@@ -124,14 +177,218 @@ export default function Header({ route, count, onSearch, onCart, onInfo }: Heade
             {count > 0 && <span>{count}</span>}
           </button>
 
-          <button
-            className="icon-button account-button"
-            aria-label="Tài khoản"
-            onClick={() => onInfo('Tài khoản CapNong')}
-          >
-            <UserRound />
-          </button>
+          {/* Auth Action Buttons: Đăng nhập & Đăng ký (hoặc Hồ sơ nếu đã đăng nhập) */}
+          <div className="relative flex items-center gap-1.5" ref={accountRef}>
+            {user ? (
+              <button
+                type="button"
+                onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                className="flex items-center gap-2 py-1.5 px-3 rounded-full bg-[#f0ebd9] hover:bg-[#e7e1cc] border border-[#d6cfbe] transition-colors"
+                aria-label="Tài khoản cá nhân"
+              >
+                <div className="w-7 h-7 rounded-full bg-[#326318] text-white flex items-center justify-center font-bold text-xs">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="hidden md:flex flex-col text-left">
+                  <span className="text-xs font-bold text-[#1f241a] leading-tight max-w-[110px] truncate">
+                    {user.name}
+                  </span>
+                  <span className={`text-[10px] font-semibold px-1.5 rounded-full w-fit ${getRoleBadge(user.role).bg}`}>
+                    {getRoleBadge(user.role).label}
+                  </span>
+                </div>
+                <ChevronDown size={14} className="text-[#5b6354]" />
+              </button>
+            ) : (
+              <>
+                {/* Desktop: Explicit "Đăng nhập" and "Đăng ký" buttons */}
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <a
+                    href="#/dang-nhap"
+                    onClick={closeDropdown}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-xs transition-all border ${
+                      route.startsWith('/dang-nhap') || route.startsWith('/login')
+                        ? 'bg-[#326318] text-white border-[#326318] shadow-sm'
+                        : 'border-[#d6dccf] text-[#326318] hover:bg-[#326318]/10 hover:border-[#326318]'
+                    }`}
+                  >
+                    <UserRound size={14} />
+                    <span>Đăng nhập</span>
+                  </a>
 
+                  <a
+                    href="#/dang-ky"
+                    onClick={closeDropdown}
+                    className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full font-bold text-xs transition-all border ${
+                      route.startsWith('/dang-ky') || route.startsWith('/register')
+                        ? 'bg-[#254b12] text-white border-[#254b12] shadow-sm'
+                        : 'bg-[#326318] hover:bg-[#254b12] text-white border-[#326318] shadow-sm hover:shadow'
+                    }`}
+                  >
+                    <span>Đăng ký</span>
+                  </a>
+                </div>
+
+                {/* Mobile icon button */}
+                <a
+                  href="#/dang-nhap"
+                  onClick={closeDropdown}
+                  className={`icon-button sm:hidden ${isAuthActive ? 'bg-[#326318] text-white' : ''}`}
+                  aria-label="Đăng nhập / Đăng ký"
+                >
+                  <UserRound size={20} />
+                </a>
+              </>
+            )}
+
+            {/* Account Popover Menu */}
+            {accountMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-[#ede8df] p-3 z-50 animate-fadeIn">
+                {user ? (
+                  <div>
+                    <div className="p-3 rounded-xl bg-[#faf7ef] border border-[#eee8da] mb-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-full bg-[#326318] text-white flex items-center justify-center font-extrabold text-sm shrink-0">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="overflow-hidden">
+                          <h4 className="font-extrabold text-xs text-[#20271c] truncate">
+                            {user.name}
+                          </h4>
+                          <p className="text-[11px] text-[#6d7567] truncate">{user.email}</p>
+                          <span
+                            className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                              getRoleBadge(user.role).bg
+                            } ${getRoleBadge(user.role).border}`}
+                          >
+                            Vai trò: {getRoleBadge(user.role).label}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1 text-xs">
+                      {user.role === 'shop' ? (
+                        <a
+                          href="#/shop"
+                          onClick={closeDropdown}
+                          className="w-full text-left py-2 px-3 rounded-xl bg-[#fdf5eb] text-[#8a4e1d] font-bold flex items-center gap-2 border border-[#f5ddbd]"
+                        >
+                          <Store size={15} className="text-[#8a4e1d]" />
+                          <span>🌾 Bảng Điều Khiển Nông Dân</span>
+                        </a>
+                      ) : (
+                        <a
+                          href="#/shop"
+                          onClick={closeDropdown}
+                          className="w-full text-left py-2 px-3 rounded-xl hover:bg-[#f3eee2] text-[#333a2d] font-semibold flex items-center gap-2"
+                        >
+                          <Store size={15} className="text-[#8a4e1d]" />
+                          <span>🌾 Kênh Bán Hàng Nhà Vườn</span>
+                        </a>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          closeDropdown();
+                          onInfo(`Hồ sơ ${user.name} (${getRoleBadge(user.role).label})`);
+                        }}
+                        className="w-full text-left py-2 px-3 rounded-xl hover:bg-[#f3eee2] text-[#333a2d] font-semibold flex items-center gap-2"
+                      >
+                        <User size={15} className="text-primary" />
+                        <span>Xem hồ sơ cá nhân</span>
+                      </button>
+
+                      <a
+                        href="#/dang-ky"
+                        onClick={closeDropdown}
+                        className="w-full text-left py-2 px-3 rounded-xl hover:bg-[#f3eee2] text-[#333a2d] font-semibold flex items-center gap-2"
+                      >
+                        <Zap size={15} className="text-[#ff9800]" />
+                        <span>Chuyển đổi / Mở thêm vai trò</span>
+                      </a>
+
+                      <hr className="my-1 border-[#ede8df]" />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          closeDropdown();
+                          onLogout?.();
+                        }}
+                        className="w-full text-left py-2 px-3 rounded-xl hover:bg-red-50 text-red-600 font-bold flex items-center gap-2"
+                      >
+                        <LogOut size={15} />
+                        <span>Đăng xuất</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="text-center pb-3 border-b border-[#ede8df] mb-2.5">
+                      <h4 className="font-extrabold text-xs text-[#20271c] mb-1">
+                        Chào mừng đến với CapNong
+                      </h4>
+                      <p className="text-[11px] text-[#6f7669]">
+                        Đăng nhập để nhận ưu đãi cứu nông sản
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <a
+                        href="#/dang-nhap"
+                        onClick={closeDropdown}
+                        className="w-full py-2.5 px-3 rounded-xl bg-[#326318] hover:bg-[#254b12] text-white font-bold text-xs text-center transition-colors shadow-sm"
+                      >
+                        Đăng Nhập
+                      </a>
+
+                      <a
+                        href="#/dang-ky"
+                        onClick={closeDropdown}
+                        className="w-full py-2.5 px-3 rounded-xl border border-[#326318] text-[#326318] hover:bg-[#f1faea] font-bold text-xs text-center transition-colors"
+                      >
+                        Đăng Ký Tài Khoản Mới
+                      </a>
+
+                      <div className="pt-2 border-t border-[#f0ebd9] flex flex-col gap-1 text-[11px]">
+                        <span className="font-bold text-[#8a4e1d] px-1 uppercase text-[10px]">
+                          Chọn vai trò đăng ký:
+                        </span>
+                        <a
+                          href="#/dang-ky?role=buyer"
+                          onClick={closeDropdown}
+                          className="py-1 px-2 rounded-lg hover:bg-[#faf7ef] text-[#4d5546] flex items-center justify-between font-medium"
+                        >
+                          <span>1. Buyer (Khách mua nông sản)</span>
+                          <ArrowRight size={12} />
+                        </a>
+                        <a
+                          href="#/dang-ky?role=shop"
+                          onClick={closeDropdown}
+                          className="py-1 px-2 rounded-lg hover:bg-[#faf7ef] text-[#4d5546] flex items-center justify-between font-medium"
+                        >
+                          <span>2. Shop (Nhà vườn mở gian hàng)</span>
+                          <ArrowRight size={12} />
+                        </a>
+                        <a
+                          href="#/dang-ky?role=shipper"
+                          onClick={closeDropdown}
+                          className="py-1 px-2 rounded-lg hover:bg-[#faf7ef] text-[#4d5546] flex items-center justify-between font-medium"
+                        >
+                          <span>3. Shipper (Tài xế giao hàng)</span>
+                          <ArrowRight size={12} />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile menu toggle */}
           <button
             className="icon-button mobile-toggle lg:hidden"
             aria-label={openMobile ? 'Đóng menu' : 'Mở menu'}
@@ -211,7 +468,7 @@ export default function Header({ route, count, onSearch, onCart, onInfo }: Heade
               href="#/cong-nghe-ai"
               className={`nav-pill ${isAiActive ? 'is-active' : ''}`}
               aria-current={isAiActive ? 'page' : undefined}
-              onClick={() => { closeDropdown(); onInfo('Công nghệ AI CapNong'); }}
+              onClick={closeDropdown}
             >
               Công nghệ AI
             </a>
@@ -221,7 +478,7 @@ export default function Header({ route, count, onSearch, onCart, onInfo }: Heade
               href="#/cau-chuyen-nong-dan"
               className={`nav-pill ${isFarmerActive ? 'is-active' : ''}`}
               aria-current={isFarmerActive ? 'page' : undefined}
-              onClick={() => { closeDropdown(); onInfo('Câu chuyện nông dân'); }}
+              onClick={closeDropdown}
             >
               Câu chuyện nông dân
             </a>
@@ -680,22 +937,64 @@ export default function Header({ route, count, onSearch, onCart, onInfo }: Heade
           </div>
 
           {/* 4. Công nghệ AI */}
-          <button
-            type="button"
-            className="text-left text-sm font-bold py-2.5 px-3.5 rounded-full text-[#42493c] hover:bg-[#e7efdf]"
-            onClick={() => { closeDropdown(); onInfo('Công nghệ AI CapNong'); }}
+          <a
+            href="#/cong-nghe-ai"
+            className={`text-left text-sm font-bold py-2.5 px-3.5 rounded-full transition-colors ${
+              isAiActive ? 'bg-[#4a7c2f] text-white' : 'text-[#42493c] hover:bg-[#e7efdf]'
+            }`}
+            onClick={closeDropdown}
           >
             Công nghệ AI
-          </button>
+          </a>
 
           {/* 5. Câu chuyện nông dân */}
-          <button
-            type="button"
-            className="text-left text-sm font-bold py-2.5 px-3.5 rounded-full text-[#42493c] hover:bg-[#e7efdf]"
-            onClick={() => { closeDropdown(); onInfo('Câu chuyện nông dân'); }}
+          <a
+            href="#/cau-chuyen-nong-dan"
+            className={`text-left text-sm font-bold py-2.5 px-3.5 rounded-full transition-colors ${
+              isFarmerActive ? 'bg-[#4a7c2f] text-white' : 'text-[#42493c] hover:bg-[#e7efdf]'
+            }`}
+            onClick={closeDropdown}
           >
             Câu chuyện nông dân
-          </button>
+          </a>
+
+          {/* 6. Auth Mobile Section */}
+          <div className="mt-3 pt-3 border-t border-[#ede8df] flex flex-col gap-2">
+            {user ? (
+              <div className="p-3 bg-[#f0ebd9] rounded-2xl flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-xs text-[#20271c]">{user.name}</div>
+                  <div className="text-[11px] text-[#555d4e]">
+                    Vai trò: <strong>{getRoleBadge(user.role).label}</strong>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { closeDropdown(); onLogout?.(); }}
+                  className="px-3 py-1.5 rounded-xl bg-red-100 text-red-700 font-bold text-xs hover:bg-red-200"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href="#/dang-nhap"
+                  onClick={closeDropdown}
+                  className="py-2.5 rounded-xl bg-[#326318] text-white font-bold text-xs text-center shadow-sm"
+                >
+                  Đăng Nhập
+                </a>
+                <a
+                  href="#/dang-ky"
+                  onClick={closeDropdown}
+                  className="py-2.5 rounded-xl border border-[#326318] text-[#326318] bg-white font-bold text-xs text-center"
+                >
+                  Đăng Ký
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </header>
