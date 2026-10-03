@@ -312,9 +312,10 @@
 
 #danh-muc .cat-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
+  gap: 8px 20px;
 }
 
 #danh-muc .cat-eyebrow {
@@ -500,4 +501,99 @@
   #danh-muc .cat-item p {
     font-size: 11.5px;
   }
+}
+
+/* =========================================================
+   Sửa 03/10/2026 – trang chủ trên mobile
+   ========================================================= */
+
+/* "Xem tất cả" xuống dòng dưới tiêu đề thay vì ép tiêu đề thành cột hẹp
+   (trước đây class Tailwind `hidden` bị rule #danh-muc .cat-link-all ghi đè nên vẫn hiện). */
+@media (max-width: 600px) {
+  #danh-muc .cat-header > div {
+    flex: 1 1 100%;
+  }
+  #danh-muc .cat-link-all {
+    font-size: 13px;
+    min-height: 44px;
+  }
+}
+
+/* Quy trình 4 bước: 2 cột gọn trên mobile thay vì 4 khối xếp dọc (~1.200px) */
+@media (max-width: 600px) {
+  #quy-trinh .rescue-flow {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 12px;
+  }
+  #quy-trinh .rescue-art {
+    width: 88px;
+    height: 72px;
+    margin-bottom: 10px;
+  }
+  #quy-trinh .rescue-art svg {
+    width: 44px;
+    height: 44px;
+  }
+  #quy-trinh .rescue-step p {
+    font-size: 12.5px;
+    margin-bottom: 10px;
+  }
+  #quy-trinh .rescue-btn {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    background: transparent;
+    color: #3e532d !important;
+    border: 1.5px solid #536c3f;
+    box-shadow: none;
+  }
+}
+
+#quy-trinh .rescue-flow {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#quy-trinh button.rescue-btn {
+  cursor: pointer;
+  font-family: inherit;
+}
+@media (min-width: 601px) {
+  #quy-trinh button.rescue-btn {
+    border: 0;
+  }
+}
+#quy-trinh .rescue-btn:focus-visible,
+#danh-muc .cat-item:focus-visible,
+#danh-muc .cat-link-all:focus-visible {
+  outline: 2px solid #326318;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #danh-muc .cat-item,
+  #danh-muc .cat-art,
+  #quy-trinh .rescue-art,
+  #quy-trinh .rescue-btn {
+    transition: none;
+  }
+  #danh-muc .cat-item:hover,
+  #quy-trinh .rescue-btn:hover {
+    transform: none;
+  }
+}
+
+/* AI section (CapNong AI Core): scan line chạy 1 lần khi đổi mẫu */
+@keyframes aiScan {
+  0% { top: 0; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+#cong-nghe-ai .ai-scanline {
+  animation: aiScan 1.1s ease-out 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  #cong-nghe-ai .ai-scanline { animation: none; }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { HashRouter } from 'react-router-dom';
 import { ShoppingBasket, Minus, Plus, Trash2, CheckCircle2, Info } from 'lucide-react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -7,12 +8,18 @@ import { ProduceImage } from './components/ProductCard';
 import Home from './pages/Home';
 import Fresh from './pages/Fresh';
 import Combos from './pages/Combos';
-import AuthPage, { type AuthUser, type UserRole } from './pages/AuthPage';
+import AuthPage, { type AuthUser } from './pages/AuthPage';
 import AiPage from './pages/AiPage';
 import FarmerStoriesPage from './pages/FarmerStoriesPage';
 import FarmerPortal from './pages/farmer/FarmerPortal';
+import AdminPortal from './pages/admin/AdminPortal';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import ProductDetail from './pages/product/ProductDetail';
+import ShopPage from './pages/product/ShopPage';
+import ShopVouchers from './pages/product/ShopVouchers';
 import { allProducts, changeQuantity, money, type Cart } from './catalog';
+import { PopupProvider } from './contexts/PopupContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 const currentRoute = () => decodeURI(location.hash.slice(1) || '/');
 
@@ -33,24 +40,11 @@ function restoreCart(): Cart {
   }
 }
 
-function restoreUser(): AuthUser | null {
-  try {
-    const saved = localStorage.getItem('capnong-user');
-    if (!saved) return null;
-    const parsed = JSON.parse(saved);
-    if (parsed && typeof parsed === 'object' && parsed.name && parsed.role) {
-      return parsed as AuthUser;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export default function App() {
+function MainApp() {
   const [route, setRoute] = useState(currentRoute);
   const [cart, setCart] = useState<Cart>(restoreCart);
-  const [user, setUser] = useState<AuthUser | null>(restoreUser);
+  // Một nguồn user duy nhất: AuthContext (trước đây App giữ thêm một state riêng).
+  const { user, login, logout } = useAuth();
   const [cartOpen, setCartOpen] = useState(false);
   const [info, setInfo] = useState('');
   const [query, setQuery] = useState('');
@@ -64,11 +58,26 @@ export default function App() {
     route.startsWith('/bao-mat-thong-tin') ||
     route.startsWith('/privacy') ||
     route.startsWith('/chinh-sach-bao-mat');
+  const isProductDetail =
+    route.startsWith('/san-pham') ||
+    route.startsWith('/product') ||
+    route.startsWith('/chi-tiet-san-pham');
+  const isShopDetail =
+    route.startsWith('/cua-hang') ||
+    route.startsWith('/shop-detail') ||
+    route.startsWith('/shop-page');
+  const isShopVouchers =
+    route.startsWith('/shop-vouchers') ||
+    route.startsWith('/voucher-shop');
   const isShop =
     route.startsWith('/shop') ||
     route.startsWith('/farmer') ||
     route.startsWith('/kenh-nguoi-ban') ||
     route.startsWith('/seller');
+  const isAdmin =
+    route.startsWith('/admin') ||
+    route.startsWith('/quan-tri') ||
+    route.startsWith('/administrator');
   const isAuth =
     route.startsWith('/dang-nhap') ||
     route.startsWith('/dang-ky') ||
@@ -93,29 +102,25 @@ export default function App() {
   }, [cart]);
 
   useEffect(() => {
-    try {
-      if (user) {
-        localStorage.setItem('capnong-user', JSON.stringify(user));
-      } else {
-        localStorage.removeItem('capnong-user');
-      }
-    } catch {
-      /* Session state still works */
-    }
-  }, [user]);
-
-  useEffect(() => {
     if (!toast) return;
     const id = setTimeout(() => setToast(''), 3500);
     return () => clearTimeout(id);
   }, [toast]);
 
   useEffect(() => {
-    const titlePrefix = isShop
+    const titlePrefix = isAdmin
+      ? 'Trung Tâm Quản Trị Hệ Thống · CapNong Admin'
+      : isShop
       ? 'Bảng Điều Khiển Nông Dân · Kênh Người Bán'
+      : isProductDetail
+      ? 'Chi Tiết Nông Sản & Nhà Vườn'
+      : isShopDetail
+      ? 'Gian Hàng Nông Dân'
+      : isShopVouchers
+      ? 'Voucher & Ưu Đãi Gian Hàng'
       : isAuth
       ? route.includes('dang-ky') || route.includes('register')
-        ? 'Đăng ký tài khoản (Buyer, Shop, Shipper)'
+        ? 'Đăng ký tài khoản (Buyer, Shop, Shipper, Admin)'
         : 'Đăng nhập thành viên'
       : isPrivacy
       ? 'Chính Sách Bảo Mật Thông Tin'
@@ -138,11 +143,20 @@ export default function App() {
       else window.scrollTo(0, 0);
     });
     return () => cancelAnimationFrame(frame);
-  }, [route, isFresh, isCombo, isAi, isFarmer, isPrivacy, isAuth, isShop]);
+  }, [route, isFresh, isCombo, isAi, isFarmer, isPrivacy, isAuth, isShop, isAdmin, isProductDetail, isShopDetail, isShopVouchers]);
 
   const add = (id: string) => {
+    const product = allProducts.find((p) => p.id === id);
+    if (!product) {
+      setToast('Sản phẩm này chưa mở bán trực tuyến.');
+      return;
+    }
+    if ((cart[id] ?? 0) >= product.stock) {
+      setToast(`Bạn đã chọn tối đa ${product.stock} ${product.unit} ${product.name}.`);
+      return;
+    }
     setCart((c) => changeQuantity(c, id, 1));
-    setToast('Đã cập nhật giỏ hàng của bạn');
+    setToast(`Đã thêm ${product.name} vào giỏ`);
   };
 
   const showInfo = (title: string) => {
@@ -151,9 +165,11 @@ export default function App() {
   };
 
   const handleLoginSuccess = (loggedInUser: AuthUser) => {
-    setUser(loggedInUser);
+    login(loggedInUser);
     setToast(`Chào mừng ${loggedInUser.name} (${loggedInUser.role.toUpperCase()})!`);
-    if (loggedInUser.role === 'shop') {
+    if (loggedInUser.role === 'admin') {
+      location.hash = '/admin';
+    } else if (loggedInUser.role === 'shop') {
       location.hash = '/shop';
     } else {
       location.hash = '/';
@@ -161,7 +177,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    setUser(null);
+    logout();
     setToast('Bạn đã đăng xuất khỏi hệ thống CapNong.');
     location.hash = '/';
   };
@@ -176,6 +192,24 @@ export default function App() {
 
   const initialMode =
     route.startsWith('/dang-ky') || route.startsWith('/register') ? 'register' : 'login';
+
+  const routeSegments = route.split('/').filter(Boolean);
+  const detailProductId = isProductDetail ? routeSegments[1] || '701' : '701';
+  const detailShopId = (isShopDetail || isShopVouchers) ? routeSegments[1] || '101' : '101';
+
+  // Render Full-Screen Dedicated Admin Portal
+  if (isAdmin) {
+    return (
+      <AdminPortal
+        user={user}
+        onLogout={handleLogout}
+        onNavigateStore={() => {
+          location.hash = '/';
+        }}
+        onInfo={showInfo}
+      />
+    );
+  }
 
   // Render Full-Screen Dedicated Shop Portal
   if (isShop) {
@@ -216,6 +250,10 @@ export default function App() {
             ? '/cau-chuyen-nong-dan'
             : isAuth
             ? '/dang-nhap'
+            : isProductDetail
+            ? '/nong-san-tuoi'
+            : isShopDetail
+            ? '/nong-san-tuoi'
             : route
         }
         count={count}
@@ -242,6 +280,33 @@ export default function App() {
             onLoginSuccess={handleLoginSuccess}
             onInfo={showInfo}
           />
+        ) : isProductDetail ? (
+          <div className="pt-6">
+            <ProductDetail
+              productId={detailProductId}
+              onBack={() => {
+                location.hash = '/';
+              }}
+            />
+          </div>
+        ) : isShopDetail ? (
+          <div className="pt-6">
+            <ShopPage
+              shopId={detailShopId}
+              onBack={() => {
+                location.hash = '/';
+              }}
+            />
+          </div>
+        ) : isShopVouchers ? (
+          <div className="pt-6">
+            <ShopVouchers
+              shopId={detailShopId}
+              onBack={() => {
+                location.hash = `/cua-hang/${detailShopId}`;
+              }}
+            />
+          </div>
         ) : isAi ? (
           <AiPage onInfo={showInfo} />
         ) : isFarmer ? (
@@ -249,11 +314,11 @@ export default function App() {
         ) : isPrivacy ? (
           <PrivacyPolicy onNavigateHome={() => { location.hash = '/'; }} />
         ) : isFresh ? (
-          <Fresh query={query} setQuery={setQuery} onAdd={add} onInfo={showInfo} />
+          <Fresh query={query} setQuery={setQuery} onAdd={add} onInfo={showInfo} cart={cart} />
         ) : isCombo ? (
           <Combos onAdd={add} onInfo={showInfo} />
         ) : (
-          <Home onAdd={add} onInfo={showInfo} />
+          <Home onAdd={add} onInfo={showInfo} cart={cart} />
         )}
       </main>
 
@@ -359,7 +424,7 @@ export default function App() {
               <strong>{info.toLowerCase()}</strong> chưa kết nối dịch vụ thực tế.
             </p>
             <p>
-              Bạn có thể thử tìm kiếm, lọc nông sản, chọn combo, đăng ký vai trò Buyer/Shop/Shipper và quản lý giỏ hàng ngay trên website.
+              Bạn có thể thử tìm kiếm, lọc nông sản, chọn combo, đăng ký vai trò Buyer/Shop/Shipper/Admin và quản lý giỏ hàng ngay trên website.
             </p>
             <button className="btn btn-green" onClick={() => setInfo('')}>
               Đã hiểu
@@ -368,5 +433,17 @@ export default function App() {
         </Modal>
       )}
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <HashRouter>
+      <PopupProvider>
+        <AuthProvider>
+          <MainApp />
+        </AuthProvider>
+      </PopupProvider>
+    </HashRouter>
   );
 }

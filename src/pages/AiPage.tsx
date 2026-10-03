@@ -312,16 +312,16 @@ export default function AiPage({ onInfo }: AiPageProps) {
 
               {/* 4 Diet Options */}
               <div className="grid grid-cols-2 gap-2">
-                {[
+                {([
                   { id: 'eatclean', label: '🥗 Eat Clean Chuẩn Dáng' },
                   { id: 'family', label: '🍲 Mâm Cơm Gia Đình' },
                   { id: 'detox', label: '🥤 Nước Ép Detox Sáng' },
                   { id: 'vegan', label: '🧘 Thực Dưỡng Chay' },
-                ].map((diet) => (
+                ] as const).map((diet) => (
                   <button
                     key={diet.id}
                     type="button"
-                    onClick={() => setActiveDiet(diet.id as any)}
+                    onClick={() => setActiveDiet(diet.id)}
                     className={`p-3 rounded-2xl border text-left font-bold text-xs transition-all ${
                       activeDiet === diet.id
                         ? 'bg-[#fdf5eb] border-2 border-[#8a4e1d] text-[#8a4e1d] shadow-sm'

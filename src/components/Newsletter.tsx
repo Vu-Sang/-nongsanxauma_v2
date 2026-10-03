@@ -2,7 +2,6 @@ import { useState, type FormEvent } from 'react';
 import {
   Mail,
   CheckCircle2,
-  Sprout,
   Truck,
   ShoppingBag,
   ArrowRight,
@@ -10,7 +9,6 @@ import {
   Sparkles,
   Zap,
   Store,
-  UserRound,
   Gift,
 } from 'lucide-react';
 import fullBannerImg from '../assets/full-ecosystem-banner.jpg';
@@ -22,10 +20,18 @@ interface NewsletterProps {
 export default function Newsletter({ onInfo }: NewsletterProps) {
   const [contactInput, setContactInput] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!contactInput.trim()) return;
+    const value = contactInput.trim();
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+    const isPhone = /^(\+84|0)(3|5|7|8|9)\d{8}$/.test(value.replace(/[\s.-]/g, ''));
+    if (!isEmail && !isPhone) {
+      setError('Vui lòng nhập email hoặc số điện thoại Việt Nam hợp lệ (VD: 0912 345 678).');
+      return;
+    }
+    setError('');
     setSubmitted(true);
   };
 
@@ -81,7 +87,7 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                 <ShoppingBag size={24} />
               </div>
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ffea79]">
+                <span className="text-caption font-bold uppercase tracking-wider text-[#ffea79]">
                   01 · Người Tiêu Dùng
                 </span>
                 <h3 className="text-xl font-black text-white mt-0.5">
@@ -111,7 +117,7 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                 <Store size={24} />
               </div>
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#a4e876]">
+                <span className="text-caption font-bold uppercase tracking-wider text-[#a4e876]">
                   02 · Nông Dân &amp; HTX
                 </span>
                 <h3 className="text-xl font-black text-white mt-0.5">
@@ -141,7 +147,7 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                 <Truck size={24} />
               </div>
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#ffba41]">
+                <span className="text-caption font-bold uppercase tracking-wider text-[#ffba41]">
                   03 · Vận Chuyển Xanh
                 </span>
                 <h3 className="text-xl font-black text-white mt-0.5">
@@ -168,29 +174,45 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
         {/* Quick Email / Phone Subscription & Benefit Bar */}
         <div className="bg-black/45 backdrop-blur-md border border-white/20 rounded-3xl p-6 sm:p-8 max-w-4xl mx-auto w-full shadow-2xl">
           {submitted ? (
-            <div className="flex items-center justify-center gap-3 text-center py-2 text-[#a4e876] animate-fadeIn">
+            <div role="status" className="flex items-center justify-center gap-3 text-center py-2 text-[#a4e876] animate-fadeIn">
               <CheckCircle2 size={24} className="shrink-0" />
               <div className="text-sm sm:text-base font-bold text-white">
-                Cảm ơn bạn! CapNong đã ghi nhận thông tin và gửi mã ưu đãi Voucher 50.000đ đến bạn.
+                Cảm ơn bạn! CapNong đã ghi nhận thông tin. Đây là bản trải nghiệm nên chưa gửi voucher thật.
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-3">
+            <form onSubmit={handleSubmit} noValidate className="flex flex-col sm:flex-row items-start gap-3">
               <div className="relative flex-1 w-full">
-                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
+                <label htmlFor="newsletter-contact" className="sr-only">
+                  Email hoặc số điện thoại
+                </label>
+                <Mail size={18} className="absolute left-4 top-[1.6rem] -translate-y-1/2 text-white/70" aria-hidden />
                 <input
+                  id="newsletter-contact"
                   type="text"
+                  inputMode="email"
+                  autoComplete="email"
                   required
                   value={contactInput}
-                  onChange={(e) => setContactInput(e.target.value)}
-                  placeholder="Nhập Email hoặc Số điện thoại để nhận thông báo mùa vụ & Voucher 50K..."
-                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/15 border border-white/30 text-white placeholder-white/70 text-xs sm:text-sm focus:outline-none focus:bg-white/25 focus:border-[#ffea79] transition-all"
+                  onChange={(e) => {
+                    setContactInput(e.target.value);
+                    if (error) setError('');
+                  }}
+                  aria-invalid={error ? true : undefined}
+                  aria-describedby={error ? 'newsletter-error' : undefined}
+                  placeholder="Email hoặc số điện thoại"
+                  className="w-full h-[3.2rem] pl-11 pr-4 rounded-2xl bg-white/15 border border-white/30 text-white placeholder-white/70 text-sm focus:outline-none focus:bg-white/25 focus:border-[#ffea79] transition-all aria-[invalid=true]:border-[#ffb4ab]"
                 />
+                {error && (
+                  <p id="newsletter-error" role="alert" className="mt-2 text-caption font-semibold text-[#ffd6d0]">
+                    {error}
+                  </p>
+                )}
               </div>
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-[#ffba41] hover:bg-[#ffce77] text-[#2c2416] font-extrabold text-xs sm:text-sm uppercase tracking-wide transition-all shadow-lg hover:shadow-xl shrink-0 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full sm:w-auto h-[3.2rem] px-7 rounded-2xl bg-[#ffba41] hover:bg-[#ffce77] text-[#2c2416] font-extrabold text-xs sm:text-sm uppercase tracking-wide transition-all shadow-lg hover:shadow-xl shrink-0 cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Nhận Voucher 50K</span>
                 <ArrowRight size={16} />
@@ -199,7 +221,7 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
           )}
 
           {/* Micro trust badges */}
-          <div className="mt-4 pt-3 border-t border-white/15 flex flex-wrap items-center justify-between text-[11px] text-white/75 gap-2">
+          <div className="mt-4 pt-3 border-t border-white/15 flex flex-wrap items-center justify-between text-caption text-white/75 gap-2">
             <span className="flex items-center gap-1.5">
               <ShieldCheck size={14} className="text-[#a4e876]" />
               Cam kết bảo mật thông tin 100%

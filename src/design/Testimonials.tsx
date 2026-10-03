@@ -1,9 +1,9 @@
-import { Star, Heart, Zap, Award, Target, Sprout, Gift, ShieldCheck, Compass } from 'lucide-react';
+import { Star, Heart, Zap, Award, Target, Sprout, Gift, ShieldCheck, Compass, type LucideIcon } from 'lucide-react';
 
 interface TestimonialCard {
   id: string;
   tag: string;
-  tagIcon: any;
+  tagIcon: LucideIcon;
   tagStyle: string;
   quote: string;
   author: string;
@@ -141,7 +141,7 @@ export default function Testimonials() {
               <div className="w-9 h-9 rounded-full bg-[#8b5cf6] text-white flex items-center justify-center font-bold text-xs ring-2 ring-white shadow-sm">
                 NL
               </div>
-              <div className="w-9 h-9 rounded-full bg-[#2e7d32] text-white flex items-center justify-center font-bold text-[11px] ring-2 ring-white shadow-sm">
+              <div className="w-9 h-9 rounded-full bg-[#2e7d32] text-white flex items-center justify-center font-bold text-caption ring-2 ring-white shadow-sm">
                 +12k
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function Testimonials() {
               <span className="text-xs sm:text-sm font-extrabold text-[#1c1c17]">
                 12.000+ Lượt giải cứu
               </span>
-              <span className="text-[11px] text-[#71766b]">
+              <span className="text-caption text-[#71766b]">
                 Hài lòng &amp; ủng hộ bà con nông dân
               </span>
             </div>
@@ -164,19 +164,21 @@ export default function Testimonials() {
           <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-16 bg-gradient-to-l from-[#f8f6f0] to-transparent z-20 pointer-events-none" />
 
           {/* Row 1: Continuous Marquee Left */}
-          <div className="overflow-hidden w-full">
-            <div className="marquee-track-left">
-              {[...ROW_1, ...ROW_1].map((item, idx) => {
+          <div className="overflow-hidden w-full motion-reduce:overflow-x-auto">
+            <div className="marquee-track-left motion-reduce:![animation:none]">
+              {[...ROW_1, ...ROW_1].map((item, idx, all) => {
+                const ROWLEN = all.length / 2;
                 const TagIcon = item.tagIcon;
                 return (
                   <div
                     key={`${item.id}-${idx}`}
+                    aria-hidden={idx >= ROWLEN || undefined}
                     className="w-[300px] sm:w-[340px] shrink-0 bg-white rounded-2xl p-4 sm:p-5 border border-[#e5e2da] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-3.5"
                   >
                     {/* Top Tag */}
                     <div className="flex items-center justify-between">
                       <span
-                        className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${item.tagStyle}`}
+                        className={`inline-flex items-center gap-1 text-caption font-bold px-2.5 py-0.5 rounded-full border ${item.tagStyle}`}
                       >
                         <TagIcon size={11} />
                         <span>{item.tag}</span>
@@ -191,7 +193,7 @@ export default function Testimonials() {
                     </div>
 
                     {/* Quote Text */}
-                    <p className="text-xs sm:text-[13px] text-[#374151] leading-relaxed line-clamp-3">
+                    <p className="text-sm text-[#374151] leading-relaxed line-clamp-4">
                       "{item.quote}"
                     </p>
 
@@ -206,7 +208,7 @@ export default function Testimonials() {
                         <span className="text-xs font-bold text-[#1e293b] truncate">
                           {item.author}
                         </span>
-                        <span className="text-[10px] text-[#64748b] truncate">
+                        <span className="text-caption text-[#64748b] truncate">
                           {item.role}
                         </span>
                       </div>
@@ -218,19 +220,21 @@ export default function Testimonials() {
           </div>
 
           {/* Row 2: Continuous Marquee Right */}
-          <div className="overflow-hidden w-full">
-            <div className="marquee-track-right">
-              {[...ROW_2, ...ROW_2].map((item, idx) => {
+          <div className="overflow-hidden w-full motion-reduce:overflow-x-auto">
+            <div className="marquee-track-right motion-reduce:![animation:none]">
+              {[...ROW_2, ...ROW_2].map((item, idx, all) => {
+                const ROWLEN = all.length / 2;
                 const TagIcon = item.tagIcon;
                 return (
                   <div
                     key={`${item.id}-${idx}`}
+                    aria-hidden={idx >= ROWLEN || undefined}
                     className="w-[300px] sm:w-[340px] shrink-0 bg-white rounded-2xl p-4 sm:p-5 border border-[#e5e2da] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-3.5"
                   >
                     {/* Top Tag */}
                     <div className="flex items-center justify-between">
                       <span
-                        className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${item.tagStyle}`}
+                        className={`inline-flex items-center gap-1 text-caption font-bold px-2.5 py-0.5 rounded-full border ${item.tagStyle}`}
                       >
                         <TagIcon size={11} />
                         <span>{item.tag}</span>
@@ -245,7 +249,7 @@ export default function Testimonials() {
                     </div>
 
                     {/* Quote Text */}
-                    <p className="text-xs sm:text-[13px] text-[#374151] leading-relaxed line-clamp-3">
+                    <p className="text-sm text-[#374151] leading-relaxed line-clamp-4">
                       "{item.quote}"
                     </p>
 
@@ -260,7 +264,7 @@ export default function Testimonials() {
                         <span className="text-xs font-bold text-[#1e293b] truncate">
                           {item.author}
                         </span>
-                        <span className="text-[10px] text-[#64748b] truncate">
+                        <span className="text-caption text-[#64748b] truncate">
                           {item.role}
                         </span>
                       </div>

@@ -1,4 +1,5 @@
 module.exports = {
+  "presets": [require("./tailwind.capnong-preset.js").default],
   "darkMode": "class",
   "theme": {
     "extend": {

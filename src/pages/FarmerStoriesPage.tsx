@@ -346,17 +346,17 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
 
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            {[
+            {([
               { id: 'all', label: 'Tất cả bài viết' },
               { id: 'rescue', label: '🚨 Nhật ký giải cứu' },
               { id: 'story', label: '📖 Phóng sự người nông dân' },
               { id: 'news', label: '📰 Báo chí & Tin tức' },
               { id: 'tips', label: '🌱 Mẹo canh tác & Bảo quản' },
-            ].map((tab) => (
+            ] as const).map((tab) => (
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setSelectedCategory(tab.id as any)}
+                onClick={() => setSelectedCategory(tab.id)}
                 className={`px-4 py-2 rounded-full text-xs font-extrabold transition-all cursor-pointer ${
                   selectedCategory === tab.id
                     ? 'bg-[#326318] text-white shadow-sm'

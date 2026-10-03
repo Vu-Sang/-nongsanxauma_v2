@@ -1,14 +1,17 @@
+import { PlayCircle, ShoppingBasket } from 'lucide-react';
 import heroFarmerImg from '../assets/hero-farmer.jpg';
 
 export default function Hero() {
   return (
-    <section className="relative w-full overflow-hidden bg-surface-container-low min-h-[520px] sm:min-h-[580px] lg:min-h-[680px] xl:min-h-[720px] flex items-center">
+    <section aria-labelledby="hero-title" className="relative w-full overflow-hidden bg-surface-container-low min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] xl:min-h-[680px] flex items-center">
       {/* Hero Image Background with Ambient Dark-to-Warm Gradient Overlays */}
       <div className="absolute inset-0 z-0">
         <img
           alt="Hai cô chú nông dân Việt Nam tươi cười rạng rỡ với nông sản tươi ngon thu hoạch từ vườn"
-          className="w-full h-full object-cover object-[center_top] lg:object-right-top transition-transform duration-1000 ease-out hover:scale-[1.02]"
+          className="w-full h-full object-cover object-[center_top] lg:object-right-top"
           src={heroFarmerImg}
+          fetchPriority="high"
+          decoding="async"
         />
         {/* Responsive gradient overlay: full dark scrim on mobile, smooth right-fade on tablet/desktop */}
         <div className="absolute inset-0 bg-gradient-to-t from-on-surface/95 via-on-surface/80 to-on-surface/50 lg:hidden" />
@@ -21,13 +24,13 @@ export default function Hero() {
           {/* Live AI Badge */}
           <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-surface-bright/20 backdrop-blur-md w-fit border border-white/20 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse shrink-0" />
-            <span className="text-[11px] sm:text-xs text-tertiary-fixed font-bold tracking-wide uppercase">
+            <span className="text-caption text-tertiary-fixed font-bold tracking-wide uppercase">
               AI Dinh Dưỡng Kiểm Định 100%
             </span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-surface-bright font-extrabold tracking-tight leading-[1.18] sm:leading-[1.15]">
+          <h1 id="hero-title" className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-surface-bright font-extrabold tracking-tight leading-[1.18] sm:leading-[1.15]">
             Nông sản xấu mã – <br />
             <span className="text-tertiary-fixed-dim inline-block">Ngon thật, rẻ thật.</span>
           </h1>
@@ -43,14 +46,14 @@ export default function Hero() {
               className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full bg-primary-container hover:bg-primary text-white font-bold text-sm sm:text-base transition-all transform hover:-translate-y-0.5 shadow-lg shadow-primary-container/30 min-h-[46px]"
               href="#/giai-cuu-hom-nay"
             >
-              <span className="material-symbols-outlined text-lg sm:text-xl">shopping_basket</span>
+              <ShoppingBasket size={20} aria-hidden />
               <span>Mua ngay hôm nay</span>
             </a>
             <a
               className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-white/15 hover:bg-white/25 text-surface-bright border border-white/25 backdrop-blur-md font-bold text-sm sm:text-base transition-all min-h-[46px]"
               href="#/cong-nghe-ai"
             >
-              <span className="material-symbols-outlined text-lg sm:text-xl">play_circle</span>
+              <PlayCircle size={20} aria-hidden />
               <span>Xem cách hoạt động</span>
             </a>
           </div>
@@ -59,15 +62,15 @@ export default function Hero() {
           <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-5 mt-2 sm:mt-4 border-t border-white/20">
             <div className="flex flex-col">
               <span className="text-xl sm:text-2xl lg:text-3xl text-tertiary-fixed-dim font-extrabold tracking-tight">12.000+</span>
-              <span className="text-[10px] sm:text-xs text-surface-container-highest mt-0.5">Đơn giải cứu</span>
+              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">Đơn giải cứu</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xl sm:text-2xl lg:text-3xl text-primary-fixed font-extrabold tracking-tight">500+</span>
-              <span className="text-[10px] sm:text-xs text-surface-container-highest mt-0.5">Nông dân liên kết</span>
+              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">Nông dân liên kết</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xl sm:text-2xl lg:text-3xl text-surface-bright font-extrabold tracking-tight">30 Tấn</span>
-              <span className="text-[10px] sm:text-xs text-surface-container-highest mt-0.5">Tránh lãng phí</span>
+              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">Tránh lãng phí</span>
             </div>
           </div>
         </div>

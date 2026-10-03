@@ -1,573 +1,286 @@
-import {
-  Search,
-  Leaf,
-  MapPin,
-  Truck,
-  Sparkles,
-  ArrowUpDown,
-  Filter,
-  Plus,
-  Check,
-  RotateCcw,
-  ShoppingBasket,
-} from 'lucide-react';
-import { useState } from 'react';
-import { filterProducts, money, type Product } from '../catalog';
-import { ProduceImage } from '../components/ProductCard';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowUpDown, Leaf, MapPin, RotateCcw, Search, SlidersHorizontal, Sparkles, Truck, X } from 'lucide-react';
+import { filterProducts, type Cart } from '../catalog';
 import freshFarmerBanner from '../assets/fresh-farmer-banner.jpg';
-
-interface FreshProps {
-  query: string;
-  setQuery: (s: string) => void;
-  onAdd: (s: string) => void;
-  onInfo: (s: string) => void;
-}
-
-const CATEGORIES = [
-  {
-    id: 'Tất cả',
-    label: 'Tất cả nông sản',
-    bannerTitle: 'Tất cả sản phẩm',
-    breadcrumb: 'Tất cả sản phẩm',
-  },
-  {
-    id: 'Rau ăn lá',
-    label: 'Rau củ hữu cơ & lá xanh',
-    bannerTitle: 'Rau củ tươi sạch',
-    breadcrumb: 'Rau củ',
-  },
-  {
-    id: 'Củ quả',
-    label: 'Củ quả vườn tự nhiên',
-    bannerTitle: 'Củ quả vườn tự nhiên',
-    breadcrumb: 'Củ quả',
-  },
-  {
-    id: 'Trái cây',
-    label: 'Hoa quả sạch Organic',
-    bannerTitle: 'Hoa quả sạch Organic',
-    breadcrumb: 'Hoa quả & Trái cây',
-  },
-  {
-    id: 'Hữu cơ',
-    label: 'Nông sản VietGAP',
-    bannerTitle: 'Nông sản VietGAP & Hữu cơ',
-    breadcrumb: 'Nông sản VietGAP',
-  },
-  {
-    id: 'Đà Lạt',
-    label: 'Đặc sản vùng Đà Lạt',
-    bannerTitle: 'Nông sản Đà Lạt',
-    breadcrumb: 'Đặc sản Đà Lạt',
-  },
-];
+import { Button } from '../components/ui/Button';
+import { Drawer } from '../components/ui/Drawer';
+import { ProductGrid } from '../components/product/ProductGrid';
+import {
+  AI_SCORES,
+  CATEGORIES,
+  DEFAULT_FILTERS,
+  FilterPanel,
+  PRICE_RANGES,
+  REGIONS,
+  countActiveFilters,
+  filtersFromHash,
+  type Filters,
+} from '../components/product/FilterPanel';
+import { cn } from '../lib/cn';
 
 const SORT_OPTIONS = [
   { id: 'featured', label: 'Nổi bật' },
-  { id: 'name-asc', label: 'Tên A-Z' },
-  { id: 'name-desc', label: 'Tên Z-A' },
-  { id: 'price-asc', label: 'Giá thấp đến cao' },
-  { id: 'price-desc', label: 'Giá cao xuống thấp' },
   { id: 'best-selling', label: 'Bán chạy' },
-];
+  { id: 'price-asc', label: 'Giá tăng dần' },
+  { id: 'price-desc', label: 'Giá giảm dần' },
+  { id: 'name-asc', label: 'Tên A-Z' },
+] as const;
+type SortId = (typeof SORT_OPTIONS)[number]['id'];
 
-export default function Fresh({ query, setQuery, onAdd, onInfo }: FreshProps) {
-  const [category, setCategory] = useState('Tất cả');
-  const [sort, setSort] = useState('featured');
-  const [priceRange, setPriceRange] = useState('all');
-  const [selectedRegion, setSelectedRegion] = useState('all');
-  const [minScore, setMinScore] = useState(0);
+type FreshProps = {
+  query: string;
+  setQuery: (value: string) => void;
+  onAdd: (id: string) => void;
+  onInfo: (title: string) => void;
+  /** Tùy chọn: truyền giỏ hàng để card hiện "Trong giỏ: n". */
+  cart?: Cart;
+};
 
-  // Active category data for dynamic banner title & breadcrumb
-  const activeCategory = CATEGORIES.find((c) => c.id === category) || CATEGORIES[0];
+const HIGHLIGHTS = [
+  { icon: Leaf, title: 'AI thẩm định độ tươi', text: 'Minh bạch điểm độ tươi trên từng lô hàng.', tone: 'bg-leaf-50 text-leaf-600' },
+  { icon: MapPin, title: 'Trực tiếp từ nhà vườn', text: 'Biết rõ người trồng và nhật ký canh tác.', tone: 'bg-sun-100 text-soil-600' },
+  { icon: Truck, title: 'Giao nhanh 2–4 giờ', text: 'Đóng thùng tái chế, giữ trọn độ giòn ngọt.', tone: 'bg-sky-50 text-sky-700' },
+] as const;
 
-  // Filter pipeline
-  let items = filterProducts(query, category, sort);
+export default function Fresh({ query, setQuery, onAdd, onInfo, cart }: FreshProps) {
+  const [filters, setFilters] = useState<Filters>(() => filtersFromHash());
 
-  if (priceRange === 'under20') {
-    items = items.filter((p) => p.price < 20000);
-  } else if (priceRange === '20to30') {
-    items = items.filter((p) => p.price >= 20000 && p.price <= 30000);
-  } else if (priceRange === 'over30') {
-    items = items.filter((p) => p.price > 30000);
-  }
+  // Bấm danh mục khác ở trang chủ/menu khi đang ở trang này: cập nhật bộ lọc theo URL
+  useEffect(() => {
+    const sync = () => {
+      if (location.hash.includes('danh-muc=')) setFilters(filtersFromHash());
+    };
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+  const [sort, setSort] = useState<SortId>('featured');
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  if (selectedRegion !== 'all') {
-    items = items.filter((p) => p.region.toLowerCase().includes(selectedRegion.toLowerCase()));
-  }
+  const items = useMemo(() => {
+    const range = PRICE_RANGES.find((r) => r.id === filters.price);
+    const min = range && 'min' in range ? range.min : 0;
+    const max = range && 'max' in range ? range.max : Number.POSITIVE_INFINITY;
+    return filterProducts(query, filters.category, sort).filter(
+      (p) =>
+        p.price >= min &&
+        p.price <= max &&
+        (filters.region === 'all' || p.region.includes(filters.region)) &&
+        p.score >= filters.minScore,
+    );
+  }, [query, filters, sort]);
 
-  if (minScore > 0) {
-    items = items.filter((p) => p.score >= minScore);
-  }
+  const activeCount = countActiveFilters(filters) + (query.trim() ? 1 : 0);
+  const category = CATEGORIES.find((c) => c.id === filters.category) ?? CATEGORIES[0];
 
-  const handleResetFilters = () => {
-    setCategory('Tất cả');
+  const resetAll = () => {
+    setFilters(DEFAULT_FILTERS);
     setSort('featured');
-    setPriceRange('all');
-    setSelectedRegion('all');
-    setMinScore(0);
     setQuery('');
   };
 
-  const hasActiveFilters =
-    category !== 'Tất cả' ||
-    priceRange !== 'all' ||
-    selectedRegion !== 'all' ||
-    minScore > 0 ||
-    query.trim() !== '';
+  // Chip cho từng bộ lọc đang bật, bấm để gỡ riêng lẻ
+  const chips = [
+    filters.category !== 'Tất cả' && { key: 'category', label: category.label },
+    filters.price !== 'all' && { key: 'price', label: PRICE_RANGES.find((r) => r.id === filters.price)?.label },
+    filters.region !== 'all' && { key: 'region', label: REGIONS.find((r) => r.id === filters.region)?.label },
+    filters.minScore !== 0 && { key: 'minScore', label: `AI ${AI_SCORES.find((s) => s.id === filters.minScore)?.label}` },
+  ].filter((c): c is { key: keyof Filters; label: string } => Boolean(c && c.label));
 
   return (
-    <div className="w-full bg-[#fdfcf9] min-h-screen">
-      {/* 1. Top Agricultural & Farmer Banner with Dynamic Title (Enlarged & Immersive) */}
-      <div className="relative w-full h-72 sm:h-84 md:h-96 lg:h-[380px] overflow-hidden flex items-center justify-center text-center shadow-lg">
+    <div className="min-h-screen bg-paper">
+      {/* Banner: thấp hơn trên mobile để sản phẩm xuất hiện sớm hơn */}
+      <header className="relative flex h-52 items-center justify-center overflow-hidden text-center sm:h-72 lg:h-80">
         <img
           src={freshFarmerBanner}
-          alt="Nông dân thu hoạch nông sản tươi xanh"
-          className="absolute inset-0 w-full h-full object-cover object-center scale-105 transition-transform duration-700"
+          alt=""
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
         />
-        {/* Dark Vignette Gradient Overlay for crisp text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/55 to-black/40" />
-
-        {/* Dynamic Title & Breadcrumb Content */}
-        <div className="relative z-10 flex flex-col items-center gap-3 px-4 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-[#ffea79] text-xs font-bold uppercase tracking-wider shadow-sm">
-            <Leaf size={13} />
-            <span>Nông Sản Tươi Lành · Trực Tiếp Từ Vườn</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-lg animate-fadeIn leading-tight">
-            {activeCategory.bannerTitle}
-          </h1>
-
-          <p className="text-xs sm:text-sm md:text-base text-white/85 font-normal max-w-xl mx-auto leading-relaxed drop-shadow">
-            Nông sản thu hoạch trong ngày từ các nông hộ và hợp tác xã liên kết, giữ trọn vẹn độ tươi giòn và dinh dưỡng tự nhiên.
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/35" aria-hidden />
+        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center gap-3 px-4">
+          <nav aria-label="Breadcrumb" className="text-caption font-medium text-white/85 sm:text-sm">
+            <ol className="flex items-center gap-2">
+              <li>
+                <a href="#/" className="rounded hover:text-sun-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sun-300">
+                  Trang chủ
+                </a>
+              </li>
+              <li aria-hidden>›</li>
+              <li aria-current="page" className="font-bold text-sun-300">
+                {category.label}
+              </li>
+            </ol>
+          </nav>
+          <h1 className="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">{category.bannerTitle}</h1>
+          <p className="hidden max-w-xl text-sm leading-relaxed text-white/85 sm:block md:text-base">
+            Thu hoạch trong ngày từ các nông hộ và hợp tác xã liên kết, giữ trọn độ tươi giòn và dinh dưỡng tự nhiên.
           </p>
-
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-white/90 font-medium mt-1 shadow-sm">
-            <a href="#/" className="hover:text-[#ffea79] transition-colors">
-              Trang chủ
-            </a>
-            <span className="text-white/40">›</span>
-            <span className="text-[#ffea79] font-bold">{activeCategory.breadcrumb}</span>
-          </div>
         </div>
-      </div>
+      </header>
 
-      {/* 2. Main Body Container: Sidebar + Products */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* LEFT SIDEBAR: Categories & Filters */}
-          <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-6">
-            {/* Box 1: Danh Mục Sản Phẩm */}
-            <div className="bg-[#f2f9ed] border border-[#d6ebd0] rounded-2xl p-5 shadow-sm">
-              <h2 className="text-base sm:text-lg font-black text-[#2b5619] pb-3.5 mb-2 border-b border-[#cfe6c8] flex items-center justify-between">
-                <span>Danh Mục Sản Phẩm</span>
-                <Leaf size={18} className="text-[#4a7c2f]" />
-              </h2>
-
-              <ul className="flex flex-col divide-y divide-[#e3f2dc]">
-                {CATEGORIES.map((c) => {
-                  const isActive = category === c.id;
-                  return (
-                    <li key={c.id}>
-                      <button
-                        type="button"
-                        onClick={() => setCategory(c.id)}
-                        className={`w-full py-2.5 px-2 flex items-center justify-between text-left text-xs sm:text-sm font-semibold transition-all rounded-lg cursor-pointer ${
-                          isActive
-                            ? 'text-[#1e4412] bg-[#ddf0d4] font-bold pl-3'
-                            : 'text-[#38482f] hover:text-[#1e4412] hover:bg-[#e8f5e2]'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          {isActive && <Check size={14} className="text-[#4a7c2f]" />}
-                          <span>{c.label}</span>
-                        </span>
-                        <Plus
-                          size={15}
-                          className={`transition-transform duration-200 ${
-                            isActive ? 'rotate-45 text-[#2b5619]' : 'text-gray-400'
-                          }`}
-                        />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-
-            {/* Box 2: Bộ Lọc Sản Phẩm (Dashed Green Border Style) */}
-            <div className="bg-white border-2 border-dashed border-[#4a7c2f]/40 rounded-2xl p-5 shadow-sm flex flex-col gap-5">
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                <h2 className="text-base font-black text-[#2b5619] flex items-center gap-2">
-                  <Filter size={17} className="text-[#4a7c2f]" />
-                  <span>Bộ Lọc Sản Phẩm</span>
-                </h2>
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={handleResetFilters}
-                    className="text-[11px] font-bold text-red-500 hover:underline flex items-center gap-1 cursor-pointer"
-                    title="Xóa tất cả bộ lọc"
-                  >
-                    <RotateCcw size={11} />
-                    <span>Xóa lọc</span>
-                  </button>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+        <div className="lg:grid lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-8">
+          {/* Sidebar chỉ hiện từ lg trở lên; mobile/tablet dùng Drawer */}
+          <aside aria-label="Bộ lọc sản phẩm" className="hidden lg:block">
+            <div className="sticky top-24 rounded-panel border border-line bg-white p-5 shadow-card">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-base font-extrabold text-ink">Bộ lọc</h2>
+                {activeCount > 0 && (
+                  <Button variant="ghost" size="sm" onClick={resetAll} leftIcon={<RotateCcw size={14} aria-hidden />}>
+                    Xóa lọc
+                  </Button>
                 )}
               </div>
-
-              {/* Lọc theo mức giá */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
-                  Khoảng giá (VNĐ)
-                </span>
-                <div className="flex flex-col gap-1.5 text-xs text-gray-700">
-                  {[
-                    { id: 'all', label: 'Tất cả mức giá' },
-                    { id: 'under20', label: 'Dưới 20.000đ / kg' },
-                    { id: '20to30', label: '20.000đ – 30.000đ' },
-                    { id: 'over30', label: 'Trên 30.000đ / kg' },
-                  ].map((p) => (
-                    <label
-                      key={p.id}
-                      className="flex items-center gap-2 cursor-pointer hover:text-[#2b5619]"
-                    >
-                      <input
-                        type="radio"
-                        name="priceFilter"
-                        checked={priceRange === p.id}
-                        onChange={() => setPriceRange(p.id)}
-                        className="accent-[#4a7c2f] cursor-pointer"
-                      />
-                      <span className={priceRange === p.id ? 'font-bold text-[#2b5619]' : ''}>
-                        {p.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Lọc theo vùng trồng */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
-                  Vùng trồng nông sản
-                </span>
-                <div className="flex flex-col gap-1.5 text-xs text-gray-700">
-                  {[
-                    { id: 'all', label: 'Tất cả vùng trồng' },
-                    { id: 'Đà Lạt', label: 'Đà Lạt (Lâm Đồng)' },
-                    { id: 'Gia Lai', label: 'Gia Lai (Tây Nguyên)' },
-                    { id: 'Bến Tre', label: 'Bến Tre (Miền Tây)' },
-                    { id: 'Đắk Lắk', label: 'Đắk Lắk' },
-                  ].map((r) => (
-                    <label
-                      key={r.id}
-                      className="flex items-center gap-2 cursor-pointer hover:text-[#2b5619]"
-                    >
-                      <input
-                        type="radio"
-                        name="regionFilter"
-                        checked={selectedRegion === r.id}
-                        onChange={() => setSelectedRegion(r.id)}
-                        className="accent-[#4a7c2f] cursor-pointer"
-                      />
-                      <span className={selectedRegion === r.id ? 'font-bold text-[#2b5619]' : ''}>
-                        {r.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Lọc theo điểm AI */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
-                  Điểm chất lượng AI
-                </span>
-                <div className="flex flex-col gap-1.5 text-xs text-gray-700">
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-[#2b5619]">
-                    <input
-                      type="radio"
-                      name="aiFilter"
-                      checked={minScore === 0}
-                      onChange={() => setMinScore(0)}
-                      className="accent-[#4a7c2f] cursor-pointer"
-                    />
-                    <span>Tất cả điểm AI</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-[#2b5619]">
-                    <input
-                      type="radio"
-                      name="aiFilter"
-                      checked={minScore === 95}
-                      onChange={() => setMinScore(95)}
-                      className="accent-[#4a7c2f] cursor-pointer"
-                    />
-                    <span className={minScore === 95 ? 'font-bold text-[#2b5619]' : ''}>
-                      AI &gt; 95% (Siêu tươi chuẩn ngon)
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Reset button */}
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="w-full mt-2 py-2.5 px-3 text-xs font-bold text-[#2b5619] bg-[#f0f8ec] hover:bg-[#4a7c2f] hover:text-white rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#cbe5c4]"
-              >
-                <RotateCcw size={13} />
-                <span>Đặt lại tất cả bộ lọc</span>
-              </button>
+              <FilterPanel idPrefix="sidebar" filters={filters} onChange={setFilters} />
             </div>
           </aside>
 
-          {/* RIGHT MAIN AREA: Sort Bar, Search, Product Grid */}
-          <main className="flex-1 min-w-0 w-full flex flex-col gap-6">
-            {/* Top Toolbar: Strictly 1-Row Horizontal Sort Bar + Integrated Search */}
-            <div className="bg-white border border-gray-200/80 rounded-2xl p-3 sm:p-3.5 shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-              {/* Sort pills row - strictly 1 row with smooth scroll on small screens */}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5">
-                <div className="text-xs font-bold text-gray-700 flex items-center gap-1 shrink-0 pr-1">
-                  <ArrowUpDown size={14} className="text-[#4a7c2f]" />
-                  <span>Xếp theo:</span>
-                </div>
-                <div className="flex items-center gap-1.5 shrink-0 flex-nowrap">
-                  {SORT_OPTIONS.map((s) => {
-                    const isSelected = sort === s.id;
-                    return (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => setSort(s.id)}
-                        className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all border whitespace-nowrap cursor-pointer ${
-                          isSelected
-                            ? 'bg-[#4a7c2f] text-white border-[#4a7c2f] shadow-sm'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-[#4a7c2f] hover:text-[#4a7c2f]'
-                        }`}
-                      >
-                        {s.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Search box */}
-              <div className="relative shrink-0 w-full lg:w-60">
-                <Search
-                  size={15}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                />
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Tìm theo tên nông sản..."
-                  className="w-full pl-9 pr-7 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#4a7c2f] focus:outline-none transition-all placeholder:text-gray-400"
-                />
-                {query && (
-                  <button
-                    type="button"
-                    onClick={() => setQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs font-bold"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Active summary */}
-            <div className="flex items-center justify-between text-xs text-gray-500 px-1">
-              <span>
-                Hiển thị <strong className="text-gray-900">{items.length}</strong> nông sản tươi
-                chất lượng
-              </span>
-              {category !== 'Tất cả' && (
-                <span className="bg-[#eef8ea] text-[#2b5619] font-bold px-2.5 py-0.5 rounded-full border border-[#d2ecc9]">
-                  {activeCategory.label}
-                </span>
-              )}
-            </div>
-
-            {/* Product Grid (4 columns on lg, 3 on md, 2 on sm) */}
-            {items.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-                {items.map((p: Product) => {
-                  const discountPercent = Math.round((1 - p.price / p.original) * 100);
-                  return (
-                    <article
-                      key={p.id}
-                      className="group bg-white rounded-2xl border border-gray-200/80 hover:border-[#4a7c2f]/60 hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative"
+          <section aria-labelledby="fresh-results" className="flex min-w-0 flex-col gap-4 sm:gap-6">
+            {/* Toolbar: dính đầu trang trên mobile để luôn lọc/tìm được */}
+            <div className="sticky top-16 z-20 -mx-4 flex flex-col gap-3 border-b border-line bg-paper/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-panel sm:border sm:bg-white sm:p-3 sm:shadow-card lg:static">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <label htmlFor="fresh-search" className="sr-only">
+                    Tìm nông sản
+                  </label>
+                  <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-subtle" aria-hidden />
+                  <input
+                    id="fresh-search"
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Tìm theo tên, nhà vườn, vùng trồng…"
+                    className="h-11 w-full rounded-xl border border-line bg-white pl-9 pr-10 text-sm text-ink placeholder:text-ink-subtle focus:border-leaf-600 focus:outline-none focus:ring-2 focus:ring-leaf-600/30"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery('')}
+                      aria-label="Xóa từ khóa"
+                      className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-ink-subtle hover:bg-paper hover:text-ink"
                     >
-                      {/* Product Image Area */}
-                      <div className="relative aspect-square overflow-hidden bg-gray-100">
-                        <ProduceImage
-                          src={p.image}
-                          alt={p.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-
-                        {/* Red Discount Badge */}
-                        {discountPercent > 0 && (
-                          <div className="absolute top-2.5 left-2.5 bg-[#d92228] text-white text-[11px] font-black px-2 py-0.5 rounded-md shadow-md tracking-tight">
-                            - {discountPercent}%
-                          </div>
-                        )}
-
-                        {/* AI Score Badge */}
-                        <div className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-sm text-[#ffea79] text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
-                          AI {p.score}%
-                        </div>
-
-                        {/* Flaw Reason Badge at bottom of image */}
-                        <div className="absolute bottom-2 left-2 right-2">
-                          <span className="inline-block bg-white/90 backdrop-blur-sm text-[#2b5619] text-[10px] font-bold px-2 py-0.5 rounded shadow-sm truncate max-w-full">
-                            {p.flaw}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Product Content */}
-                      <div className="p-3.5 sm:p-4 flex flex-col flex-1 gap-2.5">
-                        {/* Farm Origin */}
-                        <div className="flex items-center justify-between text-[11px] text-gray-500">
-                          <span className="flex items-center gap-1 truncate">
-                            <MapPin size={12} className="text-[#4a7c2f] shrink-0" />
-                            <span className="truncate">{p.farm}</span>
-                          </span>
-                          <span className="shrink-0 font-medium text-gray-600">{p.region}</span>
-                        </div>
-
-                        {/* Title */}
-                        <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-[#2b5619] transition-colors">
-                          {p.name}
-                        </h3>
-
-                        {/* Price Row */}
-                        <div className="flex items-baseline gap-2 mt-auto pt-1">
-                          <strong className="text-sm sm:text-base font-extrabold text-[#2b5619]">
-                            {money(p.price)}
-                          </strong>
-                          <del className="text-[11px] text-gray-400 font-normal">
-                            {money(p.original)}/{p.unit}
-                          </del>
-                        </div>
-
-                        {/* Progress Bar & Sold count */}
-                        <div className="flex flex-col gap-1 pt-1">
-                          <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                            <div
-                              className="bg-[#4a7c2f] h-full rounded-full transition-all duration-500"
-                              style={{ width: `${Math.min(100, p.rescued)}%` }}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between text-[10px] text-gray-500 font-semibold">
-                            <span>Đã bán {p.rescued * 4 + 25}</span>
-                            <span className="text-[#4a7c2f]">Còn {p.stock} {p.unit}</span>
-                          </div>
-                        </div>
-
-                        {/* Add to Cart Button */}
-                        <button
-                          type="button"
-                          onClick={() => onAdd(p.id)}
-                          className="w-full mt-1.5 py-2 px-3 bg-[#4a7c2f] hover:bg-[#3b6624] text-white text-xs font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-                        >
-                          <ShoppingBasket size={14} />
-                          <span>Thêm vào giỏ</span>
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            ) : (
-              /* Empty State */
-              <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center flex flex-col items-center gap-3 my-4">
-                <div className="w-16 h-16 rounded-full bg-[#f2f9ed] text-[#4a7c2f] flex items-center justify-center mb-1">
-                  <Leaf size={32} />
+                      <X size={16} aria-hidden />
+                    </button>
+                  )}
                 </div>
-                <h2 className="text-lg font-bold text-gray-800">Không tìm thấy nông sản phù hợp</h2>
-                <p className="text-xs sm:text-sm text-gray-500 max-w-sm">
-                  Hãy thử thay đổi từ khóa tìm kiếm hoặc điều chỉnh khoảng giá trong bộ lọc bên trái.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="mt-2 py-2 px-5 bg-[#4a7c2f] text-white text-xs font-bold rounded-xl hover:bg-[#3b6624] transition-all cursor-pointer"
+                <Button
+                  variant="secondary"
+                  className="lg:hidden"
+                  onClick={() => setFiltersOpen(true)}
+                  leftIcon={<SlidersHorizontal size={16} aria-hidden />}
+                  aria-label={`Mở bộ lọc${activeCount ? `, ${activeCount} đang bật` : ''}`}
                 >
-                  Xóa tất cả bộ lọc
+                  <span className="hidden sm:inline">Bộ lọc</span>
+                  {activeCount > 0 && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-leaf-700 px-1 text-caption text-white">{activeCount}</span>
+                  )}
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none]" role="group" aria-label="Sắp xếp">
+                <ArrowUpDown size={15} className="shrink-0 text-leaf-600" aria-hidden />
+                {SORT_OPTIONS.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    aria-pressed={sort === s.id}
+                    onClick={() => setSort(s.id)}
+                    className={cn(
+                      'h-9 shrink-0 whitespace-nowrap rounded-full border px-3.5 text-caption font-bold transition-colors',
+                      sort === s.id
+                        ? 'border-leaf-700 bg-leaf-700 text-white'
+                        : 'border-line bg-white text-ink-muted hover:border-leaf-600 hover:text-leaf-700',
+                    )}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 id="fresh-results" className="mr-auto text-sm text-ink-muted" aria-live="polite">
+                <strong className="text-ink">{items.length}</strong> nông sản phù hợp
+              </h2>
+              {chips.map((chip) => (
+                <button
+                  key={chip.key}
+                  type="button"
+                  onClick={() => setFilters((f) => ({ ...f, [chip.key]: DEFAULT_FILTERS[chip.key] }))}
+                  className="inline-flex h-8 items-center gap-1 rounded-full border border-leaf-200 bg-leaf-50 pl-3 pr-2 text-caption font-bold text-leaf-800 hover:bg-leaf-100"
+                  aria-label={`Bỏ lọc ${chip.label}`}
+                >
+                  {chip.label}
+                  <X size={13} aria-hidden />
                 </button>
-              </div>
-            )}
-
-            {/* AI Menu Helper Callout */}
-            <div className="mt-8 bg-gradient-to-r from-[#244e18] via-[#1d4213] to-[#14330d] text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-white/10 relative overflow-hidden">
-              <div className="relative z-10 flex flex-col gap-1.5 text-center sm:text-left">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-[#ffea79] text-xs font-bold w-fit mx-auto sm:mx-0">
-                  <Sparkles size={13} />
-                  <span>Trợ Lý Thực Đơn AI</span>
-                </div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-white">
-                  Chưa biết nấu món gì hôm nay?
-                </h2>
-                <p className="text-xs sm:text-sm text-white/80 max-w-md">
-                  CapNongAI tự động gợi ý công thức món ngon chuẩn vị dựa trên các loại rau củ đang có trong giỏ hàng.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onInfo('AI gợi ý thực đơn')}
-                className="relative z-10 shrink-0 bg-[#ffea79] hover:bg-[#ffd84d] text-[#1d4213] px-6 py-3 rounded-2xl font-black text-xs sm:text-sm shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
-              >
-                <Sparkles size={16} />
-                <span>AI gợi ý thực đơn</span>
-              </button>
+              ))}
             </div>
 
-            {/* 3 Quality Highlights */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#eef8ea] text-[#4a7c2f] flex items-center justify-center shrink-0">
-                  <Leaf size={20} />
-                </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">AI Thẩm Định Độ Tươi</h3>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
-                    Minh bạch điểm độ tươi và hàm lượng dưỡng chất trên từng lô hàng.
-                  </p>
-                </div>
-              </div>
+            <ProductGrid
+              products={items}
+              onAdd={onAdd}
+              cart={cart}
+              priorityCount={4}
+              empty={{
+                title: 'Không tìm thấy nông sản phù hợp',
+                description: query
+                  ? `Không có kết quả cho “${query}”. Thử từ khóa khác hoặc bỏ bớt bộ lọc.`
+                  : 'Thử bỏ bớt bộ lọc để xem thêm nông sản.',
+                action: (
+                  <Button onClick={resetAll} leftIcon={<RotateCcw size={16} aria-hidden />}>
+                    Xóa tất cả bộ lọc
+                  </Button>
+                ),
+              }}
+            />
 
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#fef7e0] text-[#ca8a04] flex items-center justify-center shrink-0">
-                  <MapPin size={20} />
-                </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">Trực Tiếp Từ Nhà Vườn</h3>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
-                    Biết rõ danh tính người trồng, tọa độ nông trại và nhật ký canh tác.
-                  </p>
-                </div>
+            <aside className="relative mt-4 flex flex-col items-center justify-between gap-5 overflow-hidden rounded-panel bg-gradient-to-r from-leaf-800 to-leaf-900 p-6 text-center text-white shadow-card sm:flex-row sm:p-8 sm:text-left">
+              <div className="flex flex-col gap-1.5">
+                <span className="mx-auto inline-flex w-fit items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-caption font-bold text-sun-300 sm:mx-0">
+                  <Sparkles size={13} aria-hidden /> Trợ lý thực đơn AI
+                </span>
+                <h2 className="text-xl font-extrabold sm:text-2xl">Chưa biết nấu món gì hôm nay?</h2>
+                <p className="max-w-md text-sm text-white/85">CapNongAI gợi ý công thức dựa trên rau củ trong giỏ của bạn.</p>
               </div>
+              <Button variant="accent" size="lg" onClick={() => onInfo('AI gợi ý thực đơn')} leftIcon={<Sparkles size={16} aria-hidden />}>
+                AI gợi ý thực đơn
+              </Button>
+            </aside>
 
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center shrink-0">
-                  <Truck size={20} />
-                </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">Giao Nhanh 2 - 4 Giờ</h3>
-                  <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
-                    Đóng thùng tái chế thân thiện môi trường, giữ trọn độ giòn ngọt.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </main>
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+              {HIGHLIGHTS.map(({ icon: Icon, title, text, tone }) => (
+                <li key={title} className="flex items-start gap-3 rounded-card border border-line bg-white p-4 shadow-card">
+                  <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', tone)} aria-hidden>
+                    <Icon size={20} />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-bold text-ink">{title}</h3>
+                    <p className="mt-0.5 text-caption leading-relaxed text-ink-muted">{text}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
       </div>
+
+      <Drawer
+        open={filtersOpen}
+        title="Bộ lọc sản phẩm"
+        onClose={() => setFiltersOpen(false)}
+        footer={
+          <div className="flex gap-3">
+            <Button variant="secondary" className="flex-1" onClick={resetAll}>
+              Đặt lại
+            </Button>
+            <Button className="flex-[2]" onClick={() => setFiltersOpen(false)}>
+              Xem {items.length} sản phẩm
+            </Button>
+          </div>
+        }
+      >
+        <FilterPanel idPrefix="drawer" filters={filters} onChange={setFilters} />
+      </Drawer>
     </div>
   );
 }
