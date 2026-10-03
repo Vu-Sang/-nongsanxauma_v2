@@ -41,6 +41,7 @@ export default function Products({
 
         <div className="flex flex-wrap items-center gap-2.5">
           <button
+            id="tour-products-blindbox-btn"
             type="button"
             onClick={onOpenBlindBoxTool}
             className="px-4 py-2.5 rounded-full bg-[#fdf5eb] border border-[#f5ddbd] hover:bg-[#faeedd] text-[#8a4e1d] font-bold text-xs uppercase flex items-center gap-1.5 cursor-pointer"

@@ -354,7 +354,6 @@ export default function FarmerPortal({
     { name: 'Đánh giá', icon: MessageSquare, id: 'reviews' },
     { name: 'Voucher', icon: Gift, id: 'vouchers' },
     { name: 'Thông báo', icon: Bell, id: 'notifications' },
-    { name: 'Hồ sơ cá nhân', icon: UserCircle, id: 'profile' },
     { name: 'Tin nhắn', icon: Send, id: 'messages' },
     { name: 'Ví tiền', icon: Wallet, id: 'wallet' },
   ];
@@ -418,22 +417,58 @@ export default function FarmerPortal({
         </nav>
 
         <div className="p-4 border-t border-[#f1f4ed] bg-[#fdfcf9]">
-          <div className="p-3 rounded-2xl bg-white border border-[#e5eadd] flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-8 h-8 rounded-full bg-[#326318] text-white flex items-center justify-center font-bold text-xs shrink-0">
+          <div
+            className={`p-2.5 rounded-2xl border transition-all duration-200 flex items-center justify-between shadow-sm ${
+              currentTab === 'profile' && !selectedOrderIdForPrep
+                ? 'bg-[#326318]/10 border-[#326318] shadow-sm ring-2 ring-[#326318]/20'
+                : 'bg-white border-[#e5eadd] hover:border-[#326318]/40 hover:bg-[#fafcf8]'
+            }`}
+          >
+            <div
+              id="sidebar-item-profile"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                setCurrentTab('profile');
+                setSelectedOrderIdForPrep(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setCurrentTab('profile');
+                  setSelectedOrderIdForPrep(null);
+                }
+              }}
+              title="Bấm để xem và chỉnh sửa hồ sơ cá nhân"
+              className="flex items-center gap-2.5 overflow-hidden flex-1 cursor-pointer group py-0.5"
+            >
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 transition-transform group-hover:scale-105 shadow-xs ${
+                  currentTab === 'profile' && !selectedOrderIdForPrep
+                    ? 'bg-[#326318] text-white ring-2 ring-[#326318]/40'
+                    : 'bg-[#326318] text-white'
+                }`}
+              >
                 🌾
               </div>
-              <div className="overflow-hidden">
-                <div className="text-[11px] font-black text-[#1c2216] truncate">
-                  {user?.shopName || user?.name || 'CHỦ BẢY ĐÀ LẠT'}
+              <div className="overflow-hidden min-w-0 flex-1">
+                <div
+                  className={`text-[11px] font-black truncate transition-colors flex items-center gap-1 ${
+                    currentTab === 'profile' && !selectedOrderIdForPrep
+                      ? 'text-[#326318]'
+                      : 'text-[#1c2216] group-hover:text-[#326318]'
+                  }`}
+                >
+                  <span className="truncate">{user?.shopName || user?.name || 'HTX Nông Sản Cầu Đất'}</span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setShopActive(!shopActive);
                     onInfo?.(shopActive ? 'Cửa hàng đã tạm nghỉ bán' : 'Cửa hàng đã mở bán');
                   }}
-                  className="flex items-center gap-1 text-[9px] font-bold text-[#326318] cursor-pointer hover:underline"
+                  title="Bấm để đổi trạng thái bán hàng"
+                  className="flex items-center gap-1 text-[9px] font-bold text-[#326318] cursor-pointer hover:underline mt-0.5"
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
@@ -450,7 +485,7 @@ export default function FarmerPortal({
               type="button"
               onClick={onLogout || onNavigateStore}
               title="Đăng xuất / Về trang mua sắm"
-              className="p-1.5 rounded-xl hover:bg-[#fdeeed] text-[#9aa194] hover:text-[#c5221f] transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl hover:bg-[#fdeeed] text-[#9aa194] hover:text-[#c5221f] transition-colors cursor-pointer shrink-0 ml-1"
             >
               <LogOut size={16} />
             </button>

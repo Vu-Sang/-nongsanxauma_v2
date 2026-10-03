@@ -15,7 +15,7 @@ export default function RevenueReport() {
           </p>
         </div>
 
-        <div className="flex items-center gap-1 bg-[#f0f4ec] p-1 rounded-2xl">
+        <div id="tour-revenue-filter" className="flex items-center gap-1 bg-[#f0f4ec] p-1 rounded-2xl">
           {(['week', 'month', 'all'] as const).map((p) => (
             <button
               key={p}
@@ -32,7 +32,7 @@ export default function RevenueReport() {
       </div>
 
       {/* 4 Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div id="tour-revenue-stats" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-3xl p-5 border border-[#e8ece3] shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-[#7e8779] uppercase">DOANH THU</span>
@@ -71,7 +71,7 @@ export default function RevenueReport() {
       </div>
 
       {/* Chart simulation */}
-      <div className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4">
+      <div id="tour-revenue-chart" className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4">
         <h4 className="text-base font-black text-[#1c2216]">Biểu Đồ Doanh Số Theo Ngày Trong Tuần</h4>
         <div className="h-48 flex items-end justify-between gap-3 pt-6 px-4 border-b border-[#f1f4ed]">
           {[

@@ -11,6 +11,7 @@ import AuthPage, { type AuthUser, type UserRole } from './pages/AuthPage';
 import AiPage from './pages/AiPage';
 import FarmerStoriesPage from './pages/FarmerStoriesPage';
 import FarmerPortal from './pages/farmer/FarmerPortal';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import { allProducts, changeQuantity, money, type Cart } from './catalog';
 
 const currentRoute = () => decodeURI(location.hash.slice(1) || '/');
@@ -59,6 +60,10 @@ export default function App() {
   const isCombo = route.startsWith('/combo-tui-mu');
   const isAi = route.startsWith('/cong-nghe-ai');
   const isFarmer = route.startsWith('/cau-chuyen-nong-dan') || route.startsWith('/stories');
+  const isPrivacy =
+    route.startsWith('/bao-mat-thong-tin') ||
+    route.startsWith('/privacy') ||
+    route.startsWith('/chinh-sach-bao-mat');
   const isShop =
     route.startsWith('/shop') ||
     route.startsWith('/farmer') ||
@@ -112,6 +117,8 @@ export default function App() {
       ? route.includes('dang-ky') || route.includes('register')
         ? 'Đăng ký tài khoản (Buyer, Shop, Shipper)'
         : 'Đăng nhập thành viên'
+      : isPrivacy
+      ? 'Chính Sách Bảo Mật Thông Tin'
       : isFarmer
       ? 'Chuyện Nông Dân & Diễn Đàn'
       : isAi
@@ -131,7 +138,7 @@ export default function App() {
       else window.scrollTo(0, 0);
     });
     return () => cancelAnimationFrame(frame);
-  }, [route, isFresh, isCombo, isAi, isFarmer, isAuth, isShop]);
+  }, [route, isFresh, isCombo, isAi, isFarmer, isPrivacy, isAuth, isShop]);
 
   const add = (id: string) => {
     setCart((c) => changeQuantity(c, id, 1));
@@ -239,6 +246,8 @@ export default function App() {
           <AiPage onInfo={showInfo} />
         ) : isFarmer ? (
           <FarmerStoriesPage onAdd={add} onInfo={showInfo} />
+        ) : isPrivacy ? (
+          <PrivacyPolicy onNavigateHome={() => { location.hash = '/'; }} />
         ) : isFresh ? (
           <Fresh query={query} setQuery={setQuery} onAdd={add} onInfo={showInfo} />
         ) : isCombo ? (
