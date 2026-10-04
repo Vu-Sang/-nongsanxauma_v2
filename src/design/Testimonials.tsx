@@ -164,8 +164,8 @@ export default function Testimonials() {
           <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-16 bg-gradient-to-l from-[#f8f6f0] to-transparent z-20 pointer-events-none" />
 
           {/* Row 1: Continuous Marquee Left */}
-          <div className="overflow-hidden w-full motion-reduce:overflow-x-auto">
-            <div className="marquee-track-left motion-reduce:![animation:none]">
+          <div className="overflow-hidden w-full">
+            <div className="marquee-track-left">
               {[...ROW_1, ...ROW_1].map((item, idx, all) => {
                 const ROWLEN = all.length / 2;
                 const TagIcon = item.tagIcon;
@@ -220,8 +220,8 @@ export default function Testimonials() {
           </div>
 
           {/* Row 2: Continuous Marquee Right */}
-          <div className="overflow-hidden w-full motion-reduce:overflow-x-auto">
-            <div className="marquee-track-right motion-reduce:![animation:none]">
+          <div className="overflow-hidden w-full">
+            <div className="marquee-track-right">
               {[...ROW_2, ...ROW_2].map((item, idx, all) => {
                 const ROWLEN = all.length / 2;
                 const TagIcon = item.tagIcon;
