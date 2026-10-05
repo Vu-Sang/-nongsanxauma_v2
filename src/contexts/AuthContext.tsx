@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { AuthUser, UserRole } from '@/features/auth'
+import { AUTH_UNAUTHORIZED_EVENT } from '@/services/api'
 import { STORAGE_KEYS } from '@/utils'
 
 /**
@@ -98,6 +99,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
     setToken(null)
   }, [])
+
+  // axiosInstance phát event này khi API trả 401: hết phiên thì đăng xuất và về trang đăng nhập.
+  useEffect(() => {
+    const onUnauthorized = () => {
+      logout()
+      location.hash = '/dang-nhap'
+    }
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized)
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized)
+  }, [logout])
 
   const value = useMemo<AuthContextValue>(
     () => ({

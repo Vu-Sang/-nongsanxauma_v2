@@ -1,3 +1,5 @@
+export type { ApiError, ApiResponse, PageResponse, PaginatedResponse } from './api.types'
+
 export enum BlogCategory {
   SUC_KHOE = 'SUC_KHOE',
   NONG_NGHIEP = 'NONG_NGHIEP',
@@ -18,20 +20,4 @@ export const BlogCategoryLabel: Record<string, string> = {
   [BlogCategory.CAM_NANG]: 'Cẩm nang nhà nông',
   [BlogCategory.NHA_NONG]: 'Chuyện nhà nông',
   [BlogCategory.XU_HUONG]: 'Xu hướng tiêu dùng xanh',
-}
-
-export interface PageResponse<T> {
-  page: number
-  size: number
-  totalElements: number
-  totalPages: number
-  first: boolean
-  last: boolean
-  content: T[]
-}
-
-export interface ApiResponse<T> {
-  code?: number
-  message?: string
-  result?: T
 }
