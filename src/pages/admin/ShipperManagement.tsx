@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Users,
   Zap,
@@ -23,74 +23,44 @@ import {
   FileText,
   Eye,
 } from 'lucide-react'
-import { userService, UserResponse } from '../../services'
+import type { UserResponse } from '@/services'
+import { useAllUsers, useApproveKyc, useFetchUser, useSetUserActive } from '@/features/user'
 
 const ShipperManagement: React.FC = () => {
-  const [pendingShippers, setPendingShippers] = useState<UserResponse[]>([])
-  const [allShippers, setAllShippers] = useState<UserResponse[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [approvingId, setApprovingId] = useState<number | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [selectedShipper, setSelectedShipper] = useState<UserResponse | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchShippers = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const response = await userService.getAllUsers()
-        const all = response.result || []
-        const shippers = all.filter((u) => u.role?.name === 'SHIPPER')
-        setAllShippers(shippers)
-        const pending = shippers.filter((u) => u.status === 'PENDING')
-        setPendingShippers(pending)
-      } catch (err) {
-        console.error('Failed to load shippers', err)
-        setError('Không thể tải danh sách shipper. Vui lòng kiểm tra quyền Admin hoặc thử lại sau.')
-      } finally {
-        setLoading(false)
-      }
-    }
+  const usersQuery = useAllUsers()
+  const approve = useApproveKyc()
+  const setActive = useSetUserActive()
+  const fetchUser = useFetchUser()
 
-    fetchShippers()
-  }, [])
+  const allShippers = (usersQuery.data ?? []).filter((u) => u.role?.name === 'SHIPPER')
+  const pendingShippers = allShippers.filter((u) => u.status === 'PENDING')
+  const loading = usersQuery.isPending
+  const error = usersQuery.isError
+    ? 'Không thể tải danh sách shipper. Vui lòng kiểm tra quyền Admin hoặc thử lại sau.'
+    : actionError
+  const approvingId = approve.isPending ? approve.variables.userId : null
 
   const handleApproveShipper = async (userId: number) => {
-    setApprovingId(userId)
-    setError(null)
+    setActionError(null)
     try {
-      const response = await userService.approveShipper(userId)
-      if (response.result) {
-        setPendingShippers((prev) => prev.filter((u) => u.id !== userId))
-        setAllShippers((prev) =>
-          prev.map((u) => (u.id === userId ? { ...u, status: 'ACTIVE' as const } : u)),
-        )
-      }
+      await approve.mutateAsync({ userId, roleName: 'SHIPPER' })
     } catch (err) {
       console.error('Failed to approve shipper', err)
-      setError('Duyệt hồ sơ shipper thất bại. Vui lòng thử lại sau.')
-    } finally {
-      setApprovingId(null)
+      setActionError('Duyệt hồ sơ shipper thất bại. Vui lòng thử lại sau.')
     }
   }
 
   const handleToggleStatus = async (userId: number, action: 'activate' | 'deactivate') => {
-    setError(null)
+    setActionError(null)
     try {
-      if (action === 'activate') {
-        await userService.activateUser(userId)
-      } else {
-        await userService.deactivateUser(userId)
-      }
-      setAllShippers((prev) =>
-        prev.map((u) =>
-          u.id === userId ? { ...u, status: action === 'activate' ? 'ACTIVE' : 'INACTIVE' } : u,
-        ),
-      )
+      await setActive.mutateAsync({ userId, active: action === 'activate' })
     } catch (err) {
       console.error('Failed to toggle shipper status', err)
-      setError('Thao tác thất bại. Vui lòng thử lại.')
+      setActionError('Thao tác thất bại. Vui lòng thử lại.')
     }
   }
 
@@ -98,11 +68,10 @@ const ShipperManagement: React.FC = () => {
     setModalLoading(true)
     setSelectedShipper(null)
     try {
-      const response = await userService.getUserById(userId)
-      setSelectedShipper(response.result || null)
+      setSelectedShipper(await fetchUser(userId))
     } catch (err) {
       console.error('Failed to load shipper profile', err)
-      setError('Không thể tải hồ sơ shipper. Vui lòng thử lại.')
+      setActionError('Không thể tải hồ sơ shipper. Vui lòng thử lại.')
     } finally {
       setModalLoading(false)
     }

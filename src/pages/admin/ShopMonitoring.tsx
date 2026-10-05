@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   AlertTriangle,
   Clock,
@@ -20,56 +20,37 @@ import {
   CreditCard,
   Store,
 } from 'lucide-react'
-import { userService, UserResponse } from '../../services'
+import type { UserResponse } from '@/services'
+import { useFetchUser, useSetUserActive, useUsersByRole } from '@/features/user'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 import { getErrorMessage } from '@/utils'
 
 const PAGE_SIZE = 10
 
+const SHOP_ROLES = ['SHOP_OWNER']
+
 const ShopMonitoring: React.FC = () => {
-  const [shops, setShops] = useState<UserResponse[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [page, setPage] = useState(0)
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
   const [selectedShop, setSelectedShop] = useState<UserResponse | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchShops = async () => {
-      setLoading(true)
-      try {
-        const res = await userService.getUsersByRolePaged(['SHOP_OWNER'], null, page, PAGE_SIZE)
-        if (res.result) {
-          setPageInfo({
-            page: res.result.page,
-            size: res.result.size,
-            totalElements: res.result.totalElements,
-            totalPages: res.result.totalPages,
-            first: res.result.first,
-            last: res.result.last,
-          })
-          setShops(res.result.content || [])
-        }
-      } catch (err) {
-        console.error('Failed to load shops', err)
-        setError('Không thể tải danh sách cửa hàng.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchShops()
-  }, [page])
+  const shopsQuery = useUsersByRole(SHOP_ROLES, null, page, PAGE_SIZE)
+  const fetchUser = useFetchUser()
+  const setActive = useSetUserActive()
+
+  const shops = shopsQuery.data?.content ?? []
+  const pageInfo: PageInfo | null = shopsQuery.data ?? null
+  const loading = shopsQuery.isPending
+  const error = shopsQuery.isError ? 'Không thể tải danh sách cửa hàng.' : null
 
   const handleViewProfile = async (userId: number) => {
     setModalLoading(true)
     setSelectedShop(null)
     try {
-      const response = await userService.getUserById(userId)
-      setSelectedShop(response.result || null)
-    } catch (err) {
+      setSelectedShop(await fetchUser(userId))
+    } catch {
       globalShowAlert('Không thể tải thông tin cửa hàng. Vui lòng thử lại.', 'Lỗi', 'error')
     } finally {
       setModalLoading(false)
@@ -85,8 +66,7 @@ const ShopMonitoring: React.FC = () => {
     if (!(await globalShowConfirm('Xác nhận', 'Bạn có chắc muốn khóa tạm thời cửa hàng này?')))
       return
     try {
-      await userService.deactivateUser(userId)
-      setShops((prev) => prev.map((s) => (s.id === userId ? { ...s, status: 'INACTIVE' } : s)))
+      await setActive.mutateAsync({ userId, active: false })
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Không thể khóa cửa hàng'), 'Lỗi', 'error')
     }
@@ -94,8 +74,7 @@ const ShopMonitoring: React.FC = () => {
 
   const handleActivate = async (userId: number) => {
     try {
-      await userService.activateUser(userId)
-      setShops((prev) => prev.map((s) => (s.id === userId ? { ...s, status: 'ACTIVE' } : s)))
+      await setActive.mutateAsync({ userId, active: true })
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Không thể mở khóa cửa hàng'), 'Lỗi', 'error')
     }

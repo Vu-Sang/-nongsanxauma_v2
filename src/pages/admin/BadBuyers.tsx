@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   UserX,
   Search,
@@ -22,59 +22,37 @@ import {
   MapPin,
   Calendar,
 } from 'lucide-react'
-import { userService, UserResponse } from '../../services'
+import type { UserResponse } from '@/services'
+import { useFetchUser, useSetUserActive, useUsersByRole } from '@/features/user'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 import { getErrorMessage } from '@/utils'
 
 const PAGE_SIZE = 10
 
+const BUYER_ROLES = ['BUYER']
+
 const BadBuyers: React.FC = () => {
-  const [buyers, setBuyers] = useState<UserResponse[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [processing, setProcessing] = useState<number | null>(null)
   const [page, setPage] = useState(0)
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
   const [selectedBuyer, setSelectedBuyer] = useState<UserResponse | null>(null)
   const [modalLoading, setModalLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchBuyers = async () => {
-      setLoading(true)
-      try {
-        const res = await userService.getUsersByRolePaged(['BUYER'], null, page, PAGE_SIZE)
-        if (res.result) {
-          setPageInfo({
-            page: res.result.page,
-            size: res.result.size,
-            totalElements: res.result.totalElements,
-            totalPages: res.result.totalPages,
-            first: res.result.first,
-            last: res.result.last,
-          })
-          setBuyers(res.result.content || [])
-        }
-      } catch (err) {
-        console.error('Failed to load buyers', err)
-        setError('Không thể tải danh sách người mua.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchBuyers()
-  }, [page])
+  const buyersQuery = useUsersByRole(BUYER_ROLES, null, page, PAGE_SIZE)
+  const fetchUser = useFetchUser()
+  const setActive = useSetUserActive()
+
+  const buyers = buyersQuery.data?.content ?? []
+  const pageInfo: PageInfo | null = buyersQuery.data ?? null
+  const loading = buyersQuery.isPending
+  const error = buyersQuery.isError ? 'Không thể tải danh sách người mua.' : null
+  const processing = setActive.isPending ? setActive.variables.userId : null
 
   const handleBlock = async (userId: number) => {
     if (!(await globalShowConfirm('Xác nhận', 'Bạn có chắc muốn khóa tài khoản này?'))) return
-    setProcessing(userId)
     try {
-      await userService.deactivateUser(userId)
-      setBuyers((prev) => prev.map((b) => (b.id === userId ? { ...b, status: 'INACTIVE' } : b)))
+      await setActive.mutateAsync({ userId, active: false })
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Không thể khóa tài khoản'), 'Lỗi', 'error')
-    } finally {
-      setProcessing(null)
     }
   }
 
@@ -82,9 +60,8 @@ const BadBuyers: React.FC = () => {
     setModalLoading(true)
     setSelectedBuyer(null)
     try {
-      const response = await userService.getUserById(userId)
-      setSelectedBuyer(response.result || null)
-    } catch (err) {
+      setSelectedBuyer(await fetchUser(userId))
+    } catch {
       globalShowAlert('Không thể tải thông tin người dùng. Vui lòng thử lại.', 'Lỗi', 'error')
     } finally {
       setModalLoading(false)
@@ -97,14 +74,10 @@ const BadBuyers: React.FC = () => {
   }
 
   const handleUnblock = async (userId: number) => {
-    setProcessing(userId)
     try {
-      await userService.activateUser(userId)
-      setBuyers((prev) => prev.map((b) => (b.id === userId ? { ...b, status: 'ACTIVE' } : b)))
+      await setActive.mutateAsync({ userId, active: true })
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Không thể mở khóa tài khoản'), 'Lỗi', 'error')
-    } finally {
-      setProcessing(null)
     }
   }
 

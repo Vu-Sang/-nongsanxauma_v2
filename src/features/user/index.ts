@@ -1,1 +1,8 @@
-export { useApproveKyc, userKeys, useUsersByRole } from './hooks/useUserQueries'
+export {
+  useAllUsers,
+  useApproveKyc,
+  useFetchUser,
+  userKeys,
+  useSetUserActive,
+  useUsersByRole,
+} from './hooks/useUserQueries'

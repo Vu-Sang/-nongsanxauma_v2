@@ -28,16 +28,7 @@ const KYCApproval: React.FC = () => {
   const loading = pendingQuery.isPending || approvedQuery.isPending
   const pendingUsers = pendingQuery.data?.content ?? []
   const approvedCount = approvedQuery.data?.totalElements ?? 0
-  const pageInfo: PageInfo | null = pendingQuery.data
-    ? {
-        page: pendingQuery.data.page,
-        size: pendingQuery.data.size,
-        totalElements: pendingQuery.data.totalElements,
-        totalPages: pendingQuery.data.totalPages,
-        first: pendingQuery.data.first,
-        last: pendingQuery.data.last,
-      }
-    : null
+  const pageInfo: PageInfo | null = pendingQuery.data ?? null
   const approvingId = approve.isPending ? approve.variables.userId : null
   const error =
     pendingQuery.isError || approvedQuery.isError
