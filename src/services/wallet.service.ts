@@ -1,10 +1,11 @@
 import type { ApiResponse } from '@/types'
 import type { WalletResponse, WithdrawRequestResponse } from './wallet.types'
 import { mockWithdrawRequests } from '@/mocks/wallet.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './wallet.types'
 
-export const walletService = {
+export const walletService = freshResponses({
   async getAllPendingWithdrawRequests(): Promise<ApiResponse<WithdrawRequestResponse[]>> {
     await new Promise((r) => setTimeout(r, 200))
     return { code: 200, result: mockWithdrawRequests.filter((r) => r.status === 'PENDING') }
@@ -87,4 +88,4 @@ export const walletService = {
     }
     return { code: 200, result: true, message: 'Đã từ chối lệnh rút tiền' }
   },
-}
+})

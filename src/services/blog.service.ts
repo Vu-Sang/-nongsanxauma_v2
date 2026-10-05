@@ -1,10 +1,11 @@
 import type { ApiResponse, PageResponse } from '@/types'
 import type { BlogCreationRequest, BlogResponse } from './blog.types'
 import { mockBlogs } from '@/mocks/blog.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './blog.types'
 
-export const blogService = {
+export const blogService = freshResponses({
   async getAllBlogs(
     page: number = 0,
     size: number = 10,
@@ -75,4 +76,4 @@ export const blogService = {
     if (index !== -1) mockBlogs.splice(index, 1)
     return { code: 200, result: true }
   },
-}
+})

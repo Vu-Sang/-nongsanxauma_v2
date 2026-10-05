@@ -1,6 +1,7 @@
 import type { ApiResponse } from '@/types'
+import { freshResponses } from '@/mocks/fresh'
 
-export const cartService = {
+export const cartService = freshResponses({
   /**
    * Mock: chỉ trả thành công, KHÔNG ghi localStorage.
    * Giỏ hàng chỉ có một nơi ghi là useCartStore. Bản cũ ghi id backend ('701', 'box-3')
@@ -17,4 +18,4 @@ export const cartService = {
     await new Promise((r) => setTimeout(r, 200))
     return { code: 200, result: true, message: 'Đã thêm vào giỏ hàng' }
   },
-}
+})

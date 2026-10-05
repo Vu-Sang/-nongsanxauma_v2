@@ -1,10 +1,11 @@
 import type { ApiResponse, PageResponse } from '@/types'
 import type { AdminUserReport, UserResponse } from './user.types'
 import { mockReportData, mockUsers } from '@/mocks/user.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './user.types'
 
-export const userService = {
+export const userService = freshResponses({
   async getAllUsers(): Promise<ApiResponse<UserResponse[]>> {
     await new Promise((r) => setTimeout(r, 200))
     return { code: 200, result: [...mockUsers] }
@@ -109,4 +110,4 @@ export const userService = {
       result: mockReportData,
     }
   },
-}
+})

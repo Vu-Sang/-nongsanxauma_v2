@@ -1,10 +1,11 @@
 import type { ApiResponse, PageResponse } from '@/types'
 import type { VoucherResponse } from './voucher.types'
 import { mockVouchers } from '@/mocks/voucher.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './voucher.types'
 
-export const voucherService = {
+export const voucherService = freshResponses({
   async getBuyerShopVouchers(
     shopId: number,
     page: number = 0,
@@ -39,4 +40,4 @@ export const voucherService = {
     }
     return { code: 200, result: true, message: 'Đã lưu voucher thành công!' }
   },
-}
+})

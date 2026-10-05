@@ -1,10 +1,11 @@
 import type { ApiResponse } from '@/types'
 import type { ProductImageResponse, ProductResponse } from './product.types'
 import { mockBuyerProducts, mockPendingProducts } from '@/mocks/product.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './product.types'
 
-export const productService = {
+export const productService = freshResponses({
   async getAll(): Promise<ApiResponse<ProductResponse[]>> {
     await new Promise((r) => setTimeout(r, 200))
     return { code: 200, result: [...mockBuyerProducts] }
@@ -68,4 +69,4 @@ export const productService = {
     }
     return { code: 200, result: true, message: 'Đã từ chối duyệt sản phẩm' }
   },
-}
+})

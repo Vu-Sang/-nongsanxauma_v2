@@ -1,10 +1,11 @@
 import type { ApiResponse } from '@/types'
 import type { NotificationItem } from './notification.types'
 import { mockNotifications } from '@/mocks/notification.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './notification.types'
 
-export const notificationService = {
+export const notificationService = freshResponses({
   async getAllNotifications(): Promise<ApiResponse<NotificationItem[]>> {
     await new Promise((r) => setTimeout(r, 150))
     return { code: 200, result: [...mockNotifications] }
@@ -28,4 +29,4 @@ export const notificationService = {
     mockNotifications.unshift(newNotif)
     return { code: 200, result: newNotif }
   },
-}
+})

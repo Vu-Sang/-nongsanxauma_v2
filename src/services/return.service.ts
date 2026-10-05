@@ -1,10 +1,11 @@
 import type { ApiResponse } from '@/types'
 import type { ReturnRequestResponse, ReturnStatus } from './return.types'
 import { mockDisputes } from '@/mocks/return.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './return.types'
 
-export const returnService = {
+export const returnService = freshResponses({
   async getDisputes(): Promise<ApiResponse<ReturnRequestResponse[]>> {
     await new Promise((r) => setTimeout(r, 400))
     return { code: 200, result: [...mockDisputes] }
@@ -49,4 +50,4 @@ export const returnService = {
       },
     }
   },
-}
+})

@@ -1,6 +1,7 @@
 import type { ApiResponse } from '@/types'
 import type { CodPendingOrderResponse } from './codSettlement.types'
 import { mockCodOrders } from '@/mocks/codSettlement.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './codSettlement.types'
 
@@ -16,7 +17,7 @@ export function getCodPrepaidAmount(order: CodPendingOrderResponse): number {
   )
 }
 
-export const codSettlementService = {
+export const codSettlementService = freshResponses({
   async getPendingCodOrders(): Promise<ApiResponse<CodPendingOrderResponse[]>> {
     await new Promise((r) => setTimeout(r, 400))
     return { code: 200, result: [...mockCodOrders] }
@@ -48,4 +49,4 @@ export const codSettlementService = {
     }
     return { code: 200, result: true, message: 'Đã hoàn tiền COD cho shipper' }
   },
-}
+})

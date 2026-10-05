@@ -1,10 +1,11 @@
 import type { ApiResponse } from '@/types'
 import type { ReviewResponse } from './review.types'
 import { mockReviews } from '@/mocks/review.mock'
+import { freshResponses } from '@/mocks/fresh'
 
 export type * from './review.types'
 
-export const reviewService = {
+export const reviewService = freshResponses({
   async getByProductId(productId: number): Promise<ApiResponse<ReviewResponse[]>> {
     await new Promise((r) => setTimeout(r, 150))
     const list = mockReviews.filter((r) => !r.productId || r.productId === productId)
@@ -41,4 +42,4 @@ export const reviewService = {
     }
     return { code: 200, result: mockReviews[0] }
   },
-}
+})
