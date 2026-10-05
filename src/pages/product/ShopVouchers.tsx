@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ArrowLeft, Clock, Gift, Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { voucherService, VoucherResponse } from '../../services'
+import { useReceiveVoucher, useShopVouchers } from '@/features/voucher'
 import { globalShowAlert } from '../../contexts/PopupContext'
 import { useAuth } from '@/stores'
+import { getErrorMessage } from '@/utils'
 
 const PAGE_SIZE = 10
 
@@ -26,52 +27,15 @@ const ShopVouchers: React.FC<ShopVouchersProps> = ({ shopId: propShopId, onBack:
   const { isAuthenticated } = useAuth()
   const shopId = propShopId ? String(propShopId) : params.shopId
   const shopIdNum = Number(shopId)
-  const [vouchers, setVouchers] = useState<VoucherResponse[]>([])
   const [page, setPage] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [receivingCode, setReceivingCode] = useState<string | null>(null)
-  const [canReceiveMap, setCanReceiveMap] = useState<Record<string, boolean>>({})
+  const vouchersQuery = useShopVouchers(shopIdNum, page, PAGE_SIZE, isAuthenticated)
+  const receive = useReceiveVoucher()
 
-  const fetchVouchers = useCallback(async () => {
-    if (!shopIdNum || Number.isNaN(shopIdNum)) return
-    try {
-      setLoading(true)
-      const response = await voucherService.getBuyerShopVouchers(shopIdNum, page, PAGE_SIZE)
-      const result = response.result
-      const list = (result?.content || []).filter(
-        (voucher) => voucher.voucherType === 'SHOP' && Number(voucher.shopId) === Number(shopIdNum),
-      )
-      setVouchers(list)
-      setTotalPages(result?.totalPages || 0)
-
-      if (isAuthenticated && list.length > 0) {
-        const statuses = await Promise.all(
-          list.map(async (voucher) => {
-            try {
-              const canReceive = await voucherService.canReceiveVoucher(voucher.voucherCode)
-              return [voucher.voucherCode, Boolean(canReceive.result)] as const
-            } catch {
-              return [voucher.voucherCode, false] as const
-            }
-          }),
-        )
-        setCanReceiveMap(Object.fromEntries(statuses))
-      } else {
-        setCanReceiveMap({})
-      }
-    } catch {
-      setVouchers([])
-      setTotalPages(0)
-      setCanReceiveMap({})
-    } finally {
-      setLoading(false)
-    }
-  }, [shopIdNum, page, isAuthenticated])
-
-  useEffect(() => {
-    fetchVouchers()
-  }, [fetchVouchers])
+  const vouchers = vouchersQuery.data?.vouchers ?? []
+  const totalPages = vouchersQuery.data?.totalPages ?? 0
+  const canReceiveMap = vouchersQuery.data?.canReceive ?? {}
+  const loading = vouchersQuery.isPending
+  const receivingCode = receive.isPending ? receive.variables : null
 
   const handleReceive = async (voucherCode: string) => {
     if (!isAuthenticated) {
@@ -79,21 +43,10 @@ const ShopVouchers: React.FC<ShopVouchersProps> = ({ shopId: propShopId, onBack:
       return
     }
     try {
-      setReceivingCode(voucherCode)
-      await voucherService.receiveVoucher(voucherCode)
-      setCanReceiveMap((prev) => ({ ...prev, [voucherCode]: false }))
-      setVouchers((prev) =>
-        prev.map((voucher) =>
-          voucher.voucherCode === voucherCode
-            ? { ...voucher, claimedCount: (voucher.claimedCount ?? 0) + 1 }
-            : voucher,
-        ),
-      )
+      await receive.mutateAsync(voucherCode)
       globalShowAlert('Đã lưu voucher vào kho của bạn.', 'Thành công', 'success')
-    } catch (err: any) {
-      globalShowAlert(err?.data?.message || 'Không thể nhận voucher.', 'Lỗi', 'error')
-    } finally {
-      setReceivingCode(null)
+    } catch (err) {
+      globalShowAlert(getErrorMessage(err, 'Không thể nhận voucher.'), 'Lỗi', 'error')
     }
   }
 

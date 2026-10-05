@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   Check,
   X,
@@ -10,77 +10,49 @@ import {
   Package,
   Star,
 } from 'lucide-react'
-import { productService, ProductResponse, ProductImageResponse } from '../../services'
+import type { ProductResponse } from '@/services'
+import {
+  useApproveProduct,
+  usePendingProducts,
+  useProductImages,
+  useRejectProduct,
+} from '@/features/product'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 import { getErrorMessage } from '@/utils'
 
 const ProductApproval: React.FC = () => {
-  const [products, setProducts] = useState<ProductResponse[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<ProductResponse | null>(null)
   const [rejectReason, setRejectReason] = useState('')
   const [showRejectModal, setShowRejectModal] = useState(false)
   const [rejectingProductId, setRejectingProductId] = useState<number | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [galleryImages, setGalleryImages] = useState<ProductImageResponse[]>([])
-  const [galleryLoading, setGalleryLoading] = useState(false)
-  const [previewIdx, setPreviewIdx] = useState(0)
+  // Ảnh đang xem gắn với sản phẩm: đổi sản phẩm thì tự quay về ảnh đầu.
+  const [preview, setPreview] = useState<{ productId?: number; idx: number }>({ idx: 0 })
 
-  const fetchProducts = async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      const response = await productService.getPendingProducts()
-      if (response.result) setProducts(response.result)
-    } catch (err) {
-      console.error('Failed to fetch pending products', err)
-      setError('Mất kết nối tải dữ liệu. Vui lòng thử lại sau.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const pendingQuery = usePendingProducts()
+  const galleryQuery = useProductImages(selectedProduct?.id)
+  const approve = useApproveProduct()
+  const reject = useRejectProduct()
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
-
-  // Load gallery khi admin mở xem chi tiết sản phẩm
-  useEffect(() => {
-    if (!selectedProduct) {
-      setGalleryImages([])
-      setPreviewIdx(0)
-      return
-    }
-    setGalleryLoading(true)
-    productService
-      .getImages(selectedProduct.id)
-      .then((res) => {
-        const imgs = (res.result ?? []).slice().sort((a, b) => {
-          if (a.isPrimary) return -1
-          if (b.isPrimary) return 1
-          return (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
-        })
-        setGalleryImages(imgs)
-        setPreviewIdx(0)
-      })
-      .catch(() => setGalleryImages([]))
-      .finally(() => setGalleryLoading(false))
-  }, [selectedProduct?.id])
+  const products = pendingQuery.data ?? []
+  // Giống bản cũ: hiện màn tải cả khi bấm "Tải lại" và khi tải lại sau duyệt/từ chối.
+  const isLoading = pendingQuery.isFetching
+  const error = pendingQuery.isError ? 'Mất kết nối tải dữ liệu. Vui lòng thử lại sau.' : null
+  const isProcessing = approve.isPending || reject.isPending
+  const galleryImages = galleryQuery.data ?? []
+  const galleryLoading = galleryQuery.isFetching
+  const previewIdx = preview.productId === selectedProduct?.id ? preview.idx : 0
+  const setPreviewIdx = (idx: number) => setPreview({ productId: selectedProduct?.id, idx })
+  const fetchProducts = () => void pendingQuery.refetch()
 
   const handleApprove = async (product: ProductResponse) => {
     if (!(await globalShowConfirm(`Duyệt sản phẩm "${product.productName}"?`))) return
     try {
-      setIsProcessing(true)
-      await productService.approveProduct(product.id)
+      await approve.mutateAsync(product.id)
       globalShowAlert(`Đã duyệt sản phẩm "${product.productName}"`, 'Thành công', 'success')
       setSelectedProduct(null)
-      fetchProducts()
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Có lỗi khi duyệt sản phẩm'), 'Lỗi', 'error')
-    } finally {
-      setIsProcessing(false)
     }
   }
 
@@ -91,18 +63,14 @@ const ProductApproval: React.FC = () => {
     }
     if (!rejectingProductId) return
     try {
-      setIsProcessing(true)
-      await productService.rejectProduct(rejectingProductId, rejectReason)
+      await reject.mutateAsync({ productId: rejectingProductId, reason: rejectReason })
       globalShowAlert(`Đã từ chối sản phẩm #${rejectingProductId}`, 'Thành công', 'success')
       setShowRejectModal(false)
       setRejectReason('')
       setRejectingProductId(null)
       setSelectedProduct(null)
-      fetchProducts()
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Có lỗi khi từ chối sản phẩm'), 'Lỗi', 'error')
-    } finally {
-      setIsProcessing(false)
     }
   }
 

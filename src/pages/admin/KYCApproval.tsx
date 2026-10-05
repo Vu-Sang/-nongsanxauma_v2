@@ -1,89 +1,53 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   ShieldCheck,
   UserCheck,
   CheckCircle,
   Search,
-  Bell,
   Info,
-  ChevronLeft,
-  ChevronRight,
   FileText,
   Landmark,
   AlertCircle,
 } from 'lucide-react'
-import { userService, UserResponse } from '../../services'
+import type { UserResponse } from '@/services'
+import { useApproveKyc, useUsersByRole } from '@/features/user'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
 import { ENV } from '@/utils'
 
 const PAGE_SIZE = 10
+const KYC_ROLES = ['SHOP_OWNER', 'SHIPPER']
+
 const KYCApproval: React.FC = () => {
-  const [pendingUsers, setPendingUsers] = useState<UserResponse[]>([])
-  const [approvedCount, setApprovedCount] = useState<number>(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [approvingId, setApprovingId] = useState<number | null>(null)
   const [viewingUser, setViewingUser] = useState<UserResponse | null>(null)
   const [page, setPage] = useState(0)
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const [pendingRes, approvedRes] = await Promise.all([
-          userService.getUsersByRolePaged(['SHOP_OWNER', 'SHIPPER'], 'PENDING', page, PAGE_SIZE),
-          userService.getUsersByRolePaged(['SHOP_OWNER', 'SHIPPER'], 'ACTIVE', 0, 1),
-        ])
-        if (pendingRes.result) {
-          setPageInfo({
-            page: pendingRes.result.page,
-            size: pendingRes.result.size,
-            totalElements: pendingRes.result.totalElements,
-            totalPages: pendingRes.result.totalPages,
-            first: pendingRes.result.first,
-            last: pendingRes.result.last,
-          })
-          setPendingUsers(pendingRes.result.content || [])
-        }
-        if (approvedRes.result) {
-          setApprovedCount(approvedRes.result.totalElements)
-        }
-      } catch (err) {
-        console.error('Failed to load users for KYC', err)
-        setError(
-          'Không thể tải danh sách hồ sơ KYC. Vui lòng kiểm tra quyền Admin hoặc thử lại sau.',
-        )
-      } finally {
-        setLoading(false)
+  const pendingQuery = useUsersByRole(KYC_ROLES, 'PENDING', page, PAGE_SIZE)
+  const approvedQuery = useUsersByRole(KYC_ROLES, 'ACTIVE', 0, 1)
+  const approve = useApproveKyc()
+
+  const loading = pendingQuery.isPending || approvedQuery.isPending
+  const pendingUsers = pendingQuery.data?.content ?? []
+  const approvedCount = approvedQuery.data?.totalElements ?? 0
+  const pageInfo: PageInfo | null = pendingQuery.data
+    ? {
+        page: pendingQuery.data.page,
+        size: pendingQuery.data.size,
+        totalElements: pendingQuery.data.totalElements,
+        totalPages: pendingQuery.data.totalPages,
+        first: pendingQuery.data.first,
+        last: pendingQuery.data.last,
       }
-    }
+    : null
+  const approvingId = approve.isPending ? approve.variables.userId : null
+  const error =
+    pendingQuery.isError || approvedQuery.isError
+      ? 'Không thể tải danh sách hồ sơ KYC. Vui lòng kiểm tra quyền Admin hoặc thử lại sau.'
+      : approve.isError
+        ? 'Duyệt hồ sơ thất bại. Vui lòng thử lại sau.'
+        : null
 
-    fetchUsers()
-  }, [page])
-
-  const handleApprove = async (userId: number, roleName: string) => {
-    setApprovingId(userId)
-    setError(null)
-    try {
-      let response
-      if (roleName === 'SHOP_OWNER') {
-        response = await userService.approveShopOwner(userId)
-      } else {
-        response = await userService.approveShipper(userId)
-      }
-
-      const updated = response.result
-      if (updated) {
-        setPendingUsers((prev) => prev.filter((u) => u.id !== userId))
-      }
-    } catch (err) {
-      console.error('Failed to approve user', err)
-      setError('Duyệt hồ sơ thất bại. Vui lòng thử lại sau.')
-    } finally {
-      setApprovingId(null)
-    }
+  const handleApprove = (userId: number, roleName: string) => {
+    approve.mutate({ userId, roleName })
   }
 
   // Helper to get image full URL
