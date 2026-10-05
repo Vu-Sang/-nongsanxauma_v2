@@ -14,9 +14,9 @@ import {
 } from 'lucide-react'
 import { userService, UserResponse } from '../../services'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
+import { ENV } from '@/utils'
 
 const PAGE_SIZE = 10
-const URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 const KYCApproval: React.FC = () => {
   const [pendingUsers, setPendingUsers] = useState<UserResponse[]>([])
   const [approvedCount, setApprovedCount] = useState<number>(0)
@@ -93,7 +93,7 @@ const KYCApproval: React.FC = () => {
     // Tạm giả định BE serve static files tại root hoặc theo path cụ thể
     // Nếu BE dùng /images/... hoặc tương tự thì cần điều chỉnh ở đây
 
-    return `URL/${path}`
+    return `${ENV.API_ORIGIN}/${path.replace(/^\//, '')}`
   }
 
   return (
