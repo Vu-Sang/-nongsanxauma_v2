@@ -1,5 +1,5 @@
 import React from 'react'
-import { PackageCheck, CheckCircle2, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 interface OrderPreparationProps {
   orderId?: string

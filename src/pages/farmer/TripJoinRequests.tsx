@@ -1,5 +1,5 @@
 import React from 'react'
-import { ChefHat, Truck } from 'lucide-react'
+import { ChefHat } from 'lucide-react'
 
 interface TripJoinRequestsProps {
   onInfo?: (msg: string) => void

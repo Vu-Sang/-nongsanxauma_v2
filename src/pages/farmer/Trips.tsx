@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, MapPin, Truck } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import type { FarmerTrip } from './types'
 
 interface TripsProps {

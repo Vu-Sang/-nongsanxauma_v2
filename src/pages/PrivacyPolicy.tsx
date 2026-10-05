@@ -6,17 +6,14 @@ import {
   FileText,
   UserCheck,
   Database,
-  RefreshCw,
   PhoneCall,
   CheckCircle2,
   ChevronRight,
   ArrowLeft,
   Mail,
   MapPin,
-  AlertCircle,
   Sparkles,
   Cpu,
-  HelpCircle,
 } from 'lucide-react'
 
 interface PrivacyPolicyProps {

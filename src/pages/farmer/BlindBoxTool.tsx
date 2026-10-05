@@ -1,5 +1,5 @@
 import React, { useState, type FormEvent } from 'react'
-import { Gift, Plus, Sparkles, X } from 'lucide-react'
+import { Gift, X } from 'lucide-react'
 import type { FarmerProduct } from './types'
 
 interface BlindBoxToolProps {

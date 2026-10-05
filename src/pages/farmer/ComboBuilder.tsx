@@ -1,5 +1,5 @@
 import React, { useState, type FormEvent } from 'react'
-import { ChefHat, Plus, X } from 'lucide-react'
+import { ChefHat, X } from 'lucide-react'
 import type { FarmerProduct } from './types'
 
 interface ComboBuilderProps {

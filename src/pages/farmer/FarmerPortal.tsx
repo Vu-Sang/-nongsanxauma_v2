@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Gift,
   Bell,
-  UserCircle,
   Send,
   Wallet,
   Search,

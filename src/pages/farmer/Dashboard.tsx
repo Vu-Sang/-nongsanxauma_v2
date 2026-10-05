@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Package, ShoppingCart, Building2, Plus, ShoppingBag } from 'lucide-react'
+import { Package, ShoppingCart, Building2, ShoppingBag } from 'lucide-react'
 import type { FarmerProduct, FarmerOrder } from './types'
 
 interface DashboardProps {

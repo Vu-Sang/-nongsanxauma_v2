@@ -16,8 +16,6 @@ import {
   ShieldCheck,
   LogOut,
   User,
-  Truck,
-  CheckCircle2,
 } from 'lucide-react'
 import { useState, useRef, useEffect, type FormEvent } from 'react'
 import type { AuthUser } from '@/types'

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ShieldCheck, User, Phone, MapPin, Store, CreditCard } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import type { AuthUser } from '@/features/auth'
 
 interface ProfileProps {

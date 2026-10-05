@@ -1,28 +1,9 @@
 import { useState } from 'react'
-import {
-  Sparkles,
-  Camera,
-  Utensils,
-  Sprout,
-  Scan,
-  Activity,
-  Cpu,
-  ArrowRight,
-  CheckCircle2,
-  RefreshCw,
-  Zap,
-  ShieldCheck,
-  TrendingDown,
-  Award,
-  Truck,
-  HeartHandshake,
-  Layers,
-  ChevronRight,
-} from 'lucide-react'
+import { Sparkles, Camera, Utensils, Scan, Cpu, ArrowRight, Truck } from 'lucide-react'
 
 import aiVisionImg from '../assets/ai-vision.jpg'
 import aiMealImg from '../assets/ai-meal.jpg'
-import aiFarmerImg from '../assets/ai-farmer.jpg'
+
 import aiCarrotImg from '../assets/ai-box-carrot.jpg'
 import aiCabbageImg from '../assets/ai-box-cabbage.jpg'
 import aiLettuceImg from '../assets/ai-box-lettuce.jpg'

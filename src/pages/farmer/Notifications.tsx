@@ -1,5 +1,5 @@
 import React from 'react'
-import { Bell, CheckCircle2, ShieldCheck, Coins } from 'lucide-react'
+import { Bell, ShieldCheck, Coins } from 'lucide-react'
 
 export default function Notifications() {
   const list = [

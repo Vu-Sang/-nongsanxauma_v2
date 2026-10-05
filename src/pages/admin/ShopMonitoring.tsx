@@ -1,23 +1,15 @@
 import React, { useState } from 'react'
 import {
   AlertTriangle,
-  Clock,
   Search,
   Filter,
-  History,
-  Lock,
   Bell,
-  ChevronRight,
   Star,
-  ShieldAlert,
   Loader2,
   AlertCircle,
   X,
   Eye,
   Mail,
-  Phone,
-  MapPin,
-  CreditCard,
   Store,
 } from 'lucide-react'
 import type { UserResponse } from '@/services'

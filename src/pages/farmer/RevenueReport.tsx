@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Coins, ShoppingCart, Star, Leaf, BarChart3, TrendingUp, ArrowUpRight } from 'lucide-react'
+import { Coins, ShoppingCart, Star, Leaf } from 'lucide-react'
 
 export default function RevenueReport() {
   const [period, setPeriod] = useState<'week' | 'month' | 'all'>('week')

@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import {
-  Gavel,
   Search,
   Clock,
   CheckCircle2,
   XCircle,
-  ChevronRight,
-  User,
   ShoppingBag,
-  MessageSquare,
   ShieldCheck,
   Download,
   ZoomIn,
@@ -16,7 +12,7 @@ import {
   Loader2,
   RefreshCw,
 } from 'lucide-react'
-import { returnService, ReturnRequestResponse, ReturnStatus } from '@/services/return.service'
+import { returnService, ReturnRequestResponse } from '@/services/return.service'
 import { useCheckDisputePayout, useDisputeAction, useDisputes } from '@/features/order'
 import { globalShowAlert } from '@/components/common/Popup'
 
@@ -128,7 +124,7 @@ const Disputes: React.FC = () => {
       } else {
         globalShowAlert('Giao dịch đang được xử lý hoặc chưa thanh toán.', 'Thông báo', 'info')
       }
-    } catch (err) {
+    } catch {
       globalShowAlert('Không thể kiểm tra trạng thái.', 'Lỗi', 'error')
     }
   }

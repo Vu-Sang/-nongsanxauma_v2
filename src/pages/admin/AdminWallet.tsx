@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import {
-  Wallet,
-  TrendingUp,
-  Download,
-  Loader2,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react'
+import { Wallet, TrendingUp, Download, Loader2, AlertCircle, XCircle } from 'lucide-react'
 import type { WithdrawRequestResponse } from '@/services'
 import {
   useAdminWalletOverview,

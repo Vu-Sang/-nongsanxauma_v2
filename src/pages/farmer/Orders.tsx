@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Download, ShoppingBag, Eye, CheckCircle2, PackageCheck } from 'lucide-react'
+import { Download } from 'lucide-react'
 import type { FarmerOrder } from './types'
 
 interface OrdersProps {

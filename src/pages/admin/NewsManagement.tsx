@@ -7,18 +7,14 @@ import {
   Edit3,
   Trash2,
   Eye,
-  Calendar,
-  User,
-  Clock,
   CheckCircle2,
   ChevronLeft,
-  ChevronRight,
   RefreshCcw,
   AlertCircle,
 } from 'lucide-react'
 import type { BlogCreationRequest, BlogResponse } from '@/services'
 import { useBlogsPaged, useDeleteBlog, useSaveBlog, useSetBlogStatus } from '@/features/blog'
-import { BlogCategory, BlogCategoryLabel, PageResponse } from '@/types'
+import { BlogCategory, BlogCategoryLabel } from '@/types'
 import MyCKEditor from '@/components/common/MyCKEditor'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
 import { globalShowAlert, globalShowConfirm } from '@/components/common/Popup'

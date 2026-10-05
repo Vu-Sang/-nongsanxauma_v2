@@ -1,5 +1,5 @@
 import React from 'react'
-import { Truck, Plus, Trash2 } from 'lucide-react'
+import { Truck, Plus } from 'lucide-react'
 import type { FarmerVehicle } from './types'
 
 interface VehiclesProps {

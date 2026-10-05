@@ -2,33 +2,21 @@ import { useState, type FormEvent } from 'react'
 import {
   Heart,
   MessageCircle,
-  Share2,
-  Sparkles,
   MapPin,
-  Calendar,
   Send,
   ShoppingBag,
   ArrowRight,
   CheckCircle2,
   Search,
-  Filter,
-  Eye,
-  BookOpen,
-  Newspaper,
   Sprout,
-  Award,
-  Clock,
-  User,
   X,
-  Plus,
 } from 'lucide-react'
 
 import heroFarmerImg from '../assets/hero-farmer.jpg'
 import freshFarmerBannerImg from '../assets/fresh-farmer-banner.jpg'
 import fullBannerImg from '../assets/full-ecosystem-banner.jpg'
 import aiFarmerImg from '../assets/ai-farmer.jpg'
-import comboMysteryImg from '../assets/combo-mystery.jpg'
-import comboGreenImg from '../assets/combo-green.jpg'
+
 import farmerForumBanner from '../assets/farmer-forum-banner.jpg'
 
 interface FarmerStoriesPageProps {

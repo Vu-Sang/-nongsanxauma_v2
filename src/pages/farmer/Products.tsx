@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Plus, Search, Edit3, Trash2, Tag, Gift, Leaf } from 'lucide-react'
+import { Plus, Search, Edit3, Gift } from 'lucide-react'
 import type { FarmerProduct } from './types'
 
 interface ProductsProps {

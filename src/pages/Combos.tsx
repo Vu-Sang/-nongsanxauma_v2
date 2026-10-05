@@ -10,13 +10,11 @@ import {
   Filter,
   Plus,
   RotateCcw,
-  Star,
   CheckCircle2,
-  Zap,
   ShieldCheck,
   SlidersHorizontal,
 } from 'lucide-react'
-import { products, money, type Product } from '@/mocks/catalog'
+import { products, money } from '@/mocks/catalog'
 import { LegacyProduceImage } from '@/features/product'
 import comboHeroBanner from '../assets/combo-hero-banner.jpg'
 import comboMysteryImg from '../assets/combo-mystery.jpg'

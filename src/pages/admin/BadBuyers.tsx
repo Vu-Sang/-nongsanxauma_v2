@@ -1,25 +1,19 @@
 import React, { useState } from 'react'
 import {
   UserX,
-  Search,
-  Bell,
   ShieldAlert,
   Zap,
   AlertCircle,
   Lock,
   Unlock,
   History,
-  MoreHorizontal,
   Filter,
   Download,
-  ChevronRight,
   XCircle,
   Loader2,
   X,
   Eye,
   Mail,
-  Phone,
-  MapPin,
   Calendar,
 } from 'lucide-react'
 import type { UserResponse } from '@/services'

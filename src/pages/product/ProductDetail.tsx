@@ -26,7 +26,7 @@ import {
   MapPin,
   Store,
 } from 'lucide-react'
-import type { ProductImageResponse, ProductResponse, ReviewResponse } from '@/services'
+import type { ProductImageResponse } from '@/services'
 import { useAddToCart } from '@/features/cart'
 import { useProductDetail } from '@/features/product'
 import { useProductReviews, useReactToReview, useShopReviews } from '@/features/review'

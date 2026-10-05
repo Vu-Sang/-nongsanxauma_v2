@@ -15,7 +15,6 @@ import {
   Loader2,
   MapPin,
   ShieldCheck,
-  Award,
   Gift,
   Share2,
   Copy,
