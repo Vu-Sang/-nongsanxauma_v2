@@ -18,10 +18,10 @@ import {
 } from 'lucide-react'
 import type { BlogCreationRequest, BlogResponse } from '@/services'
 import { useBlogsPaged, useDeleteBlog, useSaveBlog, useSetBlogStatus } from '@/features/blog'
-import { BlogCategory, BlogCategoryLabel, PageResponse } from '../../types'
+import { BlogCategory, BlogCategoryLabel, PageResponse } from '@/types'
 import MyCKEditor from '@/components/common/MyCKEditor'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+import { globalShowAlert, globalShowConfirm } from '@/components/common/Popup'
 
 const NewsManagement: React.FC = () => {
   const [isAddingNew, setIsAddingNew] = useState(false)

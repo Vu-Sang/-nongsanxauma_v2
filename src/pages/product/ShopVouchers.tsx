@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ArrowLeft, Clock, Gift, Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useReceiveVoucher, useShopVouchers } from '@/features/voucher'
-import { globalShowAlert } from '../../contexts/PopupContext'
+import { globalShowAlert } from '@/components/common/Popup'
 import { useAuth } from '@/stores'
 import { getErrorMessage } from '@/utils'
 

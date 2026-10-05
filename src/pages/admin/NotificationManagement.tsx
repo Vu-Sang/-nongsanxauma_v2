@@ -13,7 +13,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { useNotifications, useSendNotification } from '@/features/notification'
-import { globalShowAlert } from '../../contexts/PopupContext'
+import { globalShowAlert } from '@/components/common/Popup'
 
 type TargetOption = 'all' | 'buyer' | 'farmer' | 'shipper'
 

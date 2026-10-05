@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/stores'
-import { chatService } from '../../services/chat.service'
-import { Conversation, ChatMessage } from '../../types/chat'
+import { chatService } from '@/services/chat.service'
+import { Conversation, ChatMessage } from '@/types/chat'
 import { Send, Search, MessageSquare, Loader2 } from 'lucide-react'
 
 const AdminMessages: React.FC = () => {

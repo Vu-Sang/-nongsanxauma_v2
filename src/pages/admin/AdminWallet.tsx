@@ -15,7 +15,7 @@ import {
   useCreateWithdrawQr,
   useRejectWithdraw,
 } from '@/features/wallet'
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+import { globalShowAlert, globalShowConfirm } from '@/components/common/Popup'
 import { getErrorMessage } from '@/utils'
 
 function getWithdrawOwnerLabel(req: WithdrawRequestResponse): string {

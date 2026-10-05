@@ -31,7 +31,7 @@ import { useShopProducts } from '@/features/product'
 import { useReactToReview, useShopReviews } from '@/features/review'
 import { useUser } from '@/features/user'
 import { useReceiveVoucher, useShopVouchers } from '@/features/voucher'
-import { globalShowAlert } from '../../contexts/PopupContext'
+import { globalShowAlert } from '@/components/common/Popup'
 import { absoluteUrl, getErrorMessage } from '@/utils'
 
 interface ShopProductsProps {

@@ -4,8 +4,8 @@ import {
   CodPendingOrderResponse,
   getCodCollectAmount,
   getCodPrepaidAmount,
-} from '../../services/codSettlement.service'
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+} from '@/services/codSettlement.service'
+import { globalShowAlert, globalShowConfirm } from '@/components/common/Popup'
 import { getErrorMessage } from '@/utils'
 import { type CodAction, useCodAction, useCodPendingOrders } from '@/features/order'
 

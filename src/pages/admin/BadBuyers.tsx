@@ -25,7 +25,7 @@ import {
 import type { UserResponse } from '@/services'
 import { useFetchUser, useSetUserActive, useUsersByRole } from '@/features/user'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+import { globalShowAlert, globalShowConfirm } from '@/components/common/Popup'
 import { getErrorMessage } from '@/utils'
 
 const PAGE_SIZE = 10

@@ -17,7 +17,7 @@ import {
   useProductImages,
   useRejectProduct,
 } from '@/features/product'
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+import { globalShowAlert, globalShowConfirm } from '@/components/common/Popup'
 import { getErrorMessage } from '@/utils'
 
 const ProductApproval: React.FC = () => {

@@ -16,9 +16,9 @@ import {
   Loader2,
   RefreshCw,
 } from 'lucide-react'
-import { returnService, ReturnRequestResponse, ReturnStatus } from '../../services/return.service'
+import { returnService, ReturnRequestResponse, ReturnStatus } from '@/services/return.service'
 import { useCheckDisputePayout, useDisputeAction, useDisputes } from '@/features/order'
-import { globalShowAlert } from '../../contexts/PopupContext'
+import { globalShowAlert } from '@/components/common/Popup'
 
 const Disputes: React.FC = () => {
   const [selectedDispute, setSelectedDispute] = useState<ReturnRequestResponse | null>(null)
