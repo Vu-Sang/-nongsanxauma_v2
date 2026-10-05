@@ -1,0 +1,6 @@
+dist
+node_modules
+_backup-*
+stitch-reference
+docs
+package-lock.json
