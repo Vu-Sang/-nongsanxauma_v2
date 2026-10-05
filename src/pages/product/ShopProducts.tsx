@@ -39,6 +39,7 @@ import {
   VoucherResponse,
 } from '../../services'
 import { globalShowAlert } from '../../contexts/PopupContext'
+import { absoluteUrl } from '@/utils'
 
 interface ShopProductsProps {
   shopId: number
@@ -453,9 +454,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                       <div className="space-y-1">
                         <button
                           onClick={async () => {
-                            await navigator.clipboard.writeText(
-                              `${window.location.origin}/cua-hang/${shopId}`,
-                            )
+                            await navigator.clipboard.writeText(absoluteUrl(`/cua-hang/${shopId}`))
                             setCopied(true)
                             setTimeout(() => setCopied(false), 2000)
                           }}
@@ -471,7 +470,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                         <button
                           onClick={() =>
                             window.open(
-                              `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/cua-hang/${shopId}`)}`,
+                              `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(absoluteUrl(`/cua-hang/${shopId}`))}`,
                               '_blank',
                               'width=600,height=400',
                             )
@@ -482,7 +481,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                         </button>
                         <button
                           onClick={() => {
-                            const rawUrl = `${window.location.origin}/cua-hang/${shopId}`
+                            const rawUrl = absoluteUrl(`/cua-hang/${shopId}`)
                             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
                             if (isMobile) {
                               window.location.href = `zalo://share?url=${encodeURIComponent(rawUrl)}`
@@ -500,7 +499,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                         </button>
                         <button
                           onClick={() => {
-                            const rawUrl = `${window.location.origin}/cua-hang/${shopId}`
+                            const rawUrl = absoluteUrl(`/cua-hang/${shopId}`)
                             const url = encodeURIComponent(rawUrl)
                             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
                             if (isMobile) {

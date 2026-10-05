@@ -39,6 +39,7 @@ import { UserResponse } from '../../services/auth.service'
 import { globalShowAlert } from '../../contexts/PopupContext'
 import ShopProducts from './ShopProducts'
 import { useAuth } from '@/stores'
+import { absoluteUrl } from '@/utils'
 
 // ── Cloudinary URL helper ────────────────────────────────────────────────────
 function clImg(url: string | undefined, mode: 'main' | 'thumb' = 'main'): string {
@@ -476,8 +477,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
   const basePricePerKg = product.pricePerKg ?? product.sellingPrice ?? 0
   const isOutOfStock = stockKg <= 0
 
-  const productUrl = `${window.location.origin}/san-pham/${product.id}`
-  const shopUrl = product.shopId ? `${window.location.origin}/cua-hang/${product.shopId}` : null
+  const productUrl = absoluteUrl(`/san-pham/${product.id}`)
+  const shopUrl = product.shopId ? absoluteUrl(`/cua-hang/${product.shopId}`) : null
 
   const isMobileBrowser = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
