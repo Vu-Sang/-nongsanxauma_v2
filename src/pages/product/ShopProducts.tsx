@@ -542,7 +542,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                 <h3 className="text-sm font-black text-gray-900">Voucher của shop</h3>
               </div>
               <button
-                onClick={() => navigate(`/shop/${shopId}/vouchers`)}
+                onClick={() => navigate(`/cua-hang/${shopId}/voucher`)}
                 className="text-xs font-black text-primary hover:text-primary-dark"
               >
                 Xem tất cả
