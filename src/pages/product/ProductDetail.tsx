@@ -38,7 +38,7 @@ import { userService } from '../../services'
 import { UserResponse } from '../../services/auth.service'
 import { globalShowAlert } from '../../contexts/PopupContext'
 import ShopProducts from './ShopProducts'
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth } from '@/stores'
 
 // ── Cloudinary URL helper ────────────────────────────────────────────────────
 function clImg(url: string | undefined, mode: 'main' | 'thumb' = 'main'): string {

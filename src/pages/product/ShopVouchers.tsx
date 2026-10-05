@@ -3,7 +3,7 @@ import { ArrowLeft, Clock, Gift, Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { voucherService, VoucherResponse } from '../../services'
 import { globalShowAlert } from '../../contexts/PopupContext'
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth } from '@/stores'
 
 const PAGE_SIZE = 10
 

@@ -1,29 +1,20 @@
 import type { ApiResponse } from '@/types'
-import { STORAGE_KEYS } from '@/utils'
 
 export const cartService = {
-  async addToCart(payload: {
+  /**
+   * Mock: chỉ trả thành công, KHÔNG ghi localStorage.
+   * Giỏ hàng chỉ có một nơi ghi là useCartStore. Bản cũ ghi id backend ('701', 'box-3')
+   * vào cùng key capnong-cart nhưng giỏ (theo id catalog như 'carrot') luôn ghi đè hoặc
+   * loại bỏ chúng, nên sản phẩm thêm từ trang chi tiết/trang shop chưa bao giờ vào giỏ.
+   * Cần ánh xạ id backend <-> id catalog (hoặc giỏ theo id backend) khi làm Checkout.
+   */
+  async addToCart(_payload: {
     productId?: number
     mysteryBoxId?: number
     quantity?: number
     quantityKg?: number
   }): Promise<ApiResponse<boolean>> {
     await new Promise((r) => setTimeout(r, 200))
-    try {
-      const saved: Record<string, number> = JSON.parse(
-        localStorage.getItem(STORAGE_KEYS.CART) || '{}',
-      )
-      const itemKey = payload.productId
-        ? String(payload.productId)
-        : payload.mysteryBoxId
-          ? `box-${payload.mysteryBoxId}`
-          : 'item'
-      const qty = payload.quantity || payload.quantityKg || 1
-      saved[itemKey] = (saved[itemKey] || 0) + qty
-      localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(saved))
-    } catch {
-      // silent
-    }
     return { code: 200, result: true, message: 'Đã thêm vào giỏ hàng' }
   },
 }

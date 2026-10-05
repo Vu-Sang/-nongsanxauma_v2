@@ -10,3 +10,6 @@ export interface AuthUser {
   shopName?: string
   kycStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
 }
+
+/** User đang đăng nhập: luôn có id (bản cũ lưu user không có id). */
+export type SessionUser = AuthUser & { id: string }

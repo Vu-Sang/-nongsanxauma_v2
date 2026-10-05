@@ -18,34 +18,18 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import ProductDetail from './pages/product/ProductDetail'
 import ShopPage from './pages/product/ShopPage'
 import ShopVouchers from './pages/product/ShopVouchers'
-import { allProducts, changeQuantity, money, type Cart } from './catalog'
+import { allProducts, money } from './catalog'
 import { PopupProvider } from './contexts/PopupContext'
-import { AuthProvider, useAuth } from './contexts/AuthContext'
-import { STORAGE_KEYS } from '@/utils'
+import { cartCount, cartTotal, useAuth, useCartStore } from '@/stores'
 
 const currentRoute = () => decodeURI(location.hash.slice(1) || '/')
 
-function restoreCart(): Cart {
-  try {
-    const saved: unknown = JSON.parse(localStorage.getItem(STORAGE_KEYS.CART) || '{}')
-    if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {}
-    return Object.fromEntries(
-      allProducts.flatMap((p) => {
-        const n = (saved as Record<string, unknown>)[p.id]
-        return typeof n === 'number' && Number.isInteger(n) && n > 0
-          ? [[p.id, Math.min(n, p.stock)]]
-          : []
-      }),
-    )
-  } catch {
-    return {}
-  }
-}
-
 function MainApp() {
   const [route, setRoute] = useState(currentRoute)
-  const [cart, setCart] = useState<Cart>(restoreCart)
-  // Một nguồn user duy nhất: AuthContext (trước đây App giữ thêm một state riêng).
+  const cart = useCartStore((s) => s.items)
+  const changeCartQuantity = useCartStore((s) => s.changeQuantity)
+  const removeFromCart = useCartStore((s) => s.remove)
+  // Một nguồn user duy nhất: useAuthStore (trước đây App giữ thêm một state riêng).
   const { user, login, logout } = useAuth()
   const [cartOpen, setCartOpen] = useState(false)
   const [info, setInfo] = useState('')
@@ -84,22 +68,14 @@ function MainApp() {
     route.startsWith('/login') ||
     route.startsWith('/register')
 
-  const count = Object.values(cart).reduce((a, b) => a + b, 0)
-  const total = allProducts.reduce((s, p) => s + p.price * (cart[p.id] || 0), 0)
+  const count = cartCount(cart)
+  const total = cartTotal(cart)
 
   useEffect(() => {
     const listener = () => setRoute(currentRoute())
     window.addEventListener('hashchange', listener)
     return () => window.removeEventListener('hashchange', listener)
   }, [])
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart))
-    } catch {
-      /* Session state still works when storage is unavailable. */
-    }
-  }, [cart])
 
   useEffect(() => {
     if (!toast) return
@@ -168,7 +144,7 @@ function MainApp() {
       setToast(`Bạn đã chọn tối đa ${product.stock} ${product.unit} ${product.name}.`)
       return
     }
-    setCart((c) => changeQuantity(c, id, 1))
+    changeCartQuantity(id, 1)
     setToast(`Đã thêm ${product.name} vào giỏ`)
   }
 
@@ -374,7 +350,7 @@ function MainApp() {
                         <div className="quantity-control">
                           <button
                             aria-label={`Giảm ${p.name}`}
-                            onClick={() => setCart((c) => changeQuantity(c, p.id, -1))}
+                            onClick={() => changeCartQuantity(p.id, -1)}
                           >
                             <Minus size={14} />
                           </button>
@@ -382,7 +358,7 @@ function MainApp() {
                           <button
                             disabled={cart[p.id] >= p.stock}
                             aria-label={`Tăng ${p.name}`}
-                            onClick={() => setCart((c) => changeQuantity(c, p.id, 1))}
+                            onClick={() => changeCartQuantity(p.id, 1)}
                           >
                             <Plus size={14} />
                           </button>
@@ -393,7 +369,7 @@ function MainApp() {
                         <button
                           aria-label={`Xóa ${p.name}`}
                           className="icon-button"
-                          onClick={() => setCart((c) => changeQuantity(c, p.id, -c[p.id]))}
+                          onClick={() => removeFromCart(p.id)}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -455,9 +431,7 @@ export default function App() {
   return (
     <HashRouter>
       <PopupProvider>
-        <AuthProvider>
-          <MainApp />
-        </AuthProvider>
+        <MainApp />
       </PopupProvider>
     </HashRouter>
   )
