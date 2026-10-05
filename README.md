@@ -18,19 +18,23 @@ Codebase frontend chuẩn cho dự án Capstone, được xây dựng trên nề
 | **Form Handling** | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | Validate form linh hoạt, an toàn về kiểu dữ liệu |
 | **Lint & Format** | [Oxlint](https://oxc.rs/) + [Prettier](https://prettier.io/) | Soi lỗi logic code siêu tốc và chuẩn hóa cách trình bày |
 
+> **Trạng thái hiện tại:** dự án đang chạy **Vite 6** và **TailwindCSS 3.4** (cấu hình qua `tailwind.config.cjs`). Nâng lên Vite 8 / Tailwind v4 là bước sau; các mục còn lại của bảng đã áp dụng.
+
 ---
 
 ## ⚡ Hướng dẫn cài đặt & Chạy dự án (Quick Start)
 
 ### 1. Yêu cầu môi trường
-* **Node.js**: Phiên bản `>= 18.x` (khuyến nghị `20.x` LTS trở lên).
+* **Node.js**: Phiên bản `>= 18.x` (khuyến nghị `20.x` LTS trở lên). Khi nâng lên Vite 8 sẽ cần `>= 20.19`.
 * **Trình quản lý gói**: `npm` (hoặc `yarn` / `pnpm`).
 
 ### 2. Các bước khởi chạy
 
 ```bash
 # 1. Di chuyển vào thư mục gốc của dự án (nơi có package.json)
-cd nongsanxauma_v2
+# Tên thư mục bắt đầu bằng dấu "-", nên phải có "./" phía trước
+# (gõ `cd -nongsanxauma_v2` thì shell hiểu "-n..." là một tùy chọn và báo lỗi)
+cd ./-nongsanxauma_v2
 
 # 2. Cài đặt các thư viện phụ thuộc
 npm install
@@ -53,6 +57,9 @@ npm run dev
 | `npm run build` | Kiểm tra kiểu TypeScript và đóng gói mã nguồn cho môi trường Production (vào thư mục `dist/`) |
 | `npm run preview` | Chạy thử bản build production trên môi trường local |
 | `npm run lint` | Chạy Oxlint kiểm tra lỗi logic và cú pháp toàn bộ dự án |
+| `npm test` | Chạy unit test (Vitest) |
+| `npm run format` | Định dạng lại toàn bộ `src` theo Prettier |
+| `npm run format:check` | Kiểm tra định dạng mà không sửa (dùng trước khi commit / trong CI) |
 
 ---
 
@@ -69,6 +76,7 @@ src/
 ├── features/             # Module tính năng theo nghiệp vụ (Auth, Product, Order, ...)
 ├── pages/                # Các trang gắn trực tiếp với URL route
 ├── services/             # Cấu hình gọi API toàn cục (Axios instance, Interceptors)
+├── mocks/                # Dữ liệu giả lập khi chưa có backend (bật/tắt bằng VITE_USE_MOCK)
 ├── hooks/                # Custom React hooks dùng chung
 ├── stores/               # Quản lý state toàn cục (Zustand)
 ├── types/                # Định nghĩa interface / type TypeScript toàn cục
@@ -83,7 +91,7 @@ src/
 * **Nhiệm vụ**: Kết nối các tầng hệ thống trước khi hiển thị lên giao diện.
 * **Tệp chính**:
   * `providers/AppProviders.tsx`: Bọc tất cả Context Providers (React Query, Theme, Toast...) nhằm tránh tình trạng lồng ghép provider phức tạp tại `main.tsx`.
-  * `router/index.tsx`: Cấu hình danh sách các routes của ứng dụng bằng `createBrowserRouter`.
+  * `router/index.tsx`: Cấu hình danh sách các routes của ứng dụng bằng data router của React Router. Dự án dùng `createHashRouter` (URL dạng `/#/san-pham/702`) để chạy được trên hosting tĩnh mà không cần cấu hình fallback; đổi sang `createBrowserRouter` khi server hỗ trợ.
   * `App.tsx`: Root component kết hợp Provider và Router.
 
 #### 2. `assets/` — Static Assets
@@ -106,6 +114,7 @@ src/
   ├── hooks/       # Custom hook riêng của feature (useAuthQuery, useLogin...)
   ├── services/    # API calls riêng của feature (authApi.ts)
   ├── types/       # Kiểu dữ liệu riêng của feature (auth.types.ts)
+  ├── schemas/     # Schema Zod cho form của feature (auth.schemas.ts)
   └── index.ts     # File export công khai ra bên ngoài
   ```
 * **Quy tắc**: Nếu cần xóa hoặc sửa tính năng `auth`, bạn chỉ cần can thiệp bên trong thư mục này mà không làm ảnh hưởng đến các module khác.
