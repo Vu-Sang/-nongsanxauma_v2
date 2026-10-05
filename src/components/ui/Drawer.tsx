@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
-import { cn } from '../../lib/cn'
+import { cn } from '@/utils'
 import { Button } from './Button'
 
 type DrawerProps = {

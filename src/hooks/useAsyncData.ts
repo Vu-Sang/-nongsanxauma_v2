@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { getErrorMessage } from '../lib/errors'
+import { getErrorMessage } from '@/utils'
 
 /**
  * Trạng thái dữ liệu bất đồng bộ dạng discriminated union:

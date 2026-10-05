@@ -31,7 +31,7 @@ import {
   Line,
 } from 'recharts'
 import { userService, AdminUserReport, AdminUserReportType } from '../../services'
-import { getErrorMessage } from '../../lib/errors'
+import { getErrorMessage } from '@/utils'
 
 type PeriodPreset = AdminUserReportType | 'custom'
 

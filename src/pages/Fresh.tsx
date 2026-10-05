@@ -26,7 +26,7 @@ import {
   filtersFromHash,
   type Filters,
 } from '../components/product/FilterPanel'
-import { cn } from '../lib/cn'
+import { cn } from '@/utils'
 
 const SORT_OPTIONS = [
   { id: 'featured', label: 'Nổi bật' },

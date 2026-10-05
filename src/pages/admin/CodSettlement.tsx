@@ -7,7 +7,7 @@ import {
   getCodPrepaidAmount,
 } from '../../services/codSettlement.service'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
-import { getErrorMessage } from '../../lib/errors'
+import { getErrorMessage } from '@/utils'
 
 const fmtCur = (n: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)

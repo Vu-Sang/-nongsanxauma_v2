@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { AuthUser, UserRole } from '@/features/auth'
+import { STORAGE_KEYS } from '@/utils'
 
 /**
  * Sửa so với bản gốc:
@@ -31,8 +32,8 @@ type AuthContextValue = {
   logout: () => void
 }
 
-const USER_KEY = 'capnong-user'
-const TOKEN_KEY = 'capnong-token'
+const USER_KEY = STORAGE_KEYS.USER
+const TOKEN_KEY = STORAGE_KEYS.TOKEN
 const ROLES: readonly UserRole[] = ['buyer', 'shop', 'shipper', 'admin', 'staff']
 
 function isSessionUser(value: unknown): value is SessionUser {

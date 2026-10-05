@@ -28,7 +28,7 @@ import {
   OrderResponse,
   ProductResponse,
 } from '../../services'
-import { getOrderStatusBadgeClass, getOrderStatusLabel } from '../../constants/orderStatusLabels'
+import { getOrderStatusBadgeClass, getOrderStatusLabel } from '@/features/order'
 
 const AdminDashboard: React.FC = () => {
   const [users, setUsers] = useState<UserResponse[]>([])

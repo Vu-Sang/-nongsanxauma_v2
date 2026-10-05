@@ -33,7 +33,7 @@ import { Button, LinkButton } from '../../components/ui/Button'
 import { Drawer } from '../../components/ui/Drawer'
 import { Skeleton, TableSkeleton } from '../../components/ui/Skeleton'
 import { EmptyState } from '../../components/ui/StateViews'
-import { cn } from '../../lib/cn'
+import { cn } from '@/utils'
 
 /* ------------------------------------------------------------------ */
 /* Tách code theo tab: người mua không phải tải ~250KB code admin       */

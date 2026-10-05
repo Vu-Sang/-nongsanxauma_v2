@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react'
-import { cn } from '../../lib/cn'
+import { cn } from '@/utils'
 
 /* ------------------------------------------------------------------ */
 /* Kiểu dữ liệu bộ lọc: union type thay cho string tự do               */

@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'react'
-import { cn } from '../../lib/cn'
+import { cn } from '@/utils'
 
 /**
  * Khối placeholder có hiệu ứng shimmer. Tự tắt animation khi người dùng

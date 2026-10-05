@@ -1,4 +1,5 @@
 import type { ApiResponse, PageResponse, BlogCategory } from '../types'
+import { STORAGE_KEYS } from '@/utils'
 
 // ==========================================
 // 1. USER TYPES & SERVICE
@@ -1255,7 +1256,9 @@ export const cartService = {
   }): Promise<ApiResponse<boolean>> {
     await new Promise((r) => setTimeout(r, 200))
     try {
-      const saved: Record<string, number> = JSON.parse(localStorage.getItem('capnong-cart') || '{}')
+      const saved: Record<string, number> = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.CART) || '{}',
+      )
       const itemKey = payload.productId
         ? String(payload.productId)
         : payload.mysteryBoxId
@@ -1263,7 +1266,7 @@ export const cartService = {
           : 'item'
       const qty = payload.quantity || payload.quantityKg || 1
       saved[itemKey] = (saved[itemKey] || 0) + qty
-      localStorage.setItem('capnong-cart', JSON.stringify(saved))
+      localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(saved))
     } catch {
       // silent
     }

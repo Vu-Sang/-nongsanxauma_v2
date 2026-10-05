@@ -25,7 +25,7 @@ import {
 import { userService, UserResponse } from '../../services'
 import Pagination, { PageInfo } from '../../components/ui/Pagination'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
-import { getErrorMessage } from '../../lib/errors'
+import { getErrorMessage } from '@/utils'
 
 const PAGE_SIZE = 10
 

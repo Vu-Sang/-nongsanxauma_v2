@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { Product } from '../../catalog'
 import type { AsyncStatus } from '../../hooks/useAsyncData'
-import { cn } from '../../lib/cn'
+import { cn } from '@/utils'
 import { EmptyState, ErrorState } from '../ui/StateViews'
 import { ProductCard, ProductCardSkeleton } from './ProductCard'
 

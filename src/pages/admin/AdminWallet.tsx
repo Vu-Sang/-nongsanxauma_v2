@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { walletService, WithdrawRequestResponse, WalletResponse } from '../../services'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
-import { getErrorMessage } from '../../lib/errors'
+import { getErrorMessage } from '@/utils'
 
 function getWithdrawOwnerLabel(req: WithdrawRequestResponse): string {
   if (req.shipperId) return `SHIPPER-${req.shipperId}`

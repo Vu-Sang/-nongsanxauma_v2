@@ -21,12 +21,13 @@ import ShopVouchers from './pages/product/ShopVouchers'
 import { allProducts, changeQuantity, money, type Cart } from './catalog'
 import { PopupProvider } from './contexts/PopupContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { STORAGE_KEYS } from '@/utils'
 
 const currentRoute = () => decodeURI(location.hash.slice(1) || '/')
 
 function restoreCart(): Cart {
   try {
-    const saved: unknown = JSON.parse(localStorage.getItem('capnong-cart') || '{}')
+    const saved: unknown = JSON.parse(localStorage.getItem(STORAGE_KEYS.CART) || '{}')
     if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {}
     return Object.fromEntries(
       allProducts.flatMap((p) => {
@@ -94,7 +95,7 @@ function MainApp() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('capnong-cart', JSON.stringify(cart))
+      localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart))
     } catch {
       /* Session state still works when storage is unavailable. */
     }

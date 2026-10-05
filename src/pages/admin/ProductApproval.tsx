@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { productService, ProductResponse, ProductImageResponse } from '../../services'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
-import { getErrorMessage } from '../../lib/errors'
+import { getErrorMessage } from '@/utils'
 
 const ProductApproval: React.FC = () => {
   const [products, setProducts] = useState<ProductResponse[]>([])

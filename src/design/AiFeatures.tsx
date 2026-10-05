@@ -5,7 +5,7 @@ import aiMealImg from '../assets/ai-meal.jpg'
 import aiFarmerImg from '../assets/ai-farmer.jpg'
 import { money, products, type Product } from '../catalog'
 import { discountPercent } from '../components/product/ProductCard'
-import { cn } from '../lib/cn'
+import { cn } from '@/utils'
 
 /**
  * Section "Công nghệ AI" – thiết kế lại 03/10/2026.

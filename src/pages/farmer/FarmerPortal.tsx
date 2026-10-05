@@ -48,6 +48,7 @@ import BlindBoxTool from './BlindBoxTool'
 import ComboBuilder from './ComboBuilder'
 import FarmerDisputes from './FarmerDisputes'
 import OnboardingTour from '../onboardingtour/OnboardingTour'
+import { STORAGE_KEYS } from '@/utils'
 
 interface FarmerPortalProps {
   user?: AuthUser | null
@@ -67,7 +68,7 @@ export default function FarmerPortal({
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [selectedOrderIdForPrep, setSelectedOrderIdForPrep] = useState<string | null>(null)
   const [showTour, setShowTour] = useState<boolean>(() => {
-    return localStorage.getItem('capnong_farmer_tour_done') !== 'true'
+    return localStorage.getItem(STORAGE_KEYS.FARMER_TOUR_DONE) !== 'true'
   })
 
   // Modals state

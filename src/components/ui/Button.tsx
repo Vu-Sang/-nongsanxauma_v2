@@ -5,7 +5,7 @@ import {
   type ReactNode,
 } from 'react'
 import { Loader2 } from 'lucide-react'
-import { cn } from '../../lib/cn'
+import { cn } from '@/utils'
 
 /**
  * Một nút dùng chung thay cho khoảng 10 biến thể className viết tay

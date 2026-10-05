@@ -16,7 +16,7 @@ import comboHotpotImg from '../assets/combo-hotpot.jpg'
 import { combos, money, type Product } from '../catalog'
 import { discountPercent } from '../components/product/ProductCard'
 import { LinkButton } from '../components/ui/Button'
-import { cn } from '../lib/cn'
+import { cn } from '@/utils'
 
 /**
  * Thông tin trình bày riêng cho trang chủ. GIÁ và TỒN KHO luôn lấy từ catalog
