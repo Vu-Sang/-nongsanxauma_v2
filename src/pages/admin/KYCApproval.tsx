@@ -13,7 +13,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { userService, UserResponse } from '../../services'
-import Pagination, { PageInfo } from '../../components/ui/Pagination'
+import Pagination, { PageInfo } from '@/components/ui/Pagination'
 
 const PAGE_SIZE = 10
 const URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'

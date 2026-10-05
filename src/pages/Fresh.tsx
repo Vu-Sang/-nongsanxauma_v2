@@ -12,9 +12,8 @@ import {
 } from 'lucide-react'
 import { filterProducts, type Cart } from '../catalog'
 import freshFarmerBanner from '../assets/fresh-farmer-banner.jpg'
-import { Button } from '../components/ui/Button'
-import { Drawer } from '../components/ui/Drawer'
-import { ProductGrid } from '../components/product/ProductGrid'
+import { Button } from '@/components/ui/Button'
+import { Drawer } from '@/components/ui/Drawer'
 import {
   AI_SCORES,
   CATEGORIES,
@@ -24,8 +23,9 @@ import {
   REGIONS,
   countActiveFilters,
   filtersFromHash,
+  ProductGrid,
   type Filters,
-} from '../components/product/FilterPanel'
+} from '@/features/product'
 import { cn } from '@/utils'
 
 const SORT_OPTIONS = [

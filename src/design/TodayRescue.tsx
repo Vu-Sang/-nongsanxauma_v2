@@ -1,8 +1,8 @@
 import { ArrowRight, CheckCircle2, Flame, ShieldCheck, Sparkles, Zap } from 'lucide-react'
 import promoImg from '../assets/fresh-veg-promo.png'
 import { products, money, type Cart } from '../catalog'
-import { ProductGrid } from '../components/product/ProductGrid'
-import { LinkButton } from '../components/ui/Button'
+import { ProductGrid } from '@/features/product'
+import { LinkButton } from '@/components/ui/Button'
 
 const BENEFITS = [
   { icon: CheckCircle2, text: 'Không chất bảo quản' },

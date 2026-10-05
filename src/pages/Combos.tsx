@@ -17,7 +17,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react'
 import { products, money, type Product } from '../catalog'
-import { ProduceImage } from '../components/ProductCard'
+import { LegacyProduceImage } from '@/features/product'
 import comboHeroBanner from '../assets/combo-hero-banner.jpg'
 import comboMysteryImg from '../assets/combo-mystery.jpg'
 import comboGreenImg from '../assets/combo-green.jpg'
@@ -442,7 +442,7 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                 >
                   {/* Image & Badges */}
                   <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-                    <ProduceImage
+                    <LegacyProduceImage
                       src={c.image}
                       alt={c.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -584,7 +584,7 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                       }`}
                     >
                       <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-2.5 bg-gray-100">
-                        <ProduceImage
+                        <LegacyProduceImage
                           src={p.image}
                           alt={p.name}
                           className="w-full h-full object-cover"

@@ -1,5 +1,5 @@
 import { Quote, Store } from 'lucide-react'
-import { ProduceImage } from '../components/product/ProductCard'
+import { ProduceImage } from '@/features/product'
 
 // Ảnh đang hotlink từ Google (lh3.googleusercontent.com): nên tải về src/assets để không phụ thuộc link ngoài.
 // Khi link lỗi, ProduceImage hiện khung thay thế thay vì icon ảnh vỡ + alt text.

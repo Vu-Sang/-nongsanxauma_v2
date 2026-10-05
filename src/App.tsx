@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { HashRouter } from 'react-router-dom'
 import { ShoppingBasket, Minus, Plus, Trash2, CheckCircle2, Info } from 'lucide-react'
-import Header from './components/Header'
-import Footer from './components/Footer'
-import Modal from './components/Modal'
-import { ProduceImage } from './components/ProductCard'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import Modal from '@/components/ui/Modal'
+import { LegacyProduceImage } from '@/features/product'
 import Home from './pages/Home'
 import Fresh from './pages/Fresh'
 import Combos from './pages/Combos'
@@ -365,7 +365,7 @@ function MainApp() {
                   .filter((p) => cart[p.id])
                   .map((p) => (
                     <div className="cart-item" key={p.id}>
-                      <ProduceImage src={p.image} alt={p.name} />
+                      <LegacyProduceImage src={p.image} alt={p.name} />
                       <div className="cart-item-info">
                         <h3>{p.name}</h3>
                         <p>

@@ -6,7 +6,7 @@ import TodayRescue from '../design/TodayRescue'
 import CombosTeaser from '../design/CombosTeaser'
 import FarmerStory from '../design/FarmerStory'
 import Testimonials from '../design/Testimonials'
-import Newsletter from '../components/Newsletter'
+import { Newsletter } from '@/features/home'
 import type { Cart } from '../catalog'
 
 type HomeProps = {

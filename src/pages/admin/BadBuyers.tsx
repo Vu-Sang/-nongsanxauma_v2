@@ -23,7 +23,7 @@ import {
   Calendar,
 } from 'lucide-react'
 import { userService, UserResponse } from '../../services'
-import Pagination, { PageInfo } from '../../components/ui/Pagination'
+import Pagination, { PageInfo } from '@/components/ui/Pagination'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 import { getErrorMessage } from '@/utils'
 

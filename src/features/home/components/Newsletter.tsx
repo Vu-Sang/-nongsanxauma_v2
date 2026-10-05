@@ -11,7 +11,7 @@ import {
   Store,
   Gift,
 } from 'lucide-react'
-import fullBannerImg from '../assets/full-ecosystem-banner.jpg'
+import fullBannerImg from '@/assets/full-ecosystem-banner.jpg'
 
 interface NewsletterProps {
   onInfo?: (title: string) => void

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { AlertTriangle, Leaf, RefreshCw } from 'lucide-react'
 import { cn } from '@/utils'
-import { Button } from './Button'
+import { Button } from '../Button'
 
 type StateViewProps = {
   title: string

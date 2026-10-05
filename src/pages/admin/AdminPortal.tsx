@@ -29,10 +29,10 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import type { AuthUser } from '@/features/auth'
-import { Button, LinkButton } from '../../components/ui/Button'
-import { Drawer } from '../../components/ui/Drawer'
-import { Skeleton, TableSkeleton } from '../../components/ui/Skeleton'
-import { EmptyState } from '../../components/ui/StateViews'
+import { Button, LinkButton } from '@/components/ui/Button'
+import { Drawer } from '@/components/ui/Drawer'
+import { Skeleton, TableSkeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/StateViews'
 import { cn } from '@/utils'
 
 /* ------------------------------------------------------------------ */

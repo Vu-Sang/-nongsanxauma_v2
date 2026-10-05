@@ -14,8 +14,8 @@ import comboGreenImg from '../assets/combo-green.jpg'
 import comboKitchenImg from '../assets/combo-kitchen.jpg'
 import comboHotpotImg from '../assets/combo-hotpot.jpg'
 import { combos, money, type Product } from '../catalog'
-import { discountPercent } from '../components/product/ProductCard'
-import { LinkButton } from '../components/ui/Button'
+import { discountPercent } from '@/features/product'
+import { LinkButton } from '@/components/ui/Button'
 import { cn } from '@/utils'
 
 /**

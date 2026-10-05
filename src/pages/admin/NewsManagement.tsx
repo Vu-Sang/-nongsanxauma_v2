@@ -18,8 +18,8 @@ import {
 } from 'lucide-react'
 import { blogService, BlogResponse, BlogCreationRequest } from '../../services'
 import { BlogCategory, BlogCategoryLabel, PageResponse } from '../../types'
-import MyCKEditor from '../../components/MyCKEditor'
-import Pagination, { PageInfo } from '../../components/ui/Pagination'
+import MyCKEditor from '@/components/common/MyCKEditor'
+import Pagination, { PageInfo } from '@/components/ui/Pagination'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 
 const NewsManagement: React.FC = () => {

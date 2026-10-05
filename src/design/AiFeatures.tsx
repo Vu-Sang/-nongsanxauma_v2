@@ -4,7 +4,7 @@ import aiVisionImg from '../assets/ai-vision.jpg'
 import aiMealImg from '../assets/ai-meal.jpg'
 import aiFarmerImg from '../assets/ai-farmer.jpg'
 import { money, products, type Product } from '../catalog'
-import { discountPercent } from '../components/product/ProductCard'
+import { discountPercent } from '@/features/product'
 import { cn } from '@/utils'
 
 /**

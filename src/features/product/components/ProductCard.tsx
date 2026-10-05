@@ -1,9 +1,9 @@
 import { memo, useState } from 'react'
 import { Leaf, MapPin, ShoppingBasket } from 'lucide-react'
-import { money, type Product } from '../../catalog'
+import { money, type Product } from '@/catalog'
 import { cn } from '@/utils'
-import { Button } from '../ui/Button'
-import { Skeleton } from '../ui/Skeleton'
+import { Button } from '@/components/ui/Button'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 /**
  * Card sản phẩm DUY NHẤT cho toàn site.

@@ -21,8 +21,8 @@ import {
 } from 'lucide-react'
 import { useState, useRef, useEffect, type FormEvent } from 'react'
 import type { AuthUser } from '@/features/auth'
-import freshPromoImg from '../assets/fresh-veg-promo.png'
-import mysteryPromoImg from '../assets/mystery-box-promo.png'
+import freshPromoImg from '@/assets/fresh-veg-promo.png'
+import mysteryPromoImg from '@/assets/mystery-box-promo.png'
 
 interface HeaderProps {
   route: string

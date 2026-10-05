@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
-import type { Product } from '../../catalog'
-import type { AsyncStatus } from '../../hooks/useAsyncData'
+import type { Product } from '@/catalog'
+import type { AsyncStatus } from '@/hooks/useAsyncData'
 import { cn } from '@/utils'
-import { EmptyState, ErrorState } from '../ui/StateViews'
+import { EmptyState, ErrorState } from '@/components/ui/StateViews'
 import { ProductCard, ProductCardSkeleton } from './ProductCard'
 
 type ProductGridProps = {
