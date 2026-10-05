@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle2, Flame, ShieldCheck, Sparkles, Zap } from 'lucide-react'
-import promoImg from '../assets/fresh-veg-promo.png'
-import { products, money, type Cart } from '../catalog'
+import promoImg from '@/assets/fresh-veg-promo.png'
+import { products, money, type Cart } from '@/mocks/catalog'
 import { ProductGrid } from '@/features/product'
 import { LinkButton } from '@/components/ui/Button'
 

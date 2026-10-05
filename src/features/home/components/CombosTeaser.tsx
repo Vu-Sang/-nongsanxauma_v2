@@ -8,12 +8,12 @@ import {
   Star,
   Zap,
 } from 'lucide-react'
-import mysteryPromoImg from '../assets/mystery-box-promo.png'
-import comboMysteryImg from '../assets/combo-mystery.jpg'
-import comboGreenImg from '../assets/combo-green.jpg'
-import comboKitchenImg from '../assets/combo-kitchen.jpg'
-import comboHotpotImg from '../assets/combo-hotpot.jpg'
-import { combos, money, type Product } from '../catalog'
+import mysteryPromoImg from '@/assets/mystery-box-promo.png'
+import comboMysteryImg from '@/assets/combo-mystery.jpg'
+import comboGreenImg from '@/assets/combo-green.jpg'
+import comboKitchenImg from '@/assets/combo-kitchen.jpg'
+import comboHotpotImg from '@/assets/combo-hotpot.jpg'
+import { combos, money, type Product } from '@/mocks/catalog'
 import { discountPercent } from '@/features/product'
 import { LinkButton } from '@/components/ui/Button'
 import { cn } from '@/utils'

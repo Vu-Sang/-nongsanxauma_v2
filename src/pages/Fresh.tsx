@@ -10,7 +10,7 @@ import {
   Truck,
   X,
 } from 'lucide-react'
-import { filterProducts, type Cart } from '../catalog'
+import { filterProducts, type Cart } from '@/mocks/catalog'
 import freshFarmerBanner from '../assets/fresh-farmer-banner.jpg'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'

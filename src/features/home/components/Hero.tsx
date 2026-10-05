@@ -1,5 +1,5 @@
 import { PlayCircle, ShoppingBasket } from 'lucide-react'
-import heroFarmerImg from '../assets/hero-farmer.jpg'
+import heroFarmerImg from '@/assets/hero-farmer.jpg'
 
 export default function Hero() {
   return (

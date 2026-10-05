@@ -1,6 +1,6 @@
 import { Minus, Plus, ShoppingBasket, Trash2 } from 'lucide-react'
 import Modal from '@/components/ui/Modal'
-import { allProducts, money } from '@/catalog'
+import { allProducts, money } from '@/mocks/catalog'
 import { LegacyProduceImage } from '@/features/product'
 import { cartCount, cartTotal, useCartStore, useUiStore } from '@/stores'
 

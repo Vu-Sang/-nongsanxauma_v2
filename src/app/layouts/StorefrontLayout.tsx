@@ -4,7 +4,7 @@ import { CheckCircle2, Info } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Modal from '@/components/ui/Modal'
-import { allProducts, type Cart } from '@/catalog'
+import { allProducts, type Cart } from '@/mocks/catalog'
 import { CartModal } from '@/features/cart'
 import { cartCount, useAuth, useCartStore, useUiStore } from '@/stores'
 

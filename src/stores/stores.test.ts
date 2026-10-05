@@ -39,7 +39,7 @@ describe('useCartStore', () => {
 
   it('cartCount và cartTotal', async () => {
     const { cartCount, cartTotal } = await import('./useCartStore')
-    const { allProducts } = await import('@/catalog')
+    const { allProducts } = await import('@/mocks/catalog')
     const p = allProducts[0]
     expect(cartCount({ [p.id]: 3 })).toBe(3)
     expect(cartTotal({ [p.id]: 3, unknown: 5 })).toBe(p.price * 3)

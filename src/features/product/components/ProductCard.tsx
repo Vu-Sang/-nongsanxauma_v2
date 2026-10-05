@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { Leaf, MapPin, ShoppingBasket } from 'lucide-react'
-import { money, type Product } from '@/catalog'
+import { money, type Product } from '@/mocks/catalog'
 import { cn } from '@/utils'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'

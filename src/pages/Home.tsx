@@ -1,13 +1,15 @@
-import Hero from '../design/Hero'
-import RescueProcess from '../design/RescueProcess'
-import AiFeatures from '../design/AiFeatures'
-import Categories from '../design/Categories'
-import TodayRescue from '../design/TodayRescue'
-import CombosTeaser from '../design/CombosTeaser'
-import FarmerStory from '../design/FarmerStory'
-import Testimonials from '../design/Testimonials'
-import { Newsletter } from '@/features/home'
-import type { Cart } from '../catalog'
+import {
+  AiFeatures,
+  Categories,
+  CombosTeaser,
+  FarmerStory,
+  Hero,
+  Newsletter,
+  RescueProcess,
+  Testimonials,
+  TodayRescue,
+} from '@/features/home'
+import type { Cart } from '@/mocks/catalog'
 
 type HomeProps = {
   onAdd: (id: string) => void

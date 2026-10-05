@@ -1,9 +1,9 @@
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { ArrowRight, Camera, Sprout, Utensils, type LucideIcon } from 'lucide-react'
-import aiVisionImg from '../assets/ai-vision.jpg'
-import aiMealImg from '../assets/ai-meal.jpg'
-import aiFarmerImg from '../assets/ai-farmer.jpg'
-import { money, products, type Product } from '../catalog'
+import aiVisionImg from '@/assets/ai-vision.jpg'
+import aiMealImg from '@/assets/ai-meal.jpg'
+import aiFarmerImg from '@/assets/ai-farmer.jpg'
+import { money, products, type Product } from '@/mocks/catalog'
 import { discountPercent } from '@/features/product'
 import { cn } from '@/utils'
 

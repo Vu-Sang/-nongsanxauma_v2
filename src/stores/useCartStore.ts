@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools, persist, type PersistStorage } from 'zustand/middleware'
-import { allProducts, changeQuantity, type Cart } from '@/catalog'
+import { allProducts, changeQuantity, type Cart } from '@/mocks/catalog'
 import { STORAGE_KEYS } from '@/utils'
 import { readJson, writeRaw } from './storage'
 

@@ -1,4 +1,4 @@
-import images from './design/images.json'
+import images from './catalog-images.json'
 export type Product = {
   id: string
   name: string
