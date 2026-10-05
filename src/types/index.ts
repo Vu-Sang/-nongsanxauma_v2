@@ -1,3 +1,4 @@
+export type { AuthUser, SessionUser, UserRole } from './auth.types'
 export type { ApiError, ApiResponse, PageResponse, PaginatedResponse } from './api.types'
 
 export enum BlogCategory {

@@ -1,8 +1,6 @@
 import { create } from 'zustand'
 import { devtools, persist, type PersistStorage } from 'zustand/middleware'
-// Import thẳng file type (không qua barrel @/features/auth) để store không bao giờ tạo vòng
-// khi feature auth sau này import lại store.
-import type { AuthUser, SessionUser, UserRole } from '@/features/auth/types/auth.types'
+import type { AuthUser, SessionUser, UserRole } from '@/types'
 import { AUTH_UNAUTHORIZED_EVENT } from '@/services/api'
 import { STORAGE_KEYS } from '@/utils'
 import { readJson, readRaw, writeRaw } from './storage'
