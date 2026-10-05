@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { AuthUser, UserRole } from '../pages/AuthPage'
+import type { AuthUser, UserRole } from '@/features/auth'
 
 /**
  * Sửa so với bản gốc:

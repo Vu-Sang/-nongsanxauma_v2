@@ -28,7 +28,7 @@ import {
   Wallet,
   type LucideIcon,
 } from 'lucide-react'
-import type { AuthUser } from '../AuthPage'
+import type { AuthUser } from '@/features/auth'
 import { Button, LinkButton } from '../../components/ui/Button'
 import { Drawer } from '../../components/ui/Drawer'
 import { Skeleton, TableSkeleton } from '../../components/ui/Skeleton'

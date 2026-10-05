@@ -19,7 +19,7 @@ import {
   Leaf,
   HelpCircle,
 } from 'lucide-react'
-import type { AuthUser } from '../AuthPage'
+import type { AuthUser } from '@/features/auth'
 import type {
   FarmerProduct,
   FarmerOrder,

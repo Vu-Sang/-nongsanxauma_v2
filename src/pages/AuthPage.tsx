@@ -26,19 +26,7 @@ import {
   Check,
 } from 'lucide-react'
 import authBannerImg from '../assets/auth-shelf-banner.jpg'
-
-export type UserRole = 'buyer' | 'shop' | 'shipper' | 'admin' | 'staff'
-
-export interface AuthUser {
-  name: string
-  email: string
-  phone?: string
-  role: UserRole
-  avatar?: string
-  detail?: string
-  shopName?: string
-  kycStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
-}
+import type { AuthUser } from '@/features/auth'
 
 interface AuthPageProps {
   initialMode?: 'login' | 'register' | 'kyc_pending'

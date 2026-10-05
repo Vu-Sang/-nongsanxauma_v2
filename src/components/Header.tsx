@@ -20,7 +20,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { useState, useRef, useEffect, type FormEvent } from 'react'
-import type { AuthUser } from '../pages/AuthPage'
+import type { AuthUser } from '@/features/auth'
 import freshPromoImg from '../assets/fresh-veg-promo.png'
 import mysteryPromoImg from '../assets/mystery-box-promo.png'
 
