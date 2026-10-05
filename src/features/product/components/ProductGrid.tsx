@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import type { Product } from '@/catalog'
-import type { AsyncStatus } from '@/hooks/useAsyncData'
 import { cn } from '@/utils'
 import { EmptyState, ErrorState } from '@/components/ui/StateViews'
 import { ProductCard, ProductCardSkeleton } from './ProductCard'
@@ -8,8 +7,8 @@ import { ProductCard, ProductCardSkeleton } from './ProductCard'
 type ProductGridProps = {
   products: readonly Product[]
   onAdd: (id: string) => void
-  /** Mặc định 'success' vì catalog hiện là dữ liệu tĩnh. Khi nối API, truyền status từ useAsyncData. */
-  status?: AsyncStatus
+  /** Mặc định 'success' vì catalog hiện là dữ liệu tĩnh. Khi nối API, map từ trạng thái của query. */
+  status?: 'loading' | 'error' | 'success'
   error?: string
   onRetry?: () => void
   cart?: Readonly<Record<string, number>>

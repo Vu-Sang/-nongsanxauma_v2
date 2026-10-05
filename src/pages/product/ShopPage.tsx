@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useUser } from '@/features/user'
 import { useAuth } from '@/stores'
-import { userService } from '../../services'
 import ShopProducts from './ShopProducts'
 
 const DEFAULT_TITLE = 'XẤU MÃ - Nông Sản Mộc Mạc, Giá Trị Thật'
@@ -26,38 +26,32 @@ const ShopPage: React.FC<ShopPageProps> = ({ shopId: propShopId, onBack: propOnB
   const params = useParams<{ shopId?: string }>()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
-  const [shopName, setShopName] = useState<string>('')
 
   const shopId = propShopId ? String(propShopId) : params.shopId
   const shopIdNum = Number(shopId)
+  const validShopId = Boolean(shopIdNum) && !isNaN(shopIdNum)
+  // Cùng query key với ShopProducts nên chỉ gọi API một lần.
+  const shop = useUser(validShopId ? shopIdNum : undefined).data
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [])
 
-  // Fetch shop info để set OG tags
+  // OG tags cho chia sẻ mạng xã hội
   useEffect(() => {
-    if (!shopIdNum || isNaN(shopIdNum)) return
-    userService
-      .getUserById(shopIdNum)
-      .then((res) => {
-        const shop = res?.result
-        if (!shop) return
-        const name = shop.shopName || shop.fullName || `Cửa hàng #${shopIdNum}`
-        setShopName(name)
-        const desc = shop.description
-          ? shop.description.slice(0, 100)
-          : `Cửa hàng nông sản sạch, uy tín tại Nông Sản Xấu Mã`
+    if (!shop) return
+    const name = shop.shopName || shop.fullName || `Cửa hàng #${shopIdNum}`
+    const desc = shop.description
+      ? shop.description.slice(0, 100)
+      : `Cửa hàng nông sản sạch, uy tín tại Nông Sản Xấu Mã`
 
-        document.title = `${name} | Nông Sản Xấu Mã`
-        setMeta('og:title', name)
-        setMeta('og:description', desc)
-        setMeta('og:image', shop.logoUrl || DEFAULT_IMG)
-        setMeta('og:url', window.location.href)
-        setMeta('og:type', 'profile')
-        setMeta('og:site_name', 'Nông Sản Xấu Mã')
-      })
-      .catch(() => {})
+    document.title = `${name} | Nông Sản Xấu Mã`
+    setMeta('og:title', name)
+    setMeta('og:description', desc)
+    setMeta('og:image', shop.logoUrl || DEFAULT_IMG)
+    setMeta('og:url', window.location.href)
+    setMeta('og:type', 'profile')
+    setMeta('og:site_name', 'Nông Sản Xấu Mã')
 
     return () => {
       document.title = DEFAULT_TITLE
@@ -68,7 +62,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ shopId: propShopId, onBack: propOnB
       setMeta('og:type', 'website')
       setMeta('og:site_name', 'Nông Sản Xấu Mã')
     }
-  }, [shopIdNum])
+  }, [shop, shopIdNum])
 
   if (!shopId || isNaN(shopIdNum)) {
     return (

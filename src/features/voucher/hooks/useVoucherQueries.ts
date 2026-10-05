@@ -14,43 +14,31 @@ export const voucherKeys = {
     [...voucherKeys.all, 'shop', { shopId, page, size, signedIn }] as const,
 }
 
-const EMPTY: ShopVoucherPage = { vouchers: [], totalPages: 0, canReceive: {} }
-
+/** Lỗi tải thì query ở trạng thái lỗi; trang tự hiện danh sách rỗng hoặc thông báo lỗi. */
 async function fetchShopVouchers(
   shopId: number,
   page: number,
   size: number,
   signedIn: boolean,
 ): Promise<ShopVoucherPage> {
-  try {
-    const result = (await voucherService.getBuyerShopVouchers(shopId, page, size)).result
-    const vouchers = (result?.content ?? []).filter(
-      (v) => v.voucherType === 'SHOP' && Number(v.shopId) === shopId,
-    )
-    if (!signedIn || vouchers.length === 0) {
-      return { vouchers, totalPages: result?.totalPages ?? 0, canReceive: {} }
-    }
-    const statuses = await Promise.all(
-      vouchers.map(async (v) => {
-        try {
-          return [
-            v.voucherCode,
-            Boolean((await voucherService.canReceiveVoucher(v.voucherCode)).result),
-          ] as const
-        } catch {
-          return [v.voucherCode, false] as const
-        }
-      }),
-    )
-    return {
-      vouchers,
-      totalPages: result?.totalPages ?? 0,
-      canReceive: Object.fromEntries(statuses),
-    }
-  } catch {
-    // Giữ hành vi cũ: lỗi tải thì hiện danh sách rỗng.
-    return EMPTY
-  }
+  const result = (await voucherService.getBuyerShopVouchers(shopId, page, size)).result
+  // API có thể trả mảng hoặc trang phân trang.
+  const content: VoucherResponse[] = Array.isArray(result) ? result : (result?.content ?? [])
+  const totalPages = Array.isArray(result) ? 1 : (result?.totalPages ?? 0)
+  const vouchers = content.filter((v) => v.voucherType === 'SHOP' && Number(v.shopId) === shopId)
+  if (!signedIn || vouchers.length === 0) return { vouchers, totalPages, canReceive: {} }
+
+  const statuses = await Promise.all(
+    vouchers.map(async (v) => {
+      try {
+        const res = await voucherService.canReceiveVoucher(v.voucherCode)
+        return [v.voucherCode, Boolean(res.result)] as const
+      } catch {
+        return [v.voucherCode, false] as const
+      }
+    }),
+  )
+  return { vouchers, totalPages, canReceive: Object.fromEntries(statuses) }
 }
 
 /** Voucher của một shop (chỉ loại SHOP), kèm trạng thái "còn nhận được" khi đã đăng nhập. */

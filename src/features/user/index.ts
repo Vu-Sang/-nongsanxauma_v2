@@ -6,5 +6,6 @@ export {
   type UserReportParams,
   useUserReport,
   useSetUserActive,
+  useUser,
   useUsersByRole,
 } from './hooks/useUserQueries'

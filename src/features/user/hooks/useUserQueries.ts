@@ -49,6 +49,15 @@ export function useUsersByRole(roles: string[], status: string | null, page: num
   })
 }
 
+/** Hồ sơ một user (VD chủ shop). */
+export function useUser(id: number | undefined, options: { enabled?: boolean } = {}) {
+  return useQuery({
+    queryKey: userKeys.detail(id ?? 0),
+    queryFn: async () => (await userService.getUserById(id!)).result ?? null,
+    enabled: id != null && (options.enabled ?? true),
+  })
+}
+
 /**
  * Hàm lấy hồ sơ một user khi bấm "Xem" (dùng cache nếu vừa xem).
  * Trả về promise để trang tự xử lý loading/thông báo lỗi như trước.

@@ -26,16 +26,11 @@ import {
   MapPin,
   Store,
 } from 'lucide-react'
-import {
-  productService,
-  ProductResponse,
-  ProductImageResponse,
-  cartService,
-  reviewService,
-  ReviewResponse,
-} from '../../services'
-import { userService } from '../../services'
-import { UserResponse } from '../../services/auth.service'
+import type { ProductImageResponse, ProductResponse, ReviewResponse } from '@/services'
+import { useAddToCart } from '@/features/cart'
+import { useProductDetail } from '@/features/product'
+import { useProductReviews, useReactToReview, useShopReviews } from '@/features/review'
+import { useUser } from '@/features/user'
 import { globalShowAlert } from '../../contexts/PopupContext'
 import ShopProducts from './ShopProducts'
 import { useAuth } from '@/stores'
@@ -216,26 +211,37 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
   const { isAuthenticated } = useAuth()
   const productId = propProductId || urlProductId || ''
 
-  const [product, setProduct] = useState<ProductResponse | null>(null)
-  const [relatedProducts, setRelatedProducts] = useState<ProductResponse[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const detailQuery = useProductDetail(productId)
+  const product = detailQuery.data?.product ?? null
+  const relatedProducts = detailQuery.data?.related ?? []
+  const isLoading = detailQuery.isPending
+  const error = detailQuery.isError
+    ? 'Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.'
+    : detailQuery.data && !detailQuery.data.product
+      ? 'Sản phẩm hiện không khả dụng hoặc cửa hàng đang tạm đóng.'
+      : null
 
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('Mô tả chi tiết')
   const [viewShopMode, setViewShopMode] = useState(false)
   const [selectedShopId, setSelectedShopId] = useState<number | null>(null)
-  const [isAdding, setIsAdding] = useState(false)
-  const [reviews, setReviews] = useState<ReviewResponse[]>([])
-  const [isReviewsLoading, setIsReviewsLoading] = useState(false)
-  const [shopReviews, setShopReviews] = useState<ReviewResponse[]>([])
-  const [shopOwner, setShopOwner] = useState<UserResponse | null>(null)
   const [showShareMenu, setShowShareMenu] = useState(false)
   const [showShopShareMenu, setShowShopShareMenu] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [reactingReviewId, setReactingReviewId] = useState<number | null>(null)
   const [shopCopied, setShopCopied] = useState(false)
   const detailSectionRef = useRef<HTMLDivElement>(null)
+
+  const reviewsQuery = useProductReviews(product?.id)
+  const reviews = reviewsQuery.data ?? []
+  const isReviewsLoading = reviewsQuery.isLoading
+  const shopReviews = useShopReviews(product?.shopId).data ?? []
+  // Endpoint hồ sơ chủ shop cần đăng nhập.
+  const shopOwner =
+    useUser(product?.shopOwnerId || product?.shopId, { enabled: isAuthenticated }).data ?? null
+  const addToCart = useAddToCart()
+  const isAdding = addToCart.isPending
+  const reactToReview = useReactToReview()
+  const reactingReviewId = reactToReview.isPending ? reactToReview.variables.reviewId : null
 
   const scrollToProductDetail = () => {
     setActiveTab('Mô tả chi tiết')
@@ -248,128 +254,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
     if (propOnBack) propOnBack()
     else navigate('/')
   }
-
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-
-        const buyerProductsRes = await productService.getForBuyer()
-        const buyerProducts = buyerProductsRes.result || []
-
-        const slugMap: Record<string, number> = {
-          carrot: 702,
-          tomato: 704,
-          pomelo: 707,
-          potato: 708,
-          beetroot: 706,
-          cabbage: 702,
-          spinach: 702,
-          pumpkin: 705,
-        }
-
-        const idNum = Number(productId)
-        const targetId =
-          !isNaN(idNum) && idNum > 0 ? idNum : slugMap[String(productId).toLowerCase()] || 701
-
-        let foundProduct = buyerProducts.find(
-          (p) => p.id === targetId || String(p.id) === String(productId),
-        )
-        if (!foundProduct && buyerProducts.length > 0) {
-          foundProduct = buyerProducts[0]
-        }
-
-        if (!foundProduct) {
-          setProduct(null)
-          setError('Sản phẩm hiện không khả dụng hoặc cửa hàng đang tạm đóng.')
-          return
-        }
-
-        // Load gallery images for this product
-        try {
-          const imgRes = await productService.getImages(foundProduct.id)
-          if (imgRes.result && imgRes.result.length > 0) {
-            setProduct({ ...foundProduct, images: imgRes.result })
-          } else {
-            setProduct(foundProduct)
-          }
-        } catch {
-          setProduct(foundProduct)
-        }
-
-        setRelatedProducts(
-          (() => {
-            const shopId = foundProduct.shopOwnerId || foundProduct.shopId
-            const sameShop = buyerProducts.filter(
-              (p) => p.id !== idNum && (p.shopOwnerId === shopId || p.shopId === shopId),
-            )
-            const pool =
-              sameShop.length >= 2 ? sameShop : buyerProducts.filter((p) => p.id !== idNum)
-            return pool.slice(0, 4)
-          })(),
-        )
-
-        const shopId = foundProduct.shopOwnerId || foundProduct.shopId
-      } catch (err) {
-        console.error('Failed to fetch product detail:', err)
-        setError('Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    if (productId) fetchProductDetails()
-  }, [productId])
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      if (!product?.id) return
-      try {
-        setIsReviewsLoading(true)
-        const res = await reviewService.getByProductId(product.id)
-        setReviews(res.result ?? [])
-      } catch {
-        setReviews([])
-      } finally {
-        setIsReviewsLoading(false)
-      }
-    }
-
-    if (product?.id) fetchReviews()
-  }, [product?.id])
-
-  // Fetch shop reviews for shop rating display
-  useEffect(() => {
-    const fetchShopReviews = async () => {
-      if (!product?.shopId) return
-      try {
-        const res = await reviewService.getByShopId(product.shopId)
-        if (res.result) {
-          setShopReviews(res.result)
-        }
-      } catch (err) {
-        console.error('Failed to fetch shop reviews:', err)
-      }
-    }
-
-    if (product?.shopId) fetchShopReviews()
-  }, [product?.shopId])
-
-  // Fetch shop owner info for real avatar and join date (only when authenticated, endpoint requires auth)
-  useEffect(() => {
-    const fetchShopOwner = async () => {
-      const ownerId = product?.shopOwnerId || product?.shopId
-      if (!ownerId || !isAuthenticated) return
-      try {
-        const res = await userService.getUserById(ownerId)
-        if (res.result) setShopOwner(res.result)
-      } catch (err) {
-        console.error('Failed to fetch shop owner info:', err)
-      }
-    }
-    if (product) fetchShopOwner()
-  }, [product?.shopOwnerId, product?.shopId, isAuthenticated])
 
   // OG tags cho social sharing (Telegram, Zalo, Discord)
   useEffect(() => {
@@ -420,15 +304,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
     }
     if (reactingReviewId === reviewId) return
     try {
-      setReactingReviewId(reviewId)
-      const res = await reviewService.reactToReview(reviewId, reactionType)
-      if (res.result) {
-        setReviews((prev) => prev.map((r) => (r.id === reviewId ? res.result! : r)))
-      }
+      await reactToReview.mutateAsync({ reviewId, reaction: reactionType })
     } catch {
       /* silent */
-    } finally {
-      setReactingReviewId(null)
     }
   }
 
@@ -573,8 +451,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
       return
     }
     try {
-      setIsAdding(true)
-      await cartService.addToCart({ productId: Number(productId), quantity, quantityKg: quantity })
+      await addToCart.mutateAsync({ productId: Number(productId), quantity, quantityKg: quantity })
       window.dispatchEvent(new Event('cart-updated'))
       globalShowAlert(
         `Đã thêm ${quantity} kg ${product.productName} vào giỏ hàng`,
@@ -584,8 +461,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
     } catch (e) {
       console.error('Failed to add to cart', e)
       globalShowAlert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.', 'Lỗi', 'error')
-    } finally {
-      setIsAdding(false)
     }
   }
 

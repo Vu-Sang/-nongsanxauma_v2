@@ -25,21 +25,14 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from 'lucide-react'
-import {
-  productService,
-  ProductResponse,
-  userService,
-  UserResponse,
-  cartService,
-  reviewService,
-  ReviewResponse,
-  mysteryBoxService,
-  MysteryBox,
-  voucherService,
-  VoucherResponse,
-} from '../../services'
+import { useAddToCart } from '@/features/cart'
+import { useShopMysteryBoxes } from '@/features/mystery-box'
+import { useShopProducts } from '@/features/product'
+import { useReactToReview, useShopReviews } from '@/features/review'
+import { useUser } from '@/features/user'
+import { useReceiveVoucher, useShopVouchers } from '@/features/voucher'
 import { globalShowAlert } from '../../contexts/PopupContext'
-import { absoluteUrl } from '@/utils'
+import { absoluteUrl, getErrorMessage } from '@/utils'
 
 interface ShopProductsProps {
   shopId: number
@@ -55,125 +48,53 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
   onOpenLogin = () => {},
 }) => {
   const navigate = useNavigate()
-  const [products, setProducts] = useState<ProductResponse[]>([])
-  const [mysteryBoxes, setMysteryBoxes] = useState<MysteryBox[]>([])
-  const [shopInfo, setShopInfo] = useState<UserResponse | null>(null)
-  const [reviews, setReviews] = useState<ReviewResponse[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState('default')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [addingToCart, setAddingToCart] = useState<number | null>(null)
-  const [addingBoxToCart, setAddingBoxToCart] = useState<number | null>(null)
   const [showShareMenu, setShowShareMenu] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [shopVouchers, setShopVouchers] = useState<VoucherResponse[]>([])
-  const [receivingVoucher, setReceivingVoucher] = useState<string | null>(null)
-  const [canReceiveMap, setCanReceiveMap] = useState<Record<string, boolean>>({})
-  const [voucherLoading, setVoucherLoading] = useState(false)
-  const [voucherError, setVoucherError] = useState<string | null>(null)
-  const [reactingReviewId, setReactingReviewId] = useState<number | null>(null)
+
+  const productsQuery = useShopProducts(shopId)
+  const shopQuery = useUser(shopId)
+  const reviewsQuery = useShopReviews(shopId)
+  const boxesQuery = useShopMysteryBoxes(shopId)
+  const products = productsQuery.data ?? []
+  const shopInfo = shopQuery.data ?? null
+  const reviews = reviewsQuery.data ?? []
+  const mysteryBoxes = boxesQuery.data ?? []
+  // Như bản cũ: chờ đủ 4 nguồn; nguồn nào lỗi thì coi như rỗng.
+  const loading =
+    productsQuery.isPending || shopQuery.isPending || reviewsQuery.isPending || boxesQuery.isPending
+
+  const vouchersQuery = useShopVouchers(shopId, 0, 3, isAuthenticated)
+  const shopVouchers = vouchersQuery.data?.vouchers ?? []
+  const canReceiveMap = vouchersQuery.data?.canReceive ?? {}
+  const voucherLoading = vouchersQuery.isFetching
+  const voucherError = vouchersQuery.isError ? 'Không tải được voucher của shop.' : null
+
+  const addToCart = useAddToCart()
+  const addingToCart = addToCart.isPending ? (addToCart.variables.productId ?? null) : null
+  const addingBoxToCart = addToCart.isPending ? (addToCart.variables.mysteryBoxId ?? null) : null
+  const receiveVoucher = useReceiveVoucher()
+  const receivingVoucher = receiveVoucher.isPending ? receiveVoucher.variables : null
+  const reactToReview = useReactToReview()
+  const reactingReviewId = reactToReview.isPending ? reactToReview.variables.reviewId : null
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [])
-
-  useEffect(() => {
-    const fetchShopData = async () => {
-      setLoading(true)
-      try {
-        const [productsRes, shopRes, reviewsRes, boxesRes] = await Promise.all([
-          productService.getForBuyer().catch(() => ({ result: [] })),
-          userService.getUserById(shopId).catch(() => ({ result: null })),
-          reviewService.getByShopId(shopId).catch(() => ({ result: [] })),
-          mysteryBoxService.getForBuyer().catch(() => ({ result: [] })),
-        ])
-
-        if (productsRes.result) {
-          setProducts(
-            productsRes.result.filter(
-              (p: ProductResponse) => p.shopOwnerId === shopId || p.shopId === shopId,
-            ),
-          )
-        }
-        if (reviewsRes.result) {
-          setReviews(reviewsRes.result)
-        }
-        if (shopRes.result) {
-          setShopInfo(shopRes.result)
-        }
-        // Filter mystery boxes belonging to this shop and only active ones
-        if (boxesRes.result) {
-          setMysteryBoxes(
-            boxesRes.result.filter(
-              (b: MysteryBox) => b.shopOwnerId === shopId || b.shopId === shopId,
-            ),
-          )
-        }
-      } catch (error) {
-        console.error('Failed to load shop data', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchShopData()
-  }, [shopId])
-
-  useEffect(() => {
-    const fetchShopVouchers = async () => {
-      try {
-        setVoucherLoading(true)
-        setVoucherError(null)
-        const response = await voucherService.getBuyerShopVouchers(shopId, 0, 3)
-        const result = response.result
-        const vouchers = (Array.isArray(result) ? result : result?.content || []).filter(
-          (voucher) => voucher.voucherType === 'SHOP' && Number(voucher.shopId) === Number(shopId),
-        )
-        setShopVouchers(vouchers)
-
-        if (isAuthenticated && vouchers.length > 0) {
-          const statuses = await Promise.all(
-            vouchers.map(async (voucher) => {
-              try {
-                const canReceive = await voucherService.canReceiveVoucher(voucher.voucherCode)
-                return [voucher.voucherCode, Boolean(canReceive.result)] as const
-              } catch {
-                return [voucher.voucherCode, false] as const
-              }
-            }),
-          )
-          setCanReceiveMap(Object.fromEntries(statuses))
-        } else {
-          setCanReceiveMap({})
-        }
-      } catch (err) {
-        console.error('Failed to load shop vouchers', err)
-        setShopVouchers([])
-        setCanReceiveMap({})
-        setVoucherError('Không tải được voucher của shop.')
-      } finally {
-        setVoucherLoading(false)
-      }
-    }
-
-    fetchShopVouchers()
-  }, [shopId, isAuthenticated])
 
   const handleAddToCart = async (productId: number) => {
     if (!isAuthenticated) {
       onOpenLogin()
       return
     }
-    setAddingToCart(productId)
     try {
-      await cartService.addToCart({ productId, quantity: 1, quantityKg: 1 })
+      await addToCart.mutateAsync({ productId, quantity: 1, quantityKg: 1 })
       window.dispatchEvent(new Event('cart-updated'))
       globalShowAlert('Đã thêm vào giỏ hàng!', 'Thành công', 'success')
-    } catch (error) {
+    } catch {
       globalShowAlert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.', 'Lỗi', 'error')
-    } finally {
-      setAddingToCart(null)
     }
   }
 
@@ -182,15 +103,12 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
       onOpenLogin()
       return
     }
-    setAddingBoxToCart(boxId)
     try {
-      await cartService.addToCart({ mysteryBoxId: boxId, quantity: 1 })
+      await addToCart.mutateAsync({ mysteryBoxId: boxId, quantity: 1 })
       window.dispatchEvent(new Event('cart-updated'))
       globalShowAlert('Đã thêm túi mù vào giỏ hàng!', 'Thành công', 'success')
-    } catch (error) {
+    } catch {
       globalShowAlert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.', 'Lỗi', 'error')
-    } finally {
-      setAddingBoxToCart(null)
     }
   }
 
@@ -200,25 +118,14 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
       return
     }
     try {
-      setReceivingVoucher(voucherCode)
-      await voucherService.receiveVoucher(voucherCode)
-      setCanReceiveMap((prev) => ({ ...prev, [voucherCode]: false }))
-      setShopVouchers((prev) =>
-        prev.map((voucher) =>
-          voucher.voucherCode === voucherCode
-            ? { ...voucher, claimedCount: (voucher.claimedCount ?? 0) + 1 }
-            : voucher,
-        ),
-      )
+      await receiveVoucher.mutateAsync(voucherCode)
       globalShowAlert('Đã lưu voucher vào kho của bạn.', 'Thành công', 'success')
-    } catch (err: any) {
+    } catch (err) {
       globalShowAlert(
-        err?.data?.message || 'Không thể nhận voucher. Vui lòng thử lại.',
+        getErrorMessage(err, 'Không thể nhận voucher. Vui lòng thử lại.'),
         'Lỗi',
         'error',
       )
-    } finally {
-      setReceivingVoucher(null)
     }
   }
 
@@ -229,12 +136,9 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
     }
     if (reactingReviewId === reviewId) return
     try {
-      setReactingReviewId(reviewId)
-      const res = await reviewService.reactToReview(reviewId, reactionType)
-      if (res.result) setReviews((prev) => prev.map((r) => (r.id === reviewId ? res.result! : r)))
+      await reactToReview.mutateAsync({ reviewId, reaction: reactionType })
     } catch {
-    } finally {
-      setReactingReviewId(null)
+      /* silent */
     }
   }
 
