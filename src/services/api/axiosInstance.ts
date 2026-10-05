@@ -1,4 +1,4 @@
-import axios, { type AxiosError } from 'axios'
+import { create, type AxiosError } from 'axios'
 import type { ApiError, ApiResponse } from '@/types'
 import { ENV, STORAGE_KEYS } from '@/utils'
 
@@ -14,7 +14,7 @@ function readToken(): string | null {
 }
 
 // Không đặt Content-Type mặc định: axios tự chọn JSON cho object và multipart cho FormData.
-export const axiosInstance = axios.create({
+export const axiosInstance = create({
   baseURL: ENV.API_URL,
   timeout: 15_000,
 })
