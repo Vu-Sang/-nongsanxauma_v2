@@ -9,6 +9,8 @@ export interface FarmerProduct {
   stock: number
   unit: string
   region: string
+  /** Phương thức canh tác (Hữu cơ, VietGAP...) */
+  farmingType?: string
   image: string
   freshnessScore?: number
 }

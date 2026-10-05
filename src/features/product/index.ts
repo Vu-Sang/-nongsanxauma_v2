@@ -34,3 +34,8 @@ export {
   useProductImages,
   useRejectProduct,
 } from './hooks/useProductQueries'
+export {
+  productFormSchema,
+  type ProductFormInput,
+  type ProductFormValues,
+} from './schemas/productForm.schema'

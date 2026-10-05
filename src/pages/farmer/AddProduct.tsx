@@ -1,5 +1,11 @@
-import React, { useState, type FormEvent } from 'react'
-import { Plus, Upload, X, ShieldCheck } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { X } from 'lucide-react'
+import {
+  productFormSchema,
+  type ProductFormInput,
+  type ProductFormValues,
+} from '@/features/product'
 import type { FarmerProduct } from './types'
 
 interface AddProductProps {
@@ -8,29 +14,50 @@ interface AddProductProps {
   onInfo?: (msg: string) => void
 }
 
+const INPUT_CLASS =
+  'w-full px-4 py-2.5 rounded-2xl bg-[#f4f7f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none'
+const SELECT_CLASS =
+  'w-full px-3 py-2.5 rounded-2xl bg-[#f4f7f1] text-xs text-[#1e2319] outline-none'
+
+/** Id tạm cho sản phẩm mock (backend sẽ cấp id thật). Chỉ được gọi khi submit. */
+const newProductId = () => Date.now().toString()
+
+function FieldError({ message }: { message?: string }) {
+  return message ? (
+    <p role="alert" className="mt-1 text-[11px] font-semibold text-[#c5221f]">
+      {message}
+    </p>
+  ) : null
+}
+
 export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProductProps) {
-  const [name, setName] = useState('')
-  const [price, setPrice] = useState('')
-  const [stock, setStock] = useState('')
-  const [unit, setUnit] = useState('kg')
-  const [region, setRegion] = useState('Đà Lạt & Lâm Đồng')
-  const [farmingType, setFarmingType] = useState('Hữu cơ Organic')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProductFormInput, unknown, ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      name: '',
+      unit: 'kg',
+      region: 'Đà Lạt & Lâm Đồng',
+      farmingType: 'Hữu cơ Organic',
+    },
+  })
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    if (!name.trim() || !price) return
-
+  const onSubmit = (values: ProductFormValues) => {
     const newProd: FarmerProduct = {
-      id: Date.now().toString(),
-      name: name.trim(),
+      id: newProductId(),
+      name: values.name,
       category: 'Nông sản',
-      price: Number(price),
-      originalPrice: Number(price),
+      price: values.price,
+      originalPrice: values.price,
       discount: null,
       status: 'Đang bán',
-      stock: Number(stock) || 50,
-      unit,
-      region,
+      stock: values.stock,
+      unit: values.unit,
+      region: values.region,
+      farmingType: values.farmingType,
       image:
         'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=200&q=80',
     }
@@ -56,70 +83,84 @@ export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProduct
           Điền thông tin nông sản thu hoạch để niêm yết lên sàn CapNong
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div>
-            <label className="block text-xs font-bold text-[#353d2f] mb-1">Tên nông sản *</label>
+            <label htmlFor="product-name" className="block text-xs font-bold text-[#353d2f] mb-1">
+              Tên nông sản *
+            </label>
             <input
+              id="product-name"
               type="text"
               required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              {...register('name')}
+              aria-invalid={!!errors.name}
               placeholder="VD: Cà rốt 2 nhánh Đà Lạt"
-              className="w-full px-4 py-2.5 rounded-2xl bg-[#f4f7f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
+              className={INPUT_CLASS}
             />
+            <FieldError message={errors.name?.message} />
           </div>
 
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+              <label
+                htmlFor="product-price"
+                className="block text-xs font-bold text-[#353d2f] mb-1"
+              >
                 Giá bán (đ/kg) *
               </label>
               <input
+                id="product-price"
                 type="number"
                 required
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                {...register('price', { valueAsNumber: true })}
+                aria-invalid={!!errors.price}
                 placeholder="18000"
-                className="w-full px-4 py-2.5 rounded-2xl bg-[#f4f7f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
+                className={INPUT_CLASS}
               />
+              <FieldError message={errors.price?.message} />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+              <label
+                htmlFor="product-stock"
+                className="block text-xs font-bold text-[#353d2f] mb-1"
+              >
                 Số lượng tồn kho (kg) *
               </label>
               <input
+                id="product-stock"
                 type="number"
                 required
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
+                {...register('stock', { valueAsNumber: true })}
+                aria-invalid={!!errors.stock}
                 placeholder="100"
-                className="w-full px-4 py-2.5 rounded-2xl bg-[#f4f7f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
+                className={INPUT_CLASS}
               />
+              <FieldError message={errors.stock?.message} />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Vùng xuất xứ</label>
-              <select
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-2xl bg-[#f4f7f1] text-xs text-[#1e2319] outline-none"
+              <label
+                htmlFor="product-region"
+                className="block text-xs font-bold text-[#353d2f] mb-1"
               >
+                Vùng xuất xứ
+              </label>
+              <select id="product-region" {...register('region')} className={SELECT_CLASS}>
                 <option value="Đà Lạt & Lâm Đồng">Đà Lạt &amp; Lâm Đồng</option>
                 <option value="Miền Tây Nam Bộ">Miền Tây Nam Bộ</option>
                 <option value="Tây Nguyên">Tây Nguyên</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+              <label
+                htmlFor="product-farming"
+                className="block text-xs font-bold text-[#353d2f] mb-1"
+              >
                 Phương thức canh tác
               </label>
-              <select
-                value={farmingType}
-                onChange={(e) => setFarmingType(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-2xl bg-[#f4f7f1] text-xs text-[#1e2319] outline-none"
-              >
+              <select id="product-farming" {...register('farmingType')} className={SELECT_CLASS}>
                 <option value="Hữu cơ Organic">Hữu cơ Organic</option>
                 <option value="VietGAP">Chuẩn VietGAP</option>
                 <option value="Vườn tự nhiên">Vườn tự nhiên</option>

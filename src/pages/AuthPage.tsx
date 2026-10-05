@@ -25,8 +25,19 @@ import {
   X,
   Check,
 } from 'lucide-react'
+import { useForm, useWatch } from 'react-hook-form'
 import authBannerImg from '../assets/auth-shelf-banner.jpg'
-import type { AuthUser } from '@/features/auth'
+import {
+  loginSchema,
+  memberRegisterSchema,
+  REGISTER_DEFAULTS,
+  shopAccountSchema,
+  shopKycSchema,
+  type AuthUser,
+  type LoginValues,
+  type RegisterValues,
+} from '@/features/auth'
+import { validate } from '@/utils'
 
 interface AuthPageProps {
   initialMode?: 'login' | 'register' | 'kyc_pending'
@@ -52,30 +63,22 @@ export default function AuthPage({
   const [error, setError] = useState('')
   const [successNotice, setSuccessNotice] = useState('')
 
-  // Login form state
-  const [loginEmail, setLoginEmail] = useState('')
-  const [loginPassword, setLoginPassword] = useState('')
-
-  // Register common state (Step 1)
-  const [regFullName, setRegFullName] = useState('')
-  const [regPhone, setRegPhone] = useState('')
-  const [regEmail, setRegEmail] = useState('')
-  const [regPassword, setRegPassword] = useState('')
-  const [regConfirmPassword, setRegConfirmPassword] = useState('')
-
-  // Register Buyer / Shipper specific state
-  const [buyerAddress, setBuyerAddress] = useState('')
-  const [shipperVehicle, setShipperVehicle] = useState('Xe máy kèm thùng bảo ôn')
-  const [shipperArea, setShipperArea] = useState('TP. Hồ Chí Minh')
-
-  // Register Shop / Farmer KYC state (Step 2)
-  const [shopName, setShopName] = useState('')
-  const [shopAddress, setShopAddress] = useState('')
-  const [shopRegion, setShopRegion] = useState('Đà Lạt & Lâm Đồng')
-  const [shopFarmingType, setShopFarmingType] = useState('Hữu cơ Organic')
-  const [shopBankName, setShopBankName] = useState('Vietcombank')
-  const [shopBankAccount, setShopBankAccount] = useState('')
-  const [shopBankHolder, setShopBankHolder] = useState('')
+  // Form đăng nhập / đăng ký: React Hook Form giữ giá trị, schema Zod (features/auth) kiểm tra.
+  // Một form đăng ký chung cho mọi vai trò để không mất dữ liệu khi đổi vai trò hoặc bước.
+  const loginForm = useForm<LoginValues>({ defaultValues: { identifier: '', password: '' } })
+  const registerForm = useForm<RegisterValues>({ defaultValues: REGISTER_DEFAULTS })
+  const {
+    fullName: regFullName,
+    phone: regPhone,
+    email: regEmail,
+    shopName,
+    shopAddress,
+    shopRegion,
+    shopFarmingType,
+    shopBankName,
+    shopBankAccount,
+    shopBankHolder,
+  } = useWatch({ control: registerForm.control })
   const [shopLogoPreview, setShopLogoPreview] = useState<string>('')
   const [shopCertPreview, setShopCertPreview] = useState<string>('')
 
@@ -104,14 +107,12 @@ export default function AuthPage({
     e.preventDefault()
     setError('')
 
-    if (!loginEmail.trim()) {
-      setError('Vui lòng nhập Email hoặc Số điện thoại của bạn')
+    const result = validate(loginSchema, loginForm.getValues())
+    if (!result.ok) {
+      setError(result.error)
       return
     }
-    if (!loginPassword || loginPassword.length < 6) {
-      setError('Mật khẩu cần tối thiểu 6 ký tự')
-      return
-    }
+    const loginEmail = result.data.identifier
 
     // Detect if logging in as shop
     const isShopAccount =
@@ -208,20 +209,9 @@ export default function AuthPage({
     e.preventDefault()
     setError('')
 
-    if (!regFullName.trim()) {
-      setError('Vui lòng nhập họ tên chủ nông hộ / người đại diện')
-      return
-    }
-    if (!regPhone.trim()) {
-      setError('Vui lòng cung cấp số điện thoại liên hệ')
-      return
-    }
-    if (!regPassword || regPassword.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự')
-      return
-    }
-    if (regPassword !== regConfirmPassword) {
-      setError('Mật khẩu xác nhận không trùng khớp')
+    const result = validate(shopAccountSchema, registerForm.getValues())
+    if (!result.ok) {
+      setError(result.error)
       return
     }
 
@@ -233,17 +223,12 @@ export default function AuthPage({
     e.preventDefault()
     setError('')
 
+    const values = registerForm.getValues()
+
     if (selectedRole === 'shop') {
-      if (!shopName.trim()) {
-        setError('Vui lòng nhập tên nhà vườn hoặc tên gian hàng của bạn')
-        return
-      }
-      if (!shopAddress.trim()) {
-        setError('Vui lòng cung cấp địa chỉ nông trại / kho xuất hàng')
-        return
-      }
-      if (!shopBankAccount.trim()) {
-        setError('Vui lòng cung cấp số tài khoản ngân hàng để quyết toán')
+      const result = validate(shopKycSchema, values)
+      if (!result.ok) {
+        setError(result.error)
         return
       }
 
@@ -254,29 +239,18 @@ export default function AuthPage({
     }
 
     // Buyer & Shipper
-    if (!regFullName.trim()) {
-      setError('Vui lòng nhập họ và tên của bạn')
-      return
-    }
-    if (!regPhone.trim() && !regEmail.trim()) {
-      setError('Vui lòng cung cấp số điện thoại hoặc email liên hệ')
-      return
-    }
-    if (!regPassword || regPassword.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự')
-      return
-    }
-    if (regPassword !== regConfirmPassword) {
-      setError('Mật khẩu xác nhận không trùng khớp')
+    const result = validate(memberRegisterSchema, values)
+    if (!result.ok) {
+      setError(result.error)
       return
     }
 
     const newUser: AuthUser = {
-      name: regFullName,
-      email: regEmail || `${regPhone}@capnong.vn`,
-      phone: regPhone || '0900 000 000',
+      name: values.fullName,
+      email: values.email || `${values.phone}@capnong.vn`,
+      phone: values.phone || '0900 000 000',
       role: selectedRole,
-      detail: selectedRole === 'buyer' ? 'Khách hàng mới' : `Tài xế · ${shipperVehicle}`,
+      detail: selectedRole === 'buyer' ? 'Khách hàng mới' : `Tài xế · ${values.shipperVehicle}`,
     }
 
     setSuccessNotice(`Đăng ký tài khoản ${getRoleLabel(selectedRole)} thành công!`)
@@ -422,8 +396,7 @@ export default function AuthPage({
                     <input
                       type="text"
                       required
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
+                      {...loginForm.register('identifier')}
                       placeholder="Email hoặc Số điện thoại (VD: lienhe@capnong.vn)"
                       className="w-full pl-11 pr-4 py-3 sm:py-3.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white focus:ring-1 focus:ring-[#326318] text-xs sm:text-sm text-[#1e2319] placeholder-[#949c8e] outline-none transition-all"
                     />
@@ -438,8 +411,7 @@ export default function AuthPage({
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
+                      {...loginForm.register('password')}
                       placeholder="Mật khẩu"
                       className="w-full pl-11 pr-11 py-3 sm:py-3.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white focus:ring-1 focus:ring-[#326318] text-xs sm:text-sm text-[#1e2319] placeholder-[#949c8e] outline-none transition-all"
                     />
@@ -673,8 +645,7 @@ export default function AuthPage({
                       <input
                         type="text"
                         required
-                        value={regFullName}
-                        onChange={(e) => setRegFullName(e.target.value)}
+                        {...registerForm.register('fullName')}
                         placeholder="Họ và tên chủ vườn / người đại diện *"
                         className="w-full pl-11 pr-4 py-2.5 sm:py-3 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs sm:text-sm text-[#1e2319] outline-none"
                       />
@@ -689,8 +660,7 @@ export default function AuthPage({
                         <input
                           type="tel"
                           required
-                          value={regPhone}
-                          onChange={(e) => setRegPhone(e.target.value)}
+                          {...registerForm.register('phone')}
                           placeholder="Số điện thoại *"
                           className="w-full pl-10 pr-3 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -702,8 +672,7 @@ export default function AuthPage({
                         />
                         <input
                           type="email"
-                          value={regEmail}
-                          onChange={(e) => setRegEmail(e.target.value)}
+                          {...registerForm.register('email')}
                           placeholder="Email nhận đơn"
                           className="w-full pl-10 pr-3 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -719,8 +688,7 @@ export default function AuthPage({
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
-                          value={regPassword}
-                          onChange={(e) => setRegPassword(e.target.value)}
+                          {...registerForm.register('password')}
                           placeholder="Mật khẩu *"
                           className="w-full pl-10 pr-8 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -733,8 +701,7 @@ export default function AuthPage({
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
                           required
-                          value={regConfirmPassword}
-                          onChange={(e) => setRegConfirmPassword(e.target.value)}
+                          {...registerForm.register('confirmPassword')}
                           placeholder="Xác nhận MK *"
                           className="w-full pl-10 pr-8 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -780,8 +747,7 @@ export default function AuthPage({
                       <input
                         type="text"
                         required
-                        value={shopName}
-                        onChange={(e) => setShopName(e.target.value)}
+                        {...registerForm.register('shopName')}
                         placeholder="Tên Nông Trại / Hợp Tác Xã / Cửa Hàng *"
                         className="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs sm:text-sm text-[#1e2319] outline-none"
                       />
@@ -797,15 +763,13 @@ export default function AuthPage({
                         <input
                           type="text"
                           required
-                          value={shopAddress}
-                          onChange={(e) => setShopAddress(e.target.value)}
+                          {...registerForm.register('shopAddress')}
                           placeholder="Địa chỉ vườn / Kho *"
                           className="w-full pl-10 pr-3 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
                       </div>
                       <select
-                        value={shopRegion}
-                        onChange={(e) => setShopRegion(e.target.value)}
+                        {...registerForm.register('shopRegion')}
                         className="w-full px-3 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#8a4e1d] focus:bg-white text-xs font-semibold text-[#1e2319] outline-none"
                       >
                         <option value="Đà Lạt & Lâm Đồng">Đà Lạt &amp; Lâm Đồng</option>
@@ -821,8 +785,7 @@ export default function AuthPage({
                         Phương thức canh tác chính:
                       </label>
                       <select
-                        value={shopFarmingType}
-                        onChange={(e) => setShopFarmingType(e.target.value)}
+                        {...registerForm.register('shopFarmingType')}
                         className="w-full px-3 py-2 rounded-xl bg-white border border-[#dce0d8] text-xs font-bold text-[#1e2319] outline-none"
                       >
                         <option value="Hữu cơ Organic">
@@ -846,15 +809,13 @@ export default function AuthPage({
                         <input
                           type="text"
                           required
-                          value={shopBankAccount}
-                          onChange={(e) => setShopBankAccount(e.target.value)}
+                          {...registerForm.register('shopBankAccount')}
                           placeholder="Số tài khoản ngân hàng *"
                           className="w-full px-3 py-2 rounded-xl bg-white border border-[#d8c3aa] text-xs text-[#1e2319] outline-none"
                         />
                         <input
                           type="text"
-                          value={shopBankHolder}
-                          onChange={(e) => setShopBankHolder(e.target.value)}
+                          {...registerForm.register('shopBankHolder')}
                           placeholder="Chủ tài khoản"
                           className="w-full px-3 py-2 rounded-xl bg-white border border-[#d8c3aa] text-xs text-[#1e2319] outline-none"
                         />
@@ -918,8 +879,7 @@ export default function AuthPage({
                       <input
                         type="text"
                         required
-                        value={regFullName}
-                        onChange={(e) => setRegFullName(e.target.value)}
+                        {...registerForm.register('fullName')}
                         placeholder="Họ và tên của bạn *"
                         className="w-full pl-11 pr-4 py-2.5 sm:py-3 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs sm:text-sm text-[#1e2319] outline-none"
                       />
@@ -934,8 +894,7 @@ export default function AuthPage({
                         <input
                           type="tel"
                           required
-                          value={regPhone}
-                          onChange={(e) => setRegPhone(e.target.value)}
+                          {...registerForm.register('phone')}
                           placeholder="Số điện thoại *"
                           className="w-full pl-10 pr-3.5 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -947,8 +906,7 @@ export default function AuthPage({
                         />
                         <input
                           type="email"
-                          value={regEmail}
-                          onChange={(e) => setRegEmail(e.target.value)}
+                          {...registerForm.register('email')}
                           placeholder="Email (không bắt buộc)"
                           className="w-full pl-10 pr-3.5 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -963,8 +921,7 @@ export default function AuthPage({
                         />
                         <input
                           type="text"
-                          value={buyerAddress}
-                          onChange={(e) => setBuyerAddress(e.target.value)}
+                          {...registerForm.register('buyerAddress')}
                           placeholder="Địa chỉ nhận hàng (Quận/Huyện, Tỉnh/TP...)"
                           className="w-full pl-10 pr-3.5 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -977,8 +934,7 @@ export default function AuthPage({
                           Phương Tiện &amp; Khu Vực Giao Hàng:
                         </div>
                         <select
-                          value={shipperVehicle}
-                          onChange={(e) => setShipperVehicle(e.target.value)}
+                          {...registerForm.register('shipperVehicle')}
                           className="w-full px-3 py-2 rounded-xl bg-white border border-[#bad4e5] text-xs text-[#1e2319] outline-none"
                         >
                           <option value="Xe máy kèm thùng bảo ôn">
@@ -989,8 +945,7 @@ export default function AuthPage({
                         </select>
                         <input
                           type="text"
-                          value={shipperArea}
-                          onChange={(e) => setShipperArea(e.target.value)}
+                          {...registerForm.register('shipperArea')}
                           placeholder="Khu vực hoạt động ưu tiên (VD: Quận 7, TP.HCM)"
                           className="w-full px-3 py-2 rounded-xl bg-white border border-[#bad4e5] text-xs text-[#1e2319] outline-none"
                         />
@@ -1006,8 +961,7 @@ export default function AuthPage({
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
-                          value={regPassword}
-                          onChange={(e) => setRegPassword(e.target.value)}
+                          {...registerForm.register('password')}
                           placeholder="Mật khẩu *"
                           className="w-full pl-10 pr-8 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
@@ -1029,8 +983,7 @@ export default function AuthPage({
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
                           required
-                          value={regConfirmPassword}
-                          onChange={(e) => setRegConfirmPassword(e.target.value)}
+                          {...registerForm.register('confirmPassword')}
                           placeholder="Nhập lại mật khẩu *"
                           className="w-full pl-10 pr-8 py-2.5 rounded-2xl bg-[#f4f6f1] border border-transparent focus:border-[#326318] focus:bg-white text-xs text-[#1e2319] outline-none"
                         />
