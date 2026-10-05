@@ -1,11 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { orderService } from '@/services'
 import { codSettlementService } from '@/services/codSettlement.service'
 import { returnService } from '@/services/return.service'
 
 export const orderKeys = {
   all: ['orders'] as const,
+  list: () => [...orderKeys.all, 'list'] as const,
   codPending: () => [...orderKeys.all, 'cod-pending'] as const,
   disputes: () => [...orderKeys.all, 'disputes'] as const,
+}
+
+export function useAllOrders() {
+  return useQuery({
+    queryKey: orderKeys.list(),
+    queryFn: async () => (await orderService.getAllOrders()).result ?? [],
+  })
 }
 
 // ---- Đối soát COD ----

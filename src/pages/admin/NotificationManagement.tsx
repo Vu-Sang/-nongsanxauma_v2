@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Send,
   Users,
@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   AlertCircle,
 } from 'lucide-react'
-import { notificationService, NotificationItem } from '../../services'
+import { useNotifications, useSendNotification } from '@/features/notification'
 import { globalShowAlert } from '../../contexts/PopupContext'
 
 type TargetOption = 'all' | 'buyer' | 'farmer' | 'shipper'
@@ -28,50 +28,33 @@ const NotificationManagement: React.FC = () => {
   const [target, setTarget] = useState<TargetOption>('all')
   const [title, setTitle] = useState('')
   const [message, setMessage] = useState('')
-  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
 
-  const [history, setHistory] = useState<NotificationItem[]>([])
-  const [loadingHistory, setLoadingHistory] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const notificationsQuery = useNotifications()
+  const send = useSendNotification()
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      setLoadingHistory(true)
-      setError(null)
-      try {
-        const response = await notificationService.getAllNotifications()
-        setHistory(response.result || [])
-      } catch (err) {
-        console.error('Failed to load notifications', err)
-        setError('Không thể tải danh sách thông báo. Vui lòng thử lại sau.')
-      } finally {
-        setLoadingHistory(false)
-      }
-    }
-
-    fetchNotifications()
-  }, [])
+  const history = notificationsQuery.data ?? []
+  const loadingHistory = notificationsQuery.isPending
+  const sending = send.isPending
+  const error = notificationsQuery.isError
+    ? 'Không thể tải danh sách thông báo. Vui lòng thử lại sau.'
+    : sendError
 
   const handleSend = async () => {
     if (!title || !message) return
-    setSending(true)
-    setError(null)
+    setSendError(null)
     try {
-      await notificationService.adminSendToGroups({
+      await send.mutateAsync({
         title,
         message,
         receiverTypes: TARGET_MAPPING[target],
       })
       setTitle('')
       setMessage('')
-      const response = await notificationService.getAllNotifications()
-      setHistory(response.result || [])
       globalShowAlert('Thông báo đã được gửi thành công!', 'Thành công', 'success')
     } catch (err) {
       console.error('Failed to send notification', err)
-      setError('Gửi thông báo thất bại. Vui lòng kiểm tra lại quyền Admin hoặc thử lại sau.')
-    } finally {
-      setSending(false)
+      setSendError('Gửi thông báo thất bại. Vui lòng kiểm tra lại quyền Admin hoặc thử lại sau.')
     }
   }
 

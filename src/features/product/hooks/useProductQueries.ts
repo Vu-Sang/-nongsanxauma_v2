@@ -4,6 +4,7 @@ import { productService, type ProductImageResponse } from '@/services'
 /** Query key của sản phẩm; invalidate `productKeys.all` sau khi duyệt/từ chối. */
 export const productKeys = {
   all: ['products'] as const,
+  list: () => [...productKeys.all, 'list'] as const,
   pending: () => [...productKeys.all, 'pending'] as const,
   images: (productId: number) => [...productKeys.all, 'images', productId] as const,
 }
@@ -12,6 +13,13 @@ const byDisplayOrder = (a: ProductImageResponse, b: ProductImageResponse) => {
   if (a.isPrimary) return -1
   if (b.isPrimary) return 1
   return (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
+}
+
+export function useAllProducts() {
+  return useQuery({
+    queryKey: productKeys.list(),
+    queryFn: async () => (await productService.getAll()).result ?? [],
+  })
 }
 
 export function usePendingProducts() {

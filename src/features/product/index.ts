@@ -25,6 +25,7 @@ export {
 export { ProductGrid } from './components/ProductGrid'
 export {
   productKeys,
+  useAllProducts,
   useApproveProduct,
   usePendingProducts,
   useProductImages,

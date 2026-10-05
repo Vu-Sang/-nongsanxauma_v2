@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   ShieldCheck,
   AlertTriangle,
@@ -20,22 +20,28 @@ import {
   FileText,
 } from 'lucide-react'
 import { exportService } from '../../services/export.service'
-import {
-  userService,
-  orderService,
-  productService,
-  UserResponse,
-  OrderResponse,
-  ProductResponse,
-} from '../../services'
-import { getOrderStatusBadgeClass, getOrderStatusLabel } from '@/features/order'
+import { getOrderStatusBadgeClass, getOrderStatusLabel, useAllOrders } from '@/features/order'
+import { useAllProducts } from '@/features/product'
+import { useAllUsers, useApproveKyc } from '@/features/user'
 
 const AdminDashboard: React.FC = () => {
-  const [users, setUsers] = useState<UserResponse[]>([])
-  const [orders, setOrders] = useState<OrderResponse[]>([])
-  const [products, setProducts] = useState<ProductResponse[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const usersQuery = useAllUsers()
+  const ordersQuery = useAllOrders()
+  const productsQuery = useAllProducts()
+  const approve = useApproveKyc()
+
+  // Chuẩn hóa: map role.name -> roleName nếu chưa có
+  const users = useMemo(
+    () => (usersQuery.data ?? []).map((u) => ({ ...u, roleName: u.roleName || u.role?.name })),
+    [usersQuery.data],
+  )
+  const orders = ordersQuery.data ?? []
+  const products = productsQuery.data ?? []
+  const loading = usersQuery.isPending || ordersQuery.isPending || productsQuery.isPending
+  const error =
+    usersQuery.isError || ordersQuery.isError || productsQuery.isError
+      ? 'Không thể tải dữ liệu admin dashboard.'
+      : null
 
   // Export state — default: last 30 days
   const defaultTo = new Date().toISOString().slice(0, 10)
@@ -80,34 +86,6 @@ const AdminDashboard: React.FC = () => {
       setPdfExportProgress(null)
     }
   }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        const [usersRes, ordersRes, productsRes] = await Promise.all([
-          userService.getAllUsers(),
-          orderService.getAllOrders(),
-          productService.getAll(),
-        ])
-        if (usersRes.result) {
-          const rawUsers = Array.isArray(usersRes.result) ? usersRes.result : [usersRes.result]
-          // Normalize: map role.name -> roleName nếu chưa có
-          setUsers(rawUsers.map((u) => ({ ...u, roleName: u.roleName || u.role?.name })))
-        }
-        if (ordersRes.result)
-          setOrders(Array.isArray(ordersRes.result) ? ordersRes.result : [ordersRes.result])
-        if (productsRes.result)
-          setProducts(Array.isArray(productsRes.result) ? productsRes.result : [productsRes.result])
-      } catch (err) {
-        console.error('Failed to load admin dashboard', err)
-        setError('Không thể tải dữ liệu admin dashboard.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
 
   const pendingKyc = users.filter((u) => u.status === 'PENDING' || u.kycStatus === 'PENDING')
   const shopOwners = users.filter(
@@ -293,20 +271,12 @@ const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="px-10 py-5 text-right">
                         <button
-                          onClick={async () => {
-                            try {
-                              await userService.approveShopOwner(item.id)
-                              setUsers((prev) =>
-                                prev.map((u) =>
-                                  u.id === item.id
-                                    ? { ...u, status: 'ACTIVE', kycStatus: 'APPROVED' }
-                                    : u,
-                                ),
-                              )
-                            } catch (e) {
-                              console.error(e)
-                            }
-                          }}
+                          onClick={() =>
+                            approve.mutate(
+                              { userId: item.id, roleName: 'SHOP_OWNER' },
+                              { onError: (e) => console.error(e) },
+                            )
+                          }
                           className="px-6 py-2 bg-blue-50 text-blue-600 text-xs font-black rounded-xl hover:bg-blue-100 transition-colors"
                         >
                           Duyệt

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   Users,
   Store,
@@ -30,7 +30,8 @@ import {
   LineChart,
   Line,
 } from 'recharts'
-import { userService, AdminUserReport, AdminUserReportType } from '../../services'
+import type { AdminUserReportType } from '@/services'
+import { type UserReportParams, useUserReport } from '@/features/user'
 import { getErrorMessage } from '@/utils'
 
 type PeriodPreset = AdminUserReportType | 'custom'
@@ -66,50 +67,28 @@ const fmt = (n?: number | null) => (n ?? 0).toLocaleString('vi-VN')
 type ChartViewType = 'column' | 'line'
 
 const UserReport: React.FC = () => {
-  const [report, setReport] = useState<AdminUserReport | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [formError, setError] = useState<string | null>(null)
   const [chartView, setChartView] = useState<ChartViewType>('column')
   const [period, setPeriod] = useState<PeriodPreset>('month')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
   const [appliedRange, setAppliedRange] = useState<{ from: string; to: string } | null>(null)
 
-  const fetchReport = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      let res
-      if (period === 'custom') {
-        if (!appliedRange) {
-          setLoading(false)
-          return
-        }
-        if (appliedRange.from > appliedRange.to) {
-          setError('Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.')
-          setLoading(false)
-          return
-        }
-        res = await userService.generateAdminUserReport({
-          from: appliedRange.from,
-          to: appliedRange.to,
-        })
-      } else {
-        res = await userService.generateAdminUserReport({ type: period })
-      }
-      setReport(res.result ?? null)
-    } catch (err) {
-      console.error('Failed to load user report', err)
-      setError(getErrorMessage(err, 'Không thể tải báo cáo người dùng.'))
-    } finally {
-      setLoading(false)
-    }
-  }, [period, appliedRange])
-
-  useEffect(() => {
-    if (period === 'custom' && !appliedRange) return
-    fetchReport()
-  }, [fetchReport, period, appliedRange])
+  // Mốc có sẵn gọi theo type; "Tùy chọn" chỉ gọi khi đã áp dụng khoảng ngày hợp lệ.
+  const reportParams: UserReportParams | null =
+    period !== 'custom'
+      ? { type: period }
+      : appliedRange && appliedRange.from <= appliedRange.to
+        ? appliedRange
+        : null
+  const reportQuery = useUserReport(reportParams)
+  const report = reportQuery.data ?? null
+  const loading = reportQuery.isFetching
+  const error =
+    formError ??
+    (reportQuery.isError
+      ? getErrorMessage(reportQuery.error, 'Không thể tải báo cáo người dùng.')
+      : null)
 
   const handlePeriodChange = (next: PeriodPreset) => {
     setPeriod(next)
@@ -281,7 +260,7 @@ const UserReport: React.FC = () => {
         </div>
         <button
           type="button"
-          onClick={fetchReport}
+          onClick={() => void reportQuery.refetch()}
           disabled={loading}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gray-50 text-gray-600 font-bold text-sm hover:bg-gray-100 transition-colors disabled:opacity-50"
         >

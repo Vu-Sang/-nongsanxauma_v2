@@ -13,8 +13,21 @@ export const userKeys = {
   all: ['users'] as const,
   list: () => [...userKeys.all, 'list'] as const,
   detail: (id: number) => [...userKeys.all, 'detail', id] as const,
+  report: (params: UserReportParams) => [...userKeys.all, 'report', params] as const,
   byRole: (roles: string[], status: string | null, page: number, size: number) =>
     [...userKeys.all, 'by-role', { roles, status, page, size }] as const,
+}
+
+/** Báo cáo theo mốc (week/month/year/all) hoặc theo khoảng ngày tự chọn. */
+export type UserReportParams = { type: string } | { from: string; to: string }
+
+export function useUserReport(params: UserReportParams | null) {
+  return useQuery({
+    queryKey: userKeys.report(params ?? { type: 'none' }),
+    queryFn: async () => (await userService.generateAdminUserReport(params!)).result ?? null,
+    enabled: params != null,
+    placeholderData: keepPreviousData,
+  })
 }
 
 export function useAllUsers() {

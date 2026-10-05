@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   Newspaper,
   Plus,
@@ -16,22 +16,30 @@ import {
   RefreshCcw,
   AlertCircle,
 } from 'lucide-react'
-import { blogService, BlogResponse, BlogCreationRequest } from '../../services'
+import type { BlogCreationRequest, BlogResponse } from '@/services'
+import { useBlogsPaged, useDeleteBlog, useSaveBlog, useSetBlogStatus } from '@/features/blog'
 import { BlogCategory, BlogCategoryLabel, PageResponse } from '../../types'
 import MyCKEditor from '@/components/common/MyCKEditor'
 import Pagination, { PageInfo } from '@/components/ui/Pagination'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 
 const NewsManagement: React.FC = () => {
-  const [blogs, setBlogs] = useState<BlogResponse[]>([])
-  const [loading, setLoading] = useState(true)
   const [isAddingNew, setIsAddingNew] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   // Pagination state
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null)
+
+  const blogsQuery = useBlogsPaged(page, pageSize)
+  const saveBlog = useSaveBlog()
+  const deleteBlog = useDeleteBlog()
+  const setBlogStatus = useSetBlogStatus()
+
+  const blogs = blogsQuery.data?.content ?? []
+  const pageInfo: PageInfo | null = blogsQuery.data ?? null
+  // Màn tải khi mở trang và khi chuyển trang (không nháy khi tải lại nền sau thao tác).
+  const loading = blogsQuery.isPending || blogsQuery.isPlaceholderData
+  const error = blogsQuery.isError ? 'Không thể tải danh sách bài viết.' : null
 
   // Filter state
   const [searchQuery, setSearchQuery] = useState('')
@@ -44,7 +52,7 @@ const NewsManagement: React.FC = () => {
   const [category, setCategory] = useState(BlogCategory.SUC_KHOE)
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const submitting = saveBlog.isPending
 
   // View/Edit state
   const [isViewing, setIsViewing] = useState(false)
@@ -68,10 +76,6 @@ const NewsManagement: React.FC = () => {
     setSelectedFilterCategory('Tất cả danh mục')
   }
 
-  useEffect(() => {
-    fetchBlogs()
-  }, [page])
-
   // Filter blogs based on search and category
   const filteredBlogs = blogs.filter((blog) => {
     const matchesSearch =
@@ -84,29 +88,6 @@ const NewsManagement: React.FC = () => {
 
     return matchesSearch && matchesCategory
   })
-
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true)
-      const response = await blogService.getAllBlogsPaged(page, pageSize)
-      if (response.result) {
-        setBlogs(response.result.content)
-        setPageInfo({
-          page: response.result.page,
-          size: response.result.size,
-          totalElements: response.result.totalElements,
-          totalPages: response.result.totalPages,
-          first: response.result.first,
-          last: response.result.last,
-        })
-      }
-    } catch (err) {
-      console.error('Failed to fetch blogs', err)
-      setError('Không thể tải danh sách bài viết.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -122,35 +103,30 @@ const NewsManagement: React.FC = () => {
       return
     }
 
-    setSubmitting(true)
     try {
-      const request: any = {
+      const request: BlogCreationRequest = {
         title,
         content,
         status,
         category,
       }
 
-      if (isEditing && selectedBlog) {
-        const response = await blogService.updateBlog(selectedBlog.id, request)
-        if (response.result) {
-          globalShowAlert('Cập nhật bài viết thành công!', 'Thành công', 'success')
-          clearForm()
-          fetchBlogs()
-        }
-      } else {
-        const response = await blogService.createBlog(request as BlogCreationRequest)
-        if (response.result) {
-          globalShowAlert('Đăng bài viết thành công!', 'Thành công', 'success')
-          clearForm()
-          fetchBlogs()
-        }
+      const editing = isEditing && selectedBlog
+      const response = await saveBlog.mutateAsync({
+        id: editing ? selectedBlog.id : undefined,
+        request,
+      })
+      if (response.result) {
+        globalShowAlert(
+          editing ? 'Cập nhật bài viết thành công!' : 'Đăng bài viết thành công!',
+          'Thành công',
+          'success',
+        )
+        clearForm()
       }
     } catch (err) {
       console.error('Failed to save blog', err)
       globalShowAlert('Lưu bài viết thất bại. Vui lòng thử lại.', 'Lỗi', 'error')
-    } finally {
-      setSubmitting(false)
     }
   }
 
@@ -160,8 +136,7 @@ const NewsManagement: React.FC = () => {
     }
 
     try {
-      await blogService.deleteBlog(id)
-      setBlogs(blogs.filter((b) => b.id !== id))
+      await deleteBlog.mutateAsync(id)
       globalShowAlert('Đã xóa bài viết thành công.', 'Thành công', 'success')
     } catch (err) {
       console.error('Failed to delete blog', err)
@@ -172,13 +147,7 @@ const NewsManagement: React.FC = () => {
   const handleToggleStatus = async (blog: BlogResponse) => {
     const newStatus = blog.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED'
     try {
-      await blogService.updateBlog(blog.id, {
-        title: blog.title,
-        content: blog.content,
-        status: newStatus,
-        category: blog.category as unknown as BlogCategory,
-      })
-      setBlogs(blogs.map((b) => (b.id === blog.id ? { ...b, status: newStatus } : b)))
+      await setBlogStatus.mutateAsync({ blog, status: newStatus })
     } catch (err) {
       console.error('Failed to update blog status', err)
       globalShowAlert('Đổi trạng thái thất bại.', 'Lỗi', 'error')
