@@ -1,29 +1,22 @@
-import React, { useState } from 'react';
-import { Download, ShoppingBag, Eye, CheckCircle2, PackageCheck } from 'lucide-react';
-import type { FarmerOrder } from './types';
+import React, { useState } from 'react'
+import { Download, ShoppingBag, Eye, CheckCircle2, PackageCheck } from 'lucide-react'
+import type { FarmerOrder } from './types'
 
 interface OrdersProps {
-  orders: FarmerOrder[];
-  onOpenOrderPrep?: (orderId: string) => void;
-  onInfo?: (msg: string) => void;
+  orders: FarmerOrder[]
+  onOpenOrderPrep?: (orderId: string) => void
+  onInfo?: (msg: string) => void
 }
 
 export default function Orders({ orders, onOpenOrderPrep, onInfo }: OrdersProps) {
-  const [activeTab, setActiveTab] = useState('Tất cả');
+  const [activeTab, setActiveTab] = useState('Tất cả')
 
-  const tabs = [
-    'Tất cả',
-    'Chờ xác nhận',
-    'Đang chuẩn bị',
-    'Đã tới kho',
-    'Đang giao',
-    'Đã giao',
-  ];
+  const tabs = ['Tất cả', 'Chờ xác nhận', 'Đang chuẩn bị', 'Đã tới kho', 'Đang giao', 'Đã giao']
 
   const filtered = orders.filter((o) => {
-    if (activeTab === 'Tất cả') return true;
-    return o.status === activeTab;
-  });
+    if (activeTab === 'Tất cả') return true
+    return o.status === activeTab
+  })
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -47,7 +40,10 @@ export default function Orders({ orders, onOpenOrderPrep, onInfo }: OrdersProps)
       </div>
 
       {/* Status Filter Tabs */}
-      <div id="tour-orders-tabs" className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+      <div
+        id="tour-orders-tabs"
+        className="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar"
+      >
         {tabs.map((st) => (
           <button
             key={st}
@@ -70,7 +66,7 @@ export default function Orders({ orders, onOpenOrderPrep, onInfo }: OrdersProps)
           filtered.map((ord, idx) => (
             <div
               key={ord.id}
-              id={idx === 0 ? "tour-orders-first-card" : undefined}
+              id={idx === 0 ? 'tour-orders-first-card' : undefined}
               className="bg-white rounded-3xl p-5 border border-[#e8ece3] shadow-sm space-y-3"
             >
               <div className="flex items-center justify-between pb-3 border-b border-[#f1f4ed]">
@@ -102,8 +98,8 @@ export default function Orders({ orders, onOpenOrderPrep, onInfo }: OrdersProps)
 
               <div className="flex items-center justify-between pt-2">
                 <span className="text-[11px] text-[#6e7768]">Phương thức: {ord.payment}</span>
-                <div 
-                  id={idx === 0 ? "tour-orders-contact-btns" : undefined}
+                <div
+                  id={idx === 0 ? 'tour-orders-contact-btns' : undefined}
                   className="flex items-center gap-2"
                 >
                   <button
@@ -131,5 +127,5 @@ export default function Orders({ orders, onOpenOrderPrep, onInfo }: OrdersProps)
         )}
       </div>
     </div>
-  );
+  )
 }

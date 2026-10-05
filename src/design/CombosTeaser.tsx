@@ -1,13 +1,22 @@
-import { ArrowRight, CheckCircle2, Gift, ShieldCheck, ShoppingBasket, Sparkles, Star, Zap } from 'lucide-react';
-import mysteryPromoImg from '../assets/mystery-box-promo.png';
-import comboMysteryImg from '../assets/combo-mystery.jpg';
-import comboGreenImg from '../assets/combo-green.jpg';
-import comboKitchenImg from '../assets/combo-kitchen.jpg';
-import comboHotpotImg from '../assets/combo-hotpot.jpg';
-import { combos, money, type Product } from '../catalog';
-import { discountPercent } from '../components/product/ProductCard';
-import { LinkButton } from '../components/ui/Button';
-import { cn } from '../lib/cn';
+import {
+  ArrowRight,
+  CheckCircle2,
+  Gift,
+  ShieldCheck,
+  ShoppingBasket,
+  Sparkles,
+  Star,
+  Zap,
+} from 'lucide-react'
+import mysteryPromoImg from '../assets/mystery-box-promo.png'
+import comboMysteryImg from '../assets/combo-mystery.jpg'
+import comboGreenImg from '../assets/combo-green.jpg'
+import comboKitchenImg from '../assets/combo-kitchen.jpg'
+import comboHotpotImg from '../assets/combo-hotpot.jpg'
+import { combos, money, type Product } from '../catalog'
+import { discountPercent } from '../components/product/ProductCard'
+import { LinkButton } from '../components/ui/Button'
+import { cn } from '../lib/cn'
 
 /**
  * Thông tin trình bày riêng cho trang chủ. GIÁ và TỒN KHO luôn lấy từ catalog
@@ -16,19 +25,19 @@ import { cn } from '../lib/cn';
  */
 type ComboTeaser = {
   /** id trong catalog; null = chưa bán trực tuyến, nút sẽ dẫn sang trang Combo. */
-  catalogId: string | null;
-  name: string;
-  image: string;
-  badgeWeight: string;
-  badgeHighlight: string;
-  category: string;
-  portion: string;
-  feature: string;
-  rating: number;
-  reviews: number;
+  catalogId: string | null
+  name: string
+  image: string
+  badgeWeight: string
+  badgeHighlight: string
+  category: string
+  portion: string
+  feature: string
+  rating: number
+  reviews: number
   /** Chỉ dùng khi catalogId = null. */
-  fallbackPrice?: { price: number; original: number; unit: string };
-};
+  fallbackPrice?: { price: number; original: number; unit: string }
+}
 
 const TEASERS: ComboTeaser[] = [
   {
@@ -80,20 +89,28 @@ const TEASERS: ComboTeaser[] = [
     reviews: 156,
     fallbackPrice: { price: 119000, original: 210000, unit: 'combo' },
   },
-];
+]
 
 const BENEFITS = [
   { icon: CheckCircle2, text: '5–6 loại nông sản tươi ngon ngẫu nhiên' },
   { icon: Zap, text: 'Tiết kiệm đến 60% so với mua lẻ' },
   { icon: ShieldCheck, text: 'Đổi mới nếu có quả bị dập hỏng' },
-] as const;
+] as const
 
-const mystery = combos.find((c) => c.id === 'mystery');
+const mystery = combos.find((c) => c.id === 'mystery')
 
-function ComboCard({ teaser, product, onAdd }: { teaser: ComboTeaser; product?: Product; onAdd?: (id: string) => void }) {
-  const pricing = product ?? teaser.fallbackPrice;
-  const discount = pricing ? discountPercent(pricing) : 0;
-  const canAdd = Boolean(product && onAdd && product.stock > 0);
+function ComboCard({
+  teaser,
+  product,
+  onAdd,
+}: {
+  teaser: ComboTeaser
+  product?: Product
+  onAdd?: (id: string) => void
+}) {
+  const pricing = product ?? teaser.fallbackPrice
+  const discount = pricing ? discountPercent(pricing) : 0
+  const canAdd = Boolean(product && onAdd && product.stock > 0)
 
   return (
     <article className="group flex h-full flex-col rounded-card border border-line bg-white p-3 shadow-card transition-[box-shadow,border-color] duration-300 hover:border-leaf-600/40 hover:shadow-card-hover sm:p-4">
@@ -106,10 +123,16 @@ function ComboCard({ teaser, product, onAdd }: { teaser: ComboTeaser; product?: 
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
         />
         {discount > 0 && (
-          <span className="absolute left-2 top-2 rounded-md bg-sale px-2 py-0.5 text-caption font-extrabold text-white shadow-sm">-{discount}%</span>
+          <span className="absolute left-2 top-2 rounded-md bg-sale px-2 py-0.5 text-caption font-extrabold text-white shadow-sm">
+            -{discount}%
+          </span>
         )}
-        <span className="absolute right-2 top-2 rounded-md bg-white/95 px-2 py-0.5 text-caption font-bold text-leaf-700 shadow-sm">{teaser.badgeWeight}</span>
-        <span className="absolute bottom-2 left-2 rounded-md bg-white/95 px-2 py-0.5 text-caption font-semibold text-soil-600 shadow-sm">{teaser.badgeHighlight}</span>
+        <span className="absolute right-2 top-2 rounded-md bg-white/95 px-2 py-0.5 text-caption font-bold text-leaf-700 shadow-sm">
+          {teaser.badgeWeight}
+        </span>
+        <span className="absolute bottom-2 left-2 rounded-md bg-white/95 px-2 py-0.5 text-caption font-semibold text-soil-600 shadow-sm">
+          {teaser.badgeHighlight}
+        </span>
       </div>
 
       <p className="mb-1 flex items-center justify-between gap-2 text-caption text-ink-muted">
@@ -133,7 +156,10 @@ function ComboCard({ teaser, product, onAdd }: { teaser: ComboTeaser; product?: 
           </p>
         )}
         {/* Một ngôi sao + điểm số, thay cho 5 sao đầy cho mọi mức điểm */}
-        <p className="flex items-center gap-1 text-caption text-ink-muted" aria-label={`Đánh giá ${teaser.rating} trên 5, ${teaser.reviews} lượt`}>
+        <p
+          className="flex items-center gap-1 text-caption text-ink-muted"
+          aria-label={`Đánh giá ${teaser.rating} trên 5, ${teaser.reviews} lượt`}
+        >
           <Star size={13} className="fill-amber-400 text-amber-400" aria-hidden />
           <span className="font-bold text-ink">{teaser.rating.toFixed(1)}</span>
           <span aria-hidden>({teaser.reviews})</span>
@@ -156,12 +182,16 @@ function ComboCard({ teaser, product, onAdd }: { teaser: ComboTeaser; product?: 
         </LinkButton>
       )}
     </article>
-  );
+  )
 }
 
 export default function CombosTeaser({ onAdd }: { onAdd?: (id: string) => void }) {
   return (
-    <section id="combo-tui-mu" aria-labelledby="combo-teaser-title" className="border-b border-line bg-[#fcfaf6] py-12 md:py-16 lg:py-20">
+    <section
+      id="combo-tui-mu"
+      aria-labelledby="combo-teaser-title"
+      className="border-b border-line bg-[#fcfaf6] py-12 md:py-16 lg:py-20"
+    >
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -169,11 +199,17 @@ export default function CombosTeaser({ onAdd }: { onAdd?: (id: string) => void }
               <Gift size={16} aria-hidden />
               Trải nghiệm thú vị &amp; Tiết kiệm
             </p>
-            <h2 id="combo-teaser-title" className="mt-1 text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl">
+            <h2
+              id="combo-teaser-title"
+              className="mt-1 text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl"
+            >
               Combo &amp; Túi Mù Nông Sản
             </h2>
           </div>
-          <a href="#/combo-tui-mu" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-soil-600 hover:text-soil-700">
+          <a
+            href="#/combo-tui-mu"
+            className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-soil-600 hover:text-soil-700"
+          >
             Xem tất cả Combo &amp; Túi Mù <ArrowRight size={17} aria-hidden />
           </a>
         </div>
@@ -192,7 +228,9 @@ export default function CombosTeaser({ onAdd }: { onAdd?: (id: string) => void }
               <li key={teaser.name} className="w-[85%] shrink-0 snap-start sm:w-auto">
                 <ComboCard
                   teaser={teaser}
-                  product={teaser.catalogId ? combos.find((c) => c.id === teaser.catalogId) : undefined}
+                  product={
+                    teaser.catalogId ? combos.find((c) => c.id === teaser.catalogId) : undefined
+                  }
                   onAdd={onAdd}
                 />
               </li>
@@ -205,14 +243,21 @@ export default function CombosTeaser({ onAdd }: { onAdd?: (id: string) => void }
               <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-white/20 bg-white/20 px-3 py-1 text-caption font-bold uppercase tracking-wider">
                 <Sparkles size={13} className="text-sun-300" aria-hidden /> Bí ẩn mỗi ngày
               </span>
-              <h3 className="text-2xl font-extrabold leading-tight sm:text-3xl">Mở Túi Mù – Đón Bất Ngờ Từ Nhà Vườn</h3>
+              <h3 className="text-2xl font-extrabold leading-tight sm:text-3xl">
+                Mở Túi Mù – Đón Bất Ngờ Từ Nhà Vườn
+              </h3>
               <p className="hidden text-sm leading-relaxed text-white/85 sm:block">
-                Mỗi túi là 5kg rau củ quả thu hoạch sớm nhất trong ngày, chọn ngẫu nhiên từ nhà vườn liên kết.
+                Mỗi túi là 5kg rau củ quả thu hoạch sớm nhất trong ngày, chọn ngẫu nhiên từ nhà vườn
+                liên kết.
               </p>
               {mystery && (
                 <p className="rounded-card border border-white/15 bg-black/20 p-3.5">
-                  <span className="block text-caption uppercase tracking-wide text-white/80">Giá trải nghiệm</span>
-                  <span className="text-2xl font-black text-sun-300 sm:text-3xl">Chỉ {money(mystery.price)}</span>
+                  <span className="block text-caption uppercase tracking-wide text-white/80">
+                    Giá trải nghiệm
+                  </span>
+                  <span className="text-2xl font-black text-sun-300 sm:text-3xl">
+                    Chỉ {money(mystery.price)}
+                  </span>
                   <span className="text-caption text-white/80">/túi 5kg</span>
                 </p>
               )}
@@ -242,5 +287,5 @@ export default function CombosTeaser({ onAdd }: { onAdd?: (id: string) => void }
         </div>
       </div>
     </section>
-  );
+  )
 }

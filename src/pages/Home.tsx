@@ -1,19 +1,19 @@
-import Hero from '../design/Hero';
-import RescueProcess from '../design/RescueProcess';
-import AiFeatures from '../design/AiFeatures';
-import Categories from '../design/Categories';
-import TodayRescue from '../design/TodayRescue';
-import CombosTeaser from '../design/CombosTeaser';
-import FarmerStory from '../design/FarmerStory';
-import Testimonials from '../design/Testimonials';
-import Newsletter from '../components/Newsletter';
-import type { Cart } from '../catalog';
+import Hero from '../design/Hero'
+import RescueProcess from '../design/RescueProcess'
+import AiFeatures from '../design/AiFeatures'
+import Categories from '../design/Categories'
+import TodayRescue from '../design/TodayRescue'
+import CombosTeaser from '../design/CombosTeaser'
+import FarmerStory from '../design/FarmerStory'
+import Testimonials from '../design/Testimonials'
+import Newsletter from '../components/Newsletter'
+import type { Cart } from '../catalog'
 
 type HomeProps = {
-  onAdd: (id: string) => void;
-  onInfo: (title: string) => void;
-  cart?: Cart;
-};
+  onAdd: (id: string) => void
+  onInfo: (title: string) => void
+  cart?: Cart
+}
 
 /**
  * Trước đây Home bắt mọi click rồi đọc chữ trên link (regex "Đăng ký|Xem bảo chứng|...")
@@ -33,5 +33,5 @@ export default function Home({ onAdd, onInfo, cart }: HomeProps) {
       <Testimonials />
       <Newsletter onInfo={onInfo} />
     </>
-  );
+  )
 }

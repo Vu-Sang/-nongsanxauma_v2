@@ -1,20 +1,20 @@
-import React, { useState, type FormEvent } from 'react';
-import { ChefHat, ArrowLeft } from 'lucide-react';
+import React, { useState, type FormEvent } from 'react'
+import { ChefHat, ArrowLeft } from 'lucide-react'
 
 interface SendJoinRequestProps {
-  onBack: () => void;
-  onInfo?: (msg: string) => void;
+  onBack: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function SendJoinRequest({ onBack, onInfo }: SendJoinRequestProps) {
-  const [weight, setWeight] = useState('200');
-  const [items, setItems] = useState('Bắp cải xanh 100kg, Cà rốt 100kg');
+  const [weight, setWeight] = useState('200')
+  const [items, setItems] = useState('Bắp cải xanh 100kg, Cà rốt 100kg')
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    onInfo?.('Yêu cầu ghép chuyến xe lạnh đã được gửi đi thành công');
-    onBack();
-  };
+    e.preventDefault()
+    onInfo?.('Yêu cầu ghép chuyến xe lạnh đã được gửi đi thành công')
+    onBack()
+  }
 
   return (
     <div className="bg-white rounded-3xl p-8 border border-[#e8ece3] shadow-sm space-y-6 animate-fadeIn max-w-xl">
@@ -63,5 +63,5 @@ export default function SendJoinRequest({ onBack, onInfo }: SendJoinRequestProps
         </button>
       </form>
     </div>
-  );
+  )
 }

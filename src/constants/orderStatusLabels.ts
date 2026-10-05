@@ -17,11 +17,11 @@ export const ORDER_STATUS_LABELS: Record<string, string> = {
   PAID: 'Đã thanh toán',
   CANCELLED: 'Đã hủy',
   FAILED: 'Thất bại',
-};
+}
 
 export function getOrderStatusLabel(status?: string | null): string {
-  if (!status) return 'Không xác định';
-  return ORDER_STATUS_LABELS[status] || status.replace(/_/g, ' ');
+  if (!status) return 'Không xác định'
+  return ORDER_STATUS_LABELS[status] || status.replace(/_/g, ' ')
 }
 
 export function getOrderStatusBadgeClass(status?: string | null): string {
@@ -30,20 +30,20 @@ export function getOrderStatusBadgeClass(status?: string | null): string {
     case 'PAID':
     case 'DELIVERED':
     case 'QUALITY_APPROVED':
-      return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200'
     case 'SHIPPING':
     case 'SHIPPING_TO_WAREHOUSE':
-      return 'bg-blue-50 text-blue-700 border-blue-200';
+      return 'bg-blue-50 text-blue-700 border-blue-200'
     case 'PENDING':
     case 'AWAITING_CONFIRMATION':
     case 'PREPARING':
     case 'QUALITY_CHECKING':
-      return 'bg-amber-50 text-amber-700 border-amber-200';
+      return 'bg-amber-50 text-amber-700 border-amber-200'
     case 'CANCELLED':
     case 'FAILED':
     case 'QUALITY_REJECTED':
-      return 'bg-rose-50 text-rose-700 border-rose-200';
+      return 'bg-rose-50 text-rose-700 border-rose-200'
     default:
-      return 'bg-gray-100 text-gray-700 border-gray-200';
+      return 'bg-gray-100 text-gray-700 border-gray-200'
   }
 }

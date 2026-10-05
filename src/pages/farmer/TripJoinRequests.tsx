@@ -1,8 +1,8 @@
-import React from 'react';
-import { ChefHat, Truck } from 'lucide-react';
+import React from 'react'
+import { ChefHat, Truck } from 'lucide-react'
 
 interface TripJoinRequestsProps {
-  onInfo?: (msg: string) => void;
+  onInfo?: (msg: string) => void
 }
 
 export default function TripJoinRequests({ onInfo }: TripJoinRequestsProps) {
@@ -39,5 +39,5 @@ export default function TripJoinRequests({ onInfo }: TripJoinRequestsProps) {
         </button>
       </div>
     </div>
-  );
+  )
 }

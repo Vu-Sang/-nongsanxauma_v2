@@ -1,15 +1,15 @@
-import type { ReactNode } from 'react';
-import { AlertTriangle, Leaf, RefreshCw } from 'lucide-react';
-import { cn } from '../../lib/cn';
-import { Button } from './Button';
+import type { ReactNode } from 'react'
+import { AlertTriangle, Leaf, RefreshCw } from 'lucide-react'
+import { cn } from '../../lib/cn'
+import { Button } from './Button'
 
 type StateViewProps = {
-  title: string;
-  description?: ReactNode;
-  icon?: ReactNode;
-  action?: ReactNode;
-  className?: string;
-};
+  title: string
+  description?: ReactNode
+  icon?: ReactNode
+  action?: ReactNode
+  className?: string
+}
 
 function StateFrame({
   title,
@@ -42,12 +42,12 @@ function StateFrame({
       {description && <p className="max-w-sm text-sm text-ink-muted">{description}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
-  );
+  )
 }
 
 /** Danh sách rỗng: luôn nói rõ vì sao rỗng và cho người dùng một hành động tiếp theo. */
 export function EmptyState({ icon = <Leaf size={32} />, ...props }: StateViewProps) {
-  return <StateFrame {...props} icon={icon} tone="neutral" role="status" />;
+  return <StateFrame {...props} icon={icon} tone="neutral" role="status" />
 }
 
 /** Lỗi tải dữ liệu: có nút "Thử lại" thay vì chỉ in dòng chữ đỏ. */
@@ -67,11 +67,15 @@ export function ErrorState({
       role="alert"
       action={
         onRetry && (
-          <Button variant="secondary" onClick={onRetry} leftIcon={<RefreshCw size={16} aria-hidden />}>
+          <Button
+            variant="secondary"
+            onClick={onRetry}
+            leftIcon={<RefreshCw size={16} aria-hidden />}
+          >
             Thử lại
           </Button>
         )
       }
     />
-  );
+  )
 }

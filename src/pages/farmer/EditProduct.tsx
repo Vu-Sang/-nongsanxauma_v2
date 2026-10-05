@@ -1,32 +1,32 @@
-import React, { useState, type FormEvent } from 'react';
-import { Edit3, X } from 'lucide-react';
-import type { FarmerProduct } from './types';
+import React, { useState, type FormEvent } from 'react'
+import { Edit3, X } from 'lucide-react'
+import type { FarmerProduct } from './types'
 
 interface EditProductProps {
-  product?: FarmerProduct | null;
-  onSave: (updated: FarmerProduct) => void;
-  onClose: () => void;
-  onInfo?: (msg: string) => void;
+  product?: FarmerProduct | null
+  onSave: (updated: FarmerProduct) => void
+  onClose: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function EditProduct({ product, onSave, onClose, onInfo }: EditProductProps) {
-  const [name, setName] = useState(product?.name || '');
-  const [price, setPrice] = useState(product?.price?.toString() || '');
-  const [stock, setStock] = useState(product?.stock?.toString() || '');
+  const [name, setName] = useState(product?.name || '')
+  const [price, setPrice] = useState(product?.price?.toString() || '')
+  const [stock, setStock] = useState(product?.stock?.toString() || '')
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!product) return;
+    e.preventDefault()
+    if (!product) return
     const updated: FarmerProduct = {
       ...product,
       name,
       price: Number(price) || product.price,
       stock: Number(stock) || product.stock,
-    };
-    onSave(updated);
-    onClose();
-    onInfo?.(`Đã cập nhật sản phẩm: ${updated.name}`);
-  };
+    }
+    onSave(updated)
+    onClose()
+    onInfo?.(`Đã cập nhật sản phẩm: ${updated.name}`)
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -83,5 +83,5 @@ export default function EditProduct({ product, onSave, onClose, onInfo }: EditPr
         </form>
       </div>
     </div>
-  );
+  )
 }

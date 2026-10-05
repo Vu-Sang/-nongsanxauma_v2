@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
-import {
-  Package,
-  ShoppingCart,
-  Building2,
-  Plus,
-  ShoppingBag,
-} from 'lucide-react';
-import type { FarmerProduct, FarmerOrder } from './types';
+import React, { useState } from 'react'
+import { Package, ShoppingCart, Building2, Plus, ShoppingBag } from 'lucide-react'
+import type { FarmerProduct, FarmerOrder } from './types'
 
 interface DashboardProps {
-  products: FarmerProduct[];
-  orders: FarmerOrder[];
-  onNavigate: (tab: string) => void;
-  onOpenAddProduct: () => void;
+  products: FarmerProduct[]
+  orders: FarmerOrder[]
+  onNavigate: (tab: string) => void
+  onOpenAddProduct: () => void
 }
 
 export default function Dashboard({
@@ -21,15 +15,18 @@ export default function Dashboard({
   onNavigate,
   onOpenAddProduct,
 }: DashboardProps) {
-  const [productTab, setProductTab] = useState<'NONG_SAN' | 'BLIND_BOX'>('NONG_SAN');
+  const [productTab, setProductTab] = useState<'NONG_SAN' | 'BLIND_BOX'>('NONG_SAN')
 
-  const blindBoxes = products.filter((p) => p.category === 'Hộp mù');
-  const freshProducts = products.filter((p) => p.category === 'Nông sản');
+  const blindBoxes = products.filter((p) => p.category === 'Hộp mù')
+  const freshProducts = products.filter((p) => p.category === 'Nông sản')
 
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* 4 KPI Cards Grid */}
-      <div id="tour-overview-stats" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        id="tour-overview-stats"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         {/* 1. Tổng đơn hàng */}
         <div className="bg-white rounded-3xl p-5 border border-[#e8ece3] shadow-sm flex flex-col justify-between">
           <div className="text-[11px] font-bold text-[#7e8779] uppercase tracking-wider">
@@ -85,7 +82,10 @@ export default function Dashboard({
       {/* Main 2-Column Grid: Products Table + Orders Widget */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left 2 Columns: Quản Lý Sản Phẩm */}
-        <div id="tour-overview-products" className="lg:col-span-2 bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-5">
+        <div
+          id="tour-overview-products"
+          className="lg:col-span-2 bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-5"
+        >
           <div className="flex items-center justify-between pb-3 border-b border-[#f1f4ed]">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-[#326318]/10 flex items-center justify-center text-[#326318]">
@@ -241,7 +241,10 @@ export default function Dashboard({
         </div>
 
         {/* Right Column: Quản Lý Đơn Hàng */}
-        <div id="tour-overview-orders" className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-5">
+        <div
+          id="tour-overview-orders"
+          className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-5"
+        >
           <div className="flex items-center gap-2 pb-3 border-b border-[#f1f4ed]">
             <div className="w-8 h-8 rounded-xl bg-[#326318]/10 flex items-center justify-center text-[#326318]">
               <ShoppingCart size={18} />
@@ -299,7 +302,10 @@ export default function Dashboard({
       </div>
 
       {/* Bottom Card: Chi Tiết Tài Chính */}
-      <div id="tour-overview-finance-cards" className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4">
+      <div
+        id="tour-overview-finance-cards"
+        className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4"
+      >
         <div className="flex items-center justify-between pb-3 border-b border-[#f1f4ed]">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-[#326318]/10 flex items-center justify-center text-[#326318]">
@@ -327,18 +333,22 @@ export default function Dashboard({
           </div>
 
           <div className="p-4 rounded-2xl bg-[#fdfaf3] border border-[#f3e6cf]">
-            <span className="text-[11px] font-bold text-[#8a4e1d] uppercase">Đang Chờ Quyết Toán</span>
+            <span className="text-[11px] font-bold text-[#8a4e1d] uppercase">
+              Đang Chờ Quyết Toán
+            </span>
             <div className="text-2xl font-black text-[#8a4e1d] mt-1">2.450.000 đ</div>
             <span className="text-[10px] text-[#86927f]">3 đơn hàng đang vận chuyển</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-[#f5f8fc] border border-[#d6e3f5]">
-            <span className="text-[11px] font-bold text-[#2d5c99] uppercase">Tổng Doanh Thu Tháng</span>
+            <span className="text-[11px] font-bold text-[#2d5c99] uppercase">
+              Tổng Doanh Thu Tháng
+            </span>
             <div className="text-2xl font-black text-[#2d5c99] mt-1">38.920.000 đ</div>
             <span className="text-[10px] text-[#86927f]">Đã giải cứu 1.250 kg nông sản</span>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

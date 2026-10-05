@@ -18,20 +18,20 @@ import {
   User,
   Truck,
   CheckCircle2,
-} from 'lucide-react';
-import { useState, useRef, useEffect, type FormEvent } from 'react';
-import type { AuthUser } from '../pages/AuthPage';
-import freshPromoImg from '../assets/fresh-veg-promo.png';
-import mysteryPromoImg from '../assets/mystery-box-promo.png';
+} from 'lucide-react'
+import { useState, useRef, useEffect, type FormEvent } from 'react'
+import type { AuthUser } from '../pages/AuthPage'
+import freshPromoImg from '../assets/fresh-veg-promo.png'
+import mysteryPromoImg from '../assets/mystery-box-promo.png'
 
 interface HeaderProps {
-  route: string;
-  count: number;
-  user?: AuthUser | null;
-  onLogout?: () => void;
-  onSearch: (s: string) => void;
-  onCart: () => void;
-  onInfo: (s: string) => void;
+  route: string
+  count: number
+  user?: AuthUser | null
+  onLogout?: () => void
+  onSearch: (s: string) => void
+  onCart: () => void
+  onInfo: (s: string) => void
 }
 
 export default function Header({
@@ -43,90 +43,100 @@ export default function Header({
   onCart,
   onInfo,
 }: HeaderProps) {
-  const [query, setQuery] = useState('');
-  const [openMobile, setOpenMobile] = useState(false);
-  const [mobileSubMenu, setMobileSubMenu] = useState<'fresh' | 'combo' | null>(null);
-  const [activeDropdown, setActiveDropdown] = useState<'fresh' | 'combo' | null>(null);
-  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
-  const timeoutRef = useRef<number | null>(null);
-  const accountRef = useRef<HTMLDivElement | null>(null);
+  const [query, setQuery] = useState('')
+  const [openMobile, setOpenMobile] = useState(false)
+  const [mobileSubMenu, setMobileSubMenu] = useState<'fresh' | 'combo' | null>(null)
+  const [activeDropdown, setActiveDropdown] = useState<'fresh' | 'combo' | null>(null)
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const timeoutRef = useRef<number | null>(null)
+  const accountRef = useRef<HTMLDivElement | null>(null)
 
   // Close account menu on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
-        setAccountMenuOpen(false);
+        setAccountMenuOpen(false)
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleMouseEnter = (menu: 'fresh' | 'combo') => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setActiveDropdown(menu);
-  };
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setActiveDropdown(menu)
+  }
 
   const handleMouseLeave = () => {
     timeoutRef.current = window.setTimeout(() => {
-      setActiveDropdown(null);
-    }, 160);
-  };
+      setActiveDropdown(null)
+    }, 160)
+  }
 
   const closeDropdown = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setActiveDropdown(null);
-    setOpenMobile(false);
-    setAccountMenuOpen(false);
-  };
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setActiveDropdown(null)
+    setOpenMobile(false)
+    setAccountMenuOpen(false)
+  }
 
   const handleSelectCategory = (term: string, targetPath: string = '/nong-san-tuoi') => {
-    closeDropdown();
-    onSearch(term);
+    closeDropdown()
+    onSearch(term)
     if (location.hash !== `#${targetPath}`) {
-      location.hash = targetPath;
-    }
-  };
-
-  function submit(e: FormEvent) {
-    e.preventDefault();
-    onSearch(query);
-    closeDropdown();
-    if (!route.startsWith('/nong-san-tuoi')) {
-      location.hash = '/nong-san-tuoi';
+      location.hash = targetPath
     }
   }
 
-  const isFreshActive = route.startsWith('/nong-san-tuoi');
-  const isComboActive = route.startsWith('/combo-tui-mu');
-  const isAiActive = route.startsWith('/cong-nghe-ai');
-  const isFarmerActive = route.startsWith('/cau-chuyen-nong-dan');
-  const isAuthActive = route.startsWith('/dang-nhap') || route.startsWith('/dang-ky') || route.startsWith('/login') || route.startsWith('/register');
-  const isHomeActive = route === '/' || route === '';
+  function submit(e: FormEvent) {
+    e.preventDefault()
+    onSearch(query)
+    closeDropdown()
+    if (!route.startsWith('/nong-san-tuoi')) {
+      location.hash = '/nong-san-tuoi'
+    }
+  }
+
+  const isFreshActive = route.startsWith('/nong-san-tuoi')
+  const isComboActive = route.startsWith('/combo-tui-mu')
+  const isAiActive = route.startsWith('/cong-nghe-ai')
+  const isFarmerActive = route.startsWith('/cau-chuyen-nong-dan')
+  const isAuthActive =
+    route.startsWith('/dang-nhap') ||
+    route.startsWith('/dang-ky') ||
+    route.startsWith('/login') ||
+    route.startsWith('/register')
+  const isHomeActive = route === '/' || route === ''
 
   const getRoleBadge = (role: string) => {
     switch (role) {
       case 'buyer':
-        return { label: 'Khách Mua', bg: 'bg-[#eaf5e1] text-[#2c5f11]', border: 'border-[#b9e49c]' };
+        return { label: 'Khách Mua', bg: 'bg-[#eaf5e1] text-[#2c5f11]', border: 'border-[#b9e49c]' }
       case 'shop':
-        return { label: 'Nhà Vườn', bg: 'bg-[#fdf3e7] text-[#824413]', border: 'border-[#f3cc9f]' };
+        return { label: 'Nhà Vườn', bg: 'bg-[#fdf3e7] text-[#824413]', border: 'border-[#f3cc9f]' }
       case 'shipper':
-        return { label: 'Tài Xế', bg: 'bg-[#e9f6f7] text-[#195962]', border: 'border-[#b1dfe4]' };
+        return { label: 'Tài Xế', bg: 'bg-[#e9f6f7] text-[#195962]', border: 'border-[#b1dfe4]' }
       case 'admin':
-        return { label: 'Admin', bg: 'bg-[#f9edf9] text-[#79247d]', border: 'border-[#ebc5eb]' };
+        return { label: 'Admin', bg: 'bg-[#f9edf9] text-[#79247d]', border: 'border-[#ebc5eb]' }
       case 'staff':
-        return { label: 'Staff', bg: 'bg-[#eef2f8] text-[#2c4772]', border: 'border-[#cddbf0]' };
+        return { label: 'Staff', bg: 'bg-[#eef2f8] text-[#2c4772]', border: 'border-[#cddbf0]' }
       default:
-        return { label: 'Thành viên', bg: 'bg-[#eaf5e1] text-[#2c5f11]', border: 'border-[#b9e49c]' };
+        return {
+          label: 'Thành viên',
+          bg: 'bg-[#eaf5e1] text-[#2c5f11]',
+          border: 'border-[#b9e49c]',
+        }
     }
-  };
+  }
 
   return (
     <header className="site-header relative z-50">
       {/* Main Header Row */}
       <div className="page-container header-main">
         <a href="#/" className="brand" aria-label="CapNong – Trang chủ" onClick={closeDropdown}>
-          <span className="brand-leaf"><Leaf size={29} /></span>
+          <span className="brand-leaf">
+            <Leaf size={29} />
+          </span>
           <span>
             <strong>CapNong</strong>
             <small>Nông sản xấu mã – Ngon thật</small>
@@ -193,7 +203,9 @@ export default function Header({
                   <span className="text-xs font-bold text-[#1f241a] leading-tight max-w-[110px] truncate">
                     {user.name}
                   </span>
-                  <span className={`text-[10px] font-semibold px-1.5 rounded-full w-fit ${getRoleBadge(user.role).bg}`}>
+                  <span
+                    className={`text-[10px] font-semibold px-1.5 rounded-full w-fit ${getRoleBadge(user.role).bg}`}
+                  >
                     {getRoleBadge(user.role).label}
                   </span>
                 </div>
@@ -302,8 +314,8 @@ export default function Header({
                       <button
                         type="button"
                         onClick={() => {
-                          closeDropdown();
-                          onInfo(`Hồ sơ ${user.name} (${getRoleBadge(user.role).label})`);
+                          closeDropdown()
+                          onInfo(`Hồ sơ ${user.name} (${getRoleBadge(user.role).label})`)
                         }}
                         className="w-full text-left py-2 px-3 rounded-xl hover:bg-[#f3eee2] text-[#333a2d] font-semibold flex items-center gap-2"
                       >
@@ -325,8 +337,8 @@ export default function Header({
                       <button
                         type="button"
                         onClick={() => {
-                          closeDropdown();
-                          onLogout?.();
+                          closeDropdown()
+                          onLogout?.()
                         }}
                         className="w-full text-left py-2 px-3 rounded-xl hover:bg-red-50 text-red-600 font-bold flex items-center gap-2"
                       >
@@ -412,10 +424,7 @@ export default function Header({
       </div>
 
       {/* Original Cream Navigation Bar with Hover Dropdown */}
-      <div
-        className="nav-bar relative"
-        onMouseLeave={handleMouseLeave}
-      >
+      <div className="nav-bar relative" onMouseLeave={handleMouseLeave}>
         <div className="page-container nav-inner">
           <nav aria-label="Điều hướng chính" className="hidden lg:flex items-center gap-1.5">
             {/* 1. Trang chủ */}
@@ -429,10 +438,7 @@ export default function Header({
             </a>
 
             {/* 2. Nông sản tươi (Hover trigger) */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleMouseEnter('fresh')}
-            >
+            <div className="relative" onMouseEnter={() => handleMouseEnter('fresh')}>
               <a
                 href="#/nong-san-tuoi"
                 className={`nav-pill ${isFreshActive ? 'is-active' : ''} ${
@@ -452,10 +458,7 @@ export default function Header({
             </div>
 
             {/* 3. Combo & Túi mù (Hover trigger) */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleMouseEnter('combo')}
-            >
+            <div className="relative" onMouseEnter={() => handleMouseEnter('combo')}>
               <a
                 href="#/combo-tui-mu"
                 className={`nav-pill ${isComboActive ? 'is-active' : ''} ${
@@ -687,7 +690,11 @@ export default function Header({
 
                   {/* Background Cutout Image */}
                   <div className="absolute right-0 -bottom-4 w-32 h-32 opacity-25 pointer-events-none">
-                    <img src={freshPromoImg} alt="Rau củ tươi" className="w-full h-full object-contain" />
+                    <img
+                      src={freshPromoImg}
+                      alt="Rau củ tươi"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                 </div>
               </div>
@@ -796,7 +803,10 @@ export default function Header({
                         <li key={idx}>
                           <button
                             type="button"
-                            onClick={() => { closeDropdown(); onInfo(item.action); }}
+                            onClick={() => {
+                              closeDropdown()
+                              onInfo(item.action)
+                            }}
                             className="text-left text-[#384133] hover:text-[#8a4e1d] hover:translate-x-1 font-medium transition-all block py-0.5"
                           >
                             {item.name}
@@ -806,7 +816,10 @@ export default function Header({
                       <li className="pt-1">
                         <button
                           type="button"
-                          onClick={() => { closeDropdown(); onInfo('Tư vấn chọn combo'); }}
+                          onClick={() => {
+                            closeDropdown()
+                            onInfo('Tư vấn chọn combo')
+                          }}
                           className="text-[11px] font-bold text-[#8a4e1d] hover:underline flex items-center gap-1"
                         >
                           <span>Nhận tư vấn combo</span>
@@ -846,7 +859,11 @@ export default function Header({
 
                   {/* Background Cutout Image */}
                   <div className="absolute right-0 -bottom-4 w-32 h-32 opacity-25 pointer-events-none">
-                    <img src={mysteryPromoImg} alt="Túi Mù" className="w-full h-full object-contain" />
+                    <img
+                      src={mysteryPromoImg}
+                      alt="Túi Mù"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
                 </div>
               </div>
@@ -890,17 +907,59 @@ export default function Header({
               <div className="pl-4 pr-2 py-3 flex flex-col gap-2 bg-[#f0ece1] rounded-2xl my-1.5 text-xs">
                 <span className="font-bold text-primary uppercase text-[10px]">Rau Ăn Lá:</span>
                 <div className="grid grid-cols-2 gap-1.5 text-[#384133]">
-                  <button onClick={() => handleSelectCategory('Cải bó xôi')} className="text-left py-1 hover:text-primary">Cải bó xôi</button>
-                  <button onClick={() => handleSelectCategory('Bắp cải')} className="text-left py-1 hover:text-primary">Bắp cải xanh</button>
-                  <button onClick={() => handleSelectCategory('Rau mồng tơi')} className="text-left py-1 hover:text-primary">Rau mồng tơi</button>
-                  <button onClick={() => handleSelectCategory('Xà lách')} className="text-left py-1 hover:text-primary">Xà lách Đà Lạt</button>
+                  <button
+                    onClick={() => handleSelectCategory('Cải bó xôi')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Cải bó xôi
+                  </button>
+                  <button
+                    onClick={() => handleSelectCategory('Bắp cải')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Bắp cải xanh
+                  </button>
+                  <button
+                    onClick={() => handleSelectCategory('Rau mồng tơi')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Rau mồng tơi
+                  </button>
+                  <button
+                    onClick={() => handleSelectCategory('Xà lách')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Xà lách Đà Lạt
+                  </button>
                 </div>
-                <span className="font-bold text-primary uppercase text-[10px] mt-2">Củ Quả &amp; Trái Cây:</span>
+                <span className="font-bold text-primary uppercase text-[10px] mt-2">
+                  Củ Quả &amp; Trái Cây:
+                </span>
                 <div className="grid grid-cols-2 gap-1.5 text-[#384133]">
-                  <button onClick={() => handleSelectCategory('Cà rốt')} className="text-left py-1 hover:text-primary">Cà rốt 2 nhánh</button>
-                  <button onClick={() => handleSelectCategory('Khoai lang')} className="text-left py-1 hover:text-primary">Khoai lang mật</button>
-                  <button onClick={() => handleSelectCategory('Bưởi')} className="text-left py-1 hover:text-primary">Bưởi da xanh</button>
-                  <button onClick={() => handleSelectCategory('Cà chua')} className="text-left py-1 hover:text-primary">Cà chua bi</button>
+                  <button
+                    onClick={() => handleSelectCategory('Cà rốt')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Cà rốt 2 nhánh
+                  </button>
+                  <button
+                    onClick={() => handleSelectCategory('Khoai lang')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Khoai lang mật
+                  </button>
+                  <button
+                    onClick={() => handleSelectCategory('Bưởi')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Bưởi da xanh
+                  </button>
+                  <button
+                    onClick={() => handleSelectCategory('Cà chua')}
+                    className="text-left py-1 hover:text-primary"
+                  >
+                    Cà chua bi
+                  </button>
                 </div>
                 <a
                   href="#/nong-san-tuoi"
@@ -932,10 +991,30 @@ export default function Header({
             </button>
             {mobileSubMenu === 'combo' && (
               <div className="pl-4 pr-2 py-3 flex flex-col gap-2 bg-[#f0ece1] rounded-2xl my-1.5 text-xs">
-                <button onClick={() => handleSelectCategory('mystery', '/combo-tui-mu')} className="text-left py-1 hover:text-[#8a4e1d]">🎁 Túi Mù Thần Bí 5kg (79k)</button>
-                <button onClick={() => handleSelectCategory('green', '/combo-tui-mu')} className="text-left py-1 hover:text-[#8a4e1d]">🥬 Combo Rau Xanh 5 Bữa (139k)</button>
-                <button onClick={() => handleSelectCategory('kitchen', '/combo-tui-mu')} className="text-left py-1 hover:text-[#8a4e1d]">🥕 Thùng Bếp Xanh 10kg (199k)</button>
-                <button onClick={() => handleSelectCategory('hotpot', '/combo-tui-mu')} className="text-left py-1 hover:text-[#8a4e1d]">🍲 Combo Tiệc Lẩu &amp; Nướng (119k)</button>
+                <button
+                  onClick={() => handleSelectCategory('mystery', '/combo-tui-mu')}
+                  className="text-left py-1 hover:text-[#8a4e1d]"
+                >
+                  🎁 Túi Mù Thần Bí 5kg (79k)
+                </button>
+                <button
+                  onClick={() => handleSelectCategory('green', '/combo-tui-mu')}
+                  className="text-left py-1 hover:text-[#8a4e1d]"
+                >
+                  🥬 Combo Rau Xanh 5 Bữa (139k)
+                </button>
+                <button
+                  onClick={() => handleSelectCategory('kitchen', '/combo-tui-mu')}
+                  className="text-left py-1 hover:text-[#8a4e1d]"
+                >
+                  🥕 Thùng Bếp Xanh 10kg (199k)
+                </button>
+                <button
+                  onClick={() => handleSelectCategory('hotpot', '/combo-tui-mu')}
+                  className="text-left py-1 hover:text-[#8a4e1d]"
+                >
+                  🍲 Combo Tiệc Lẩu &amp; Nướng (119k)
+                </button>
                 <a
                   href="#/combo-tui-mu"
                   onClick={closeDropdown}
@@ -981,7 +1060,10 @@ export default function Header({
                 </div>
                 <button
                   type="button"
-                  onClick={() => { closeDropdown(); onLogout?.(); }}
+                  onClick={() => {
+                    closeDropdown()
+                    onLogout?.()
+                  }}
                   className="px-3 py-1.5 rounded-xl bg-red-100 text-red-700 font-bold text-xs hover:bg-red-200"
                 >
                   Đăng xuất
@@ -1009,5 +1091,5 @@ export default function Header({
         </div>
       )}
     </header>
-  );
+  )
 }

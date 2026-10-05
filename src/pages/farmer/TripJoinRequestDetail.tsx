@@ -1,8 +1,8 @@
-import React from 'react';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import React from 'react'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 interface TripJoinRequestDetailProps {
-  onBack: () => void;
+  onBack: () => void
 }
 
 export default function TripJoinRequestDetail({ onBack }: TripJoinRequestDetailProps) {
@@ -19,11 +19,20 @@ export default function TripJoinRequestDetail({ onBack }: TripJoinRequestDetailP
         <h3 className="text-xl font-black text-[#1c2216]">Chi Tiết Yêu Cầu Ghép Chuyến</h3>
       </div>
       <div className="p-4 rounded-2xl bg-[#fafcf9] text-xs space-y-2 border border-[#e5edd9]">
-        <div><strong>Hộ nông dân:</strong> Vườn Rau Hữu Cơ Xuân Thọ</div>
-        <div><strong>Khối lượng:</strong> 350 kg</div>
-        <div><strong>Nông sản:</strong> Cà chua + Xà lách</div>
-        <div><strong>Trạng thái:</strong> <span className="text-[#326318] font-bold">Đã tiếp nhận</span></div>
+        <div>
+          <strong>Hộ nông dân:</strong> Vườn Rau Hữu Cơ Xuân Thọ
+        </div>
+        <div>
+          <strong>Khối lượng:</strong> 350 kg
+        </div>
+        <div>
+          <strong>Nông sản:</strong> Cà chua + Xà lách
+        </div>
+        <div>
+          <strong>Trạng thái:</strong>{' '}
+          <span className="text-[#326318] font-bold">Đã tiếp nhận</span>
+        </div>
       </div>
     </div>
-  );
+  )
 }

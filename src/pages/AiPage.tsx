@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Sparkles,
   Camera,
@@ -18,25 +18,25 @@ import {
   HeartHandshake,
   Layers,
   ChevronRight,
-} from 'lucide-react';
+} from 'lucide-react'
 
-import aiVisionImg from '../assets/ai-vision.jpg';
-import aiMealImg from '../assets/ai-meal.jpg';
-import aiFarmerImg from '../assets/ai-farmer.jpg';
-import aiCarrotImg from '../assets/ai-box-carrot.jpg';
-import aiCabbageImg from '../assets/ai-box-cabbage.jpg';
-import aiLettuceImg from '../assets/ai-box-lettuce.jpg';
+import aiVisionImg from '../assets/ai-vision.jpg'
+import aiMealImg from '../assets/ai-meal.jpg'
+import aiFarmerImg from '../assets/ai-farmer.jpg'
+import aiCarrotImg from '../assets/ai-box-carrot.jpg'
+import aiCabbageImg from '../assets/ai-box-cabbage.jpg'
+import aiLettuceImg from '../assets/ai-box-lettuce.jpg'
 
-import aiHeroBanner from '../assets/ai-hero-banner.jpg';
+import aiHeroBanner from '../assets/ai-hero-banner.jpg'
 
 interface AiPageProps {
-  onInfo?: (msg: string) => void;
+  onInfo?: (msg: string) => void
 }
 
 export default function AiPage({ onInfo }: AiPageProps) {
   // Vision Demo State
-  const [selectedScan, setSelectedScan] = useState(0);
-  const [isScanning, setIsScanning] = useState(false);
+  const [selectedScan, setSelectedScan] = useState(0)
+  const [isScanning, setIsScanning] = useState(false)
 
   const VISION_SAMPLES = [
     {
@@ -72,10 +72,12 @@ export default function AiPage({ onInfo }: AiPageProps) {
       bestFor: 'Salad sốt mè, cuốn bánh tráng',
       image: aiLettuceImg,
     },
-  ];
+  ]
 
   // Chef Demo State
-  const [activeDiet, setActiveDiet] = useState<'eatclean' | 'family' | 'detox' | 'vegan'>('eatclean');
+  const [activeDiet, setActiveDiet] = useState<'eatclean' | 'family' | 'detox' | 'vegan'>(
+    'eatclean',
+  )
 
   const CHEF_PREVIEWS = {
     eatclean: {
@@ -110,15 +112,15 @@ export default function AiPage({ onInfo }: AiPageProps) {
       items: ['Nấm đùi gà', 'Bắp cải xoăn', 'Cà rốt', 'Cải thảo hữu cơ'],
       tip: 'Nước dùng ngọt thanh 100% từ rau củ tự nhiên không cần hạt nêm.',
     },
-  };
+  }
 
   const handleScanChange = (idx: number) => {
-    setIsScanning(true);
-    setSelectedScan(idx);
+    setIsScanning(true)
+    setSelectedScan(idx)
     setTimeout(() => {
-      setIsScanning(false);
-    }, 450);
-  };
+      setIsScanning(false)
+    }, 450)
+  }
 
   return (
     <div className="w-full bg-[#fdfaf3] text-[#1f241a]">
@@ -144,7 +146,8 @@ export default function AiPage({ onInfo }: AiPageProps) {
           </h1>
 
           <p className="text-xs sm:text-sm md:text-base text-white/85 font-normal max-w-xl mx-auto leading-relaxed drop-shadow">
-            Minh bạch 100% chất lượng nông sản, hỗ trợ định giá tự động và gợi ý thực đơn thông minh cho mọi gia đình.
+            Minh bạch 100% chất lượng nông sản, hỗ trợ định giá tự động và gợi ý thực đơn thông minh
+            cho mọi gia đình.
           </p>
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-white/90 font-medium mt-1 shadow-sm">
@@ -172,7 +175,8 @@ export default function AiPage({ onInfo }: AiPageProps) {
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[#586052] max-w-md">
-              Chụp ảnh rau củ để AI tự động phân tích độ tươi ngon, bóc tách khuyết tật hình thái và định giá giảm trực tiếp 40% – 60%.
+              Chụp ảnh rau củ để AI tự động phân tích độ tươi ngon, bóc tách khuyết tật hình thái và
+              định giá giảm trực tiếp 40% – 60%.
             </p>
           </div>
 
@@ -243,9 +247,7 @@ export default function AiPage({ onInfo }: AiPageProps) {
                       <div className="font-black text-xs sm:text-sm text-[#1c2216]">
                         {item.name}
                       </div>
-                      <div className="text-[11px] text-[#6d7567] mt-0.5">
-                        {item.vitamin}
-                      </div>
+                      <div className="text-[11px] text-[#6d7567] mt-0.5">{item.vitamin}</div>
                     </div>
                     <span className="px-2.5 py-1 rounded-full bg-[#eaf5e1] text-[#2c5f11] font-black text-xs">
                       {item.discount}
@@ -297,7 +299,8 @@ export default function AiPage({ onInfo }: AiPageProps) {
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[#586052] max-w-md">
-              Tự động gợi ý các món ăn Eat Clean và mâm cơm gia đình chuẩn calo từ những loại rau củ đang cần giải cứu trong ngày.
+              Tự động gợi ý các món ăn Eat Clean và mâm cơm gia đình chuẩn calo từ những loại rau củ
+              đang cần giải cứu trong ngày.
             </p>
           </div>
 
@@ -312,12 +315,14 @@ export default function AiPage({ onInfo }: AiPageProps) {
 
               {/* 4 Diet Options */}
               <div className="grid grid-cols-2 gap-2">
-                {([
-                  { id: 'eatclean', label: '🥗 Eat Clean Chuẩn Dáng' },
-                  { id: 'family', label: '🍲 Mâm Cơm Gia Đình' },
-                  { id: 'detox', label: '🥤 Nước Ép Detox Sáng' },
-                  { id: 'vegan', label: '🧘 Thực Dưỡng Chay' },
-                ] as const).map((diet) => (
+                {(
+                  [
+                    { id: 'eatclean', label: '🥗 Eat Clean Chuẩn Dáng' },
+                    { id: 'family', label: '🍲 Mâm Cơm Gia Đình' },
+                    { id: 'detox', label: '🥤 Nước Ép Detox Sáng' },
+                    { id: 'vegan', label: '🧘 Thực Dưỡng Chay' },
+                  ] as const
+                ).map((diet) => (
                   <button
                     key={diet.id}
                     type="button"
@@ -346,11 +351,15 @@ export default function AiPage({ onInfo }: AiPageProps) {
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2.5 rounded-xl bg-white border border-[#eedec8]">
-                    <span className="text-[10px] text-[#71796b] block font-medium">Thời gian chuẩn bị:</span>
+                    <span className="text-[10px] text-[#71796b] block font-medium">
+                      Thời gian chuẩn bị:
+                    </span>
                     <strong className="text-[#20271c]">{CHEF_PREVIEWS[activeDiet].time}</strong>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-[#eedec8]">
-                    <span className="text-[10px] text-[#71796b] block font-medium">Chi phí nguyên liệu:</span>
+                    <span className="text-[10px] text-[#71796b] block font-medium">
+                      Chi phí nguyên liệu:
+                    </span>
                     <strong className="text-[#326318]">{CHEF_PREVIEWS[activeDiet].cost}</strong>
                   </div>
                 </div>
@@ -405,7 +414,8 @@ export default function AiPage({ onInfo }: AiPageProps) {
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[#586052] max-w-md">
-              Nông dân chỉ cần chụp 1 tấm ảnh tại ruộng, hệ thống AI sẽ tự động tạo bài đăng, cấp mã VietGAP và phân phối xe giao hàng tận vườn.
+              Nông dân chỉ cần chụp 1 tấm ảnh tại ruộng, hệ thống AI sẽ tự động tạo bài đăng, cấp mã
+              VietGAP và phân phối xe giao hàng tận vườn.
             </p>
           </div>
 
@@ -421,7 +431,8 @@ export default function AiPage({ onInfo }: AiPageProps) {
               <div>
                 <h3 className="text-base font-black text-[#1c2216]">Chụp Ảnh Tại Luống</h3>
                 <p className="text-xs text-[#525a4d] mt-1 leading-relaxed">
-                  AI nhận diện giống rau củ, ước lượng sản lượng cần xuất vườn và tình trạng độ chín.
+                  AI nhận diện giống rau củ, ước lượng sản lượng cần xuất vườn và tình trạng độ
+                  chín.
                 </p>
               </div>
               <div className="text-[11px] font-bold text-[#2d6f78]">Thời gian: 5 giây</div>
@@ -437,7 +448,8 @@ export default function AiPage({ onInfo }: AiPageProps) {
               <div>
                 <h3 className="text-base font-black text-[#1c2216]">AI Viết Bài &amp; Định Giá</h3>
                 <p className="text-xs text-[#525a4d] mt-1 leading-relaxed">
-                  Tự động gắn mã chuẩn VietGAP, tạo mô tả hấp dẫn và tính giá thu mua công bằng cho nông dân.
+                  Tự động gắn mã chuẩn VietGAP, tạo mô tả hấp dẫn và tính giá thu mua công bằng cho
+                  nông dân.
                 </p>
               </div>
               <div className="text-[11px] font-bold text-[#2d6f78]">Thời gian: 15 giây</div>
@@ -453,7 +465,8 @@ export default function AiPage({ onInfo }: AiPageProps) {
               <div>
                 <h3 className="text-base font-black text-[#1c2216]">Điều Xe Giao Tận Ruộng</h3>
                 <p className="text-xs text-[#525a4d] mt-1 leading-relaxed">
-                  Hệ thống phân bổ đơn cho tài xế xe lạnh gần nhất để nhận nông sản chuyển về thành phố trong 2–4 giờ.
+                  Hệ thống phân bổ đơn cho tài xế xe lạnh gần nhất để nhận nông sản chuyển về thành
+                  phố trong 2–4 giờ.
                 </p>
               </div>
               <div className="text-[11px] font-bold text-[#2d6f78]">Thời gian: 10 giây</div>
@@ -463,8 +476,12 @@ export default function AiPage({ onInfo }: AiPageProps) {
           {/* Direct CTA Bar */}
           <div className="p-6 rounded-3xl bg-gradient-to-r from-[#2d6f78] to-[#1c555d] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
             <div>
-              <h3 className="text-lg sm:text-xl font-black text-white">Bạn là Nhà Vườn / Nông Trại Cần Giải Cứu Nông Sản?</h3>
-              <p className="text-xs text-white/80 mt-0.5">Đăng ký tham gia mạng lưới CapNong hoàn toàn 0đ phí sàn tháng đầu tiên.</p>
+              <h3 className="text-lg sm:text-xl font-black text-white">
+                Bạn là Nhà Vườn / Nông Trại Cần Giải Cứu Nông Sản?
+              </h3>
+              <p className="text-xs text-white/80 mt-0.5">
+                Đăng ký tham gia mạng lưới CapNong hoàn toàn 0đ phí sàn tháng đầu tiên.
+              </p>
             </div>
             <a
               href="#/dang-ky?role=shop"
@@ -476,5 +493,5 @@ export default function AiPage({ onInfo }: AiPageProps) {
         </div>
       </section>
     </div>
-  );
+  )
 }

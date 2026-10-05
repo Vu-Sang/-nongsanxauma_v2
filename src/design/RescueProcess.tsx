@@ -5,7 +5,9 @@ export default function RescueProcess({ onInfo }: { onInfo: (title: string) => v
         {/* Header */}
         <div className="rescue-header">
           <span className="rescue-eyebrow">Trải nghiệm đơn giản &amp; an tâm</span>
-          <h2 id="quy-trinh-title" className="rescue-title">Quy trình giải cứu 4 bước minh bạch</h2>
+          <h2 id="quy-trinh-title" className="rescue-title">
+            Quy trình giải cứu 4 bước minh bạch
+          </h2>
           <p className="rescue-desc">
             Từ một nông sản chưa đạt chuẩn hình thức đến bữa ăn ngon lành trên bàn của bạn.
           </p>
@@ -32,7 +34,9 @@ export default function RescueProcess({ onInfo }: { onInfo: (title: string) => v
           </li>
 
           {/* Arrow 1 */}
-          <li className="rescue-arrow" aria-hidden="true">→</li>
+          <li className="rescue-arrow" aria-hidden="true">
+            →
+          </li>
 
           {/* Step 2 */}
           <li className="rescue-step">
@@ -52,7 +56,9 @@ export default function RescueProcess({ onInfo }: { onInfo: (title: string) => v
           </li>
 
           {/* Arrow 2 */}
-          <li className="rescue-arrow" aria-hidden="true">→</li>
+          <li className="rescue-arrow" aria-hidden="true">
+            →
+          </li>
 
           {/* Step 3 */}
           <li className="rescue-step">
@@ -71,7 +77,9 @@ export default function RescueProcess({ onInfo }: { onInfo: (title: string) => v
           </li>
 
           {/* Arrow 3 */}
-          <li className="rescue-arrow" aria-hidden="true">→</li>
+          <li className="rescue-arrow" aria-hidden="true">
+            →
+          </li>
 
           {/* Step 4 */}
           <li className="rescue-step">
@@ -95,5 +103,5 @@ export default function RescueProcess({ onInfo }: { onInfo: (title: string) => v
         </ol>
       </div>
     </section>
-  );
+  )
 }

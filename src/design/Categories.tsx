@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react'
 
 export default function Categories() {
   return (
@@ -8,7 +8,9 @@ export default function Categories() {
         <div className="cat-header">
           <div>
             <span className="cat-eyebrow">Phân loại phong phú</span>
-            <h2 id="danh-muc-title" className="cat-title">Khám phá theo danh mục nông sản</h2>
+            <h2 id="danh-muc-title" className="cat-title">
+              Khám phá theo danh mục nông sản
+            </h2>
           </div>
           <a className="cat-link-all" href="#/nong-san-tuoi">
             <span>Xem tất cả phân loại</span>
@@ -87,5 +89,5 @@ export default function Categories() {
         </div>
       </div>
     </section>
-  );
+  )
 }

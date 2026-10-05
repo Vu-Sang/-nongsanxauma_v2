@@ -18,20 +18,20 @@ export const BlogCategoryLabel: Record<string, string> = {
   [BlogCategory.CAM_NANG]: 'Cẩm nang nhà nông',
   [BlogCategory.NHA_NONG]: 'Chuyện nhà nông',
   [BlogCategory.XU_HUONG]: 'Xu hướng tiêu dùng xanh',
-};
+}
 
 export interface PageResponse<T> {
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-  content: T[];
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  first: boolean
+  last: boolean
+  content: T[]
 }
 
 export interface ApiResponse<T> {
-  code?: number;
-  message?: string;
-  result?: T;
+  code?: number
+  message?: string
+  result?: T
 }

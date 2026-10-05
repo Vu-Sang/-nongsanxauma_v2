@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Sparkles, X, BookOpen, ChevronRight, Check } from 'lucide-react';
+import { useState, useEffect } from 'react'
+import { Sparkles, X, BookOpen, ChevronRight, Check } from 'lucide-react'
 
 export interface OnboardingStep {
-  tabId: string;
-  badge: string;
-  title: string;
-  desc: string;
-  detail: string;
+  tabId: string
+  badge: string
+  title: string
+  desc: string
+  detail: string
 }
 
 export const TOUR_STEPS: OnboardingStep[] = [
@@ -15,14 +15,16 @@ export const TOUR_STEPS: OnboardingStep[] = [
     badge: 'MỤC 1/8 – 📊 TỔNG QUAN',
     title: '📊 Tổng quan',
     desc: 'Đây là trang chủ của bạn. Xem doanh thu, đơn hàng mới và các thống kê quan trọng tại đây.',
-    detail: 'Theo dõi 4 chỉ số KPI quan trọng, danh sách sản phẩm đang bán và quản lý các đơn hàng mới nhất.',
+    detail:
+      'Theo dõi 4 chỉ số KPI quan trọng, danh sách sản phẩm đang bán và quản lý các đơn hàng mới nhất.',
   },
   {
     tabId: 'revenue-report',
     badge: 'MỤC 2/8 – 📈 BÁO CÁO DOANH THU',
     title: '📈 Báo cáo doanh thu',
     desc: 'Xem biểu đồ doanh thu theo tuần, tháng và tổng số lượng nông sản bạn đã giải cứu thành công.',
-    detail: 'Biểu đồ dòng tiền minh bạch, thống kê tỷ lệ hoàn thành đơn hàng và xếp hạng sản phẩm bán chạy.',
+    detail:
+      'Biểu đồ dòng tiền minh bạch, thống kê tỷ lệ hoàn thành đơn hàng và xếp hạng sản phẩm bán chạy.',
   },
   {
     tabId: 'products',
@@ -57,7 +59,8 @@ export const TOUR_STEPS: OnboardingStep[] = [
     badge: 'MỤC 7/8 – 💬 ĐÁNH GIÁ',
     title: '💬 Đánh giá từ khách hàng',
     desc: 'Xem điểm chất lượng và lời cảm ơn, đánh giá từ người tiêu dùng sau khi nhận nông sản tươi.',
-    detail: 'Duy trì đánh giá 5 sao giúp gian hàng của bạn được CapNong ưu tiên hiển thị đầu trang.',
+    detail:
+      'Duy trì đánh giá 5 sao giúp gian hàng của bạn được CapNong ưu tiên hiển thị đầu trang.',
   },
   {
     tabId: 'wallet',
@@ -66,15 +69,15 @@ export const TOUR_STEPS: OnboardingStep[] = [
     desc: 'Doanh thu bán nông sản tự động giải ngân sau 24h khi khách nhận hàng. Rút tiền về ngân hàng tức thì.',
     detail: 'Không giam vốn, quyết toán nhanh chóng và minh bạch về tài khoản ngân hàng của bạn.',
   },
-];
+]
 
-const STORAGE_KEY = 'capnong_farmer_tour_done';
+const STORAGE_KEY = 'capnong_farmer_tour_done'
 
 interface OnboardingTourProps {
-  currentTab: string;
-  isOpen: boolean;
-  onNavigate: (tabId: string) => void;
-  onCloseTour: () => void;
+  currentTab: string
+  isOpen: boolean
+  onNavigate: (tabId: string) => void
+  onCloseTour: () => void
 }
 
 export default function OnboardingTour({
@@ -83,52 +86,52 @@ export default function OnboardingTour({
   onNavigate,
   onCloseTour,
 }: OnboardingTourProps) {
-  const [currentStepIdx, setCurrentStepIdx] = useState(0);
-  const [showDetail, setShowDetail] = useState(false);
+  const [currentStepIdx, setCurrentStepIdx] = useState(0)
+  const [showDetail, setShowDetail] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
-      setCurrentStepIdx(0);
-      setShowDetail(false);
-      onNavigate(TOUR_STEPS[0].tabId);
+      setCurrentStepIdx(0)
+      setShowDetail(false)
+      onNavigate(TOUR_STEPS[0].tabId)
     }
-  }, [isOpen]);
+  }, [isOpen])
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
-  const step = TOUR_STEPS[currentStepIdx];
-  const isLastStep = currentStepIdx === TOUR_STEPS.length - 1;
+  const step = TOUR_STEPS[currentStepIdx]
+  const isLastStep = currentStepIdx === TOUR_STEPS.length - 1
 
   const handleNext = () => {
     if (isLastStep) {
-      handleSkip();
+      handleSkip()
     } else {
-      const nextIdx = currentStepIdx + 1;
-      setCurrentStepIdx(nextIdx);
-      setShowDetail(false);
-      onNavigate(TOUR_STEPS[nextIdx].tabId);
+      const nextIdx = currentStepIdx + 1
+      setCurrentStepIdx(nextIdx)
+      setShowDetail(false)
+      onNavigate(TOUR_STEPS[nextIdx].tabId)
     }
-  };
+  }
 
   const handleSkip = () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
-    onCloseTour();
-  };
+    localStorage.setItem(STORAGE_KEY, 'true')
+    onCloseTour()
+  }
 
   // Calculate approximate top offset for popover based on step index (each sidebar button is ~48px tall)
-  const topPositions = [95, 142, 190, 238, 286, 334, 430, 560];
-  const currentTop = topPositions[currentStepIdx] || 120;
+  const topPositions = [95, 142, 190, 238, 286, 334, 430, 560]
+  const currentTop = topPositions[currentStepIdx] || 120
 
   return (
     <div className="fixed inset-0 z-50 pointer-events-none">
       {/* Semi-transparent dark overlay */}
-      <div 
+      <div
         onClick={handleSkip}
-        className="absolute inset-0 bg-black/35 backdrop-blur-[1px] pointer-events-auto transition-opacity duration-300" 
+        className="absolute inset-0 bg-black/35 backdrop-blur-[1px] pointer-events-auto transition-opacity duration-300"
       />
 
       {/* Floating Tour Popover Box positioned next to Sidebar */}
-      <div 
+      <div
         style={{ top: `${currentTop}px` }}
         className="absolute left-[295px] pointer-events-auto z-50 animate-fadeIn transition-all duration-300"
       >
@@ -176,8 +179,8 @@ export default function OnboardingTour({
                   idx === currentStepIdx
                     ? 'w-7 bg-[#326318]'
                     : idx < currentStepIdx
-                    ? 'w-2 bg-[#8da77c]'
-                    : 'w-2 bg-[#e4e8df]'
+                      ? 'w-2 bg-[#8da77c]'
+                      : 'w-2 bg-[#e4e8df]'
                 }`}
               />
             ))}
@@ -198,8 +201,8 @@ export default function OnboardingTour({
                 type="button"
                 onClick={() => setShowDetail(!showDetail)}
                 className={`px-3.5 py-2 rounded-2xl border text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                  showDetail 
-                    ? 'bg-[#326318]/10 border-[#326318] text-[#326318]' 
+                  showDetail
+                    ? 'bg-[#326318]/10 border-[#326318] text-[#326318]'
                     : 'border-[#d8decb] hover:bg-[#f4f7f1] text-[#326318]'
                 }`}
               >
@@ -220,5 +223,5 @@ export default function OnboardingTour({
         </div>
       </div>
     </div>
-  );
+  )
 }

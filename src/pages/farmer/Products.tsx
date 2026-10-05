@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Plus, Search, Edit3, Trash2, Tag, Gift, Leaf } from 'lucide-react';
-import type { FarmerProduct } from './types';
+import React, { useState } from 'react'
+import { Plus, Search, Edit3, Trash2, Tag, Gift, Leaf } from 'lucide-react'
+import type { FarmerProduct } from './types'
 
 interface ProductsProps {
-  products: FarmerProduct[];
-  onOpenAddProduct: () => void;
-  onOpenBlindBoxTool: () => void;
-  onOpenComboBuilder: () => void;
-  onInfo?: (msg: string) => void;
+  products: FarmerProduct[]
+  onOpenAddProduct: () => void
+  onOpenBlindBoxTool: () => void
+  onOpenComboBuilder: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function Products({
@@ -17,16 +17,16 @@ export default function Products({
   onOpenComboBuilder,
   onInfo,
 }: ProductsProps) {
-  const [activeTab, setActiveTab] = useState<'NONG_SAN' | 'BLIND_BOX' | 'COMBO'>('NONG_SAN');
-  const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState<'NONG_SAN' | 'BLIND_BOX' | 'COMBO'>('NONG_SAN')
+  const [search, setSearch] = useState('')
 
   const filtered = products.filter((p) => {
-    if (activeTab === 'NONG_SAN' && p.category !== 'Nông sản') return false;
-    if (activeTab === 'BLIND_BOX' && p.category !== 'Hộp mù') return false;
-    if (activeTab === 'COMBO' && p.category !== 'Combo') return false;
-    if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+    if (activeTab === 'NONG_SAN' && p.category !== 'Nông sản') return false
+    if (activeTab === 'BLIND_BOX' && p.category !== 'Hộp mù') return false
+    if (activeTab === 'COMBO' && p.category !== 'Combo') return false
+    if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false
+    return true
+  })
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -64,15 +64,16 @@ export default function Products({
 
       {/* Filter Tabs & Search */}
       <div className="bg-white rounded-3xl border border-[#e8ece3] shadow-sm overflow-hidden">
-        <div id="tour-products-filter-bar" className="p-4 border-b border-[#f1f4ed] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div
+          id="tour-products-filter-bar"
+          className="p-4 border-b border-[#f1f4ed] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+        >
           <div id="tour-products-tabs" className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setActiveTab('NONG_SAN')}
               className={`px-4 py-2 rounded-xl text-xs font-extrabold cursor-pointer transition-all ${
-                activeTab === 'NONG_SAN'
-                  ? 'bg-[#326318] text-white'
-                  : 'bg-[#f4f7f1] text-[#5b6454]'
+                activeTab === 'NONG_SAN' ? 'bg-[#326318] text-white' : 'bg-[#f4f7f1] text-[#5b6454]'
               }`}
             >
               Nông Sản Tươi ({products.filter((p) => p.category === 'Nông sản').length})
@@ -132,8 +133,8 @@ export default function Products({
                     <span className="text-[10px] text-[#326318] font-bold">🟢 {p.status}</span>
                   </div>
 
-                  <div 
-                    id={idx === 0 ? "tour-products-action-btns" : undefined}
+                  <div
+                    id={idx === 0 ? 'tour-products-action-btns' : undefined}
                     className="flex items-center gap-2"
                   >
                     <button
@@ -155,5 +156,5 @@ export default function Products({
         </div>
       </div>
     </div>
-  );
+  )
 }

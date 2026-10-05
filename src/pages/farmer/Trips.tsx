@@ -1,11 +1,11 @@
-import React from 'react';
-import { Plus, MapPin, Truck } from 'lucide-react';
-import type { FarmerTrip } from './types';
+import React from 'react'
+import { Plus, MapPin, Truck } from 'lucide-react'
+import type { FarmerTrip } from './types'
 
 interface TripsProps {
-  trips: FarmerTrip[];
-  onOpenCreateTrip: () => void;
-  onInfo?: (msg: string) => void;
+  trips: FarmerTrip[]
+  onOpenCreateTrip: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function Trips({ trips, onOpenCreateTrip, onInfo }: TripsProps) {
@@ -13,7 +13,9 @@ export default function Trips({ trips, onOpenCreateTrip, onInfo }: TripsProps) {
     <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center justify-between pb-4 border-b border-[#f1f4ed]">
         <div>
-          <h3 className="text-2xl font-black text-[#1c2216]">Chuyến Xe Chở Nông Sản Tới Kho Tổng</h3>
+          <h3 className="text-2xl font-black text-[#1c2216]">
+            Chuyến Xe Chở Nông Sản Tới Kho Tổng
+          </h3>
           <p className="text-xs text-[#7e8779]">
             Lên lịch chuyến vận chuyển rau củ về kho tập kết kiểm định AI
           </p>
@@ -65,5 +67,5 @@ export default function Trips({ trips, onOpenCreateTrip, onInfo }: TripsProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }

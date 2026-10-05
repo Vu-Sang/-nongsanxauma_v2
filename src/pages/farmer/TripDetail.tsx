@@ -1,10 +1,10 @@
-import React from 'react';
-import { ArrowLeft, Truck, MapPin, CheckCircle2 } from 'lucide-react';
-import type { FarmerTrip } from './types';
+import React from 'react'
+import { ArrowLeft, Truck, MapPin, CheckCircle2 } from 'lucide-react'
+import type { FarmerTrip } from './types'
 
 interface TripDetailProps {
-  trip?: FarmerTrip | null;
-  onBack: () => void;
+  trip?: FarmerTrip | null
+  onBack: () => void
 }
 
 export default function TripDetail({ trip, onBack }: TripDetailProps) {
@@ -20,7 +20,9 @@ export default function TripDetail({ trip, onBack }: TripDetailProps) {
         </button>
         <div>
           <h3 className="text-xl font-black text-[#1c2216]">Chi Tiết Chuyến Xe Vận Chuyển</h3>
-          <span className="text-xs text-[#326318] font-bold">Mã chuyến: {trip?.id || 'TRIP-0104'}</span>
+          <span className="text-xs text-[#326318] font-bold">
+            Mã chuyến: {trip?.id || 'TRIP-0104'}
+          </span>
         </div>
       </div>
 
@@ -30,11 +32,21 @@ export default function TripDetail({ trip, onBack }: TripDetailProps) {
             Lộ Trình &amp; Thời Gian:
           </div>
           <div className="space-y-1 text-[#384131]">
-            <div><strong>Điểm đi:</strong> {trip?.origin || 'Vườn Cầu Đất, TP. Đà Lạt'}</div>
-            <div><strong>Điểm đến:</strong> {trip?.destination || 'Kho Tổng CapNong TP.HCM'}</div>
-            <div><strong>Khởi hành:</strong> {trip?.departureTime || '18:00 Hôm nay'}</div>
-            <div><strong>Phương tiện:</strong> {trip?.vehicle || 'Xe tải lạnh 49A-342.18'}</div>
-            <div><strong>Trọng lượng:</strong> {trip?.weight || '850 kg'}</div>
+            <div>
+              <strong>Điểm đi:</strong> {trip?.origin || 'Vườn Cầu Đất, TP. Đà Lạt'}
+            </div>
+            <div>
+              <strong>Điểm đến:</strong> {trip?.destination || 'Kho Tổng CapNong TP.HCM'}
+            </div>
+            <div>
+              <strong>Khởi hành:</strong> {trip?.departureTime || '18:00 Hôm nay'}
+            </div>
+            <div>
+              <strong>Phương tiện:</strong> {trip?.vehicle || 'Xe tải lạnh 49A-342.18'}
+            </div>
+            <div>
+              <strong>Trọng lượng:</strong> {trip?.weight || '850 kg'}
+            </div>
           </div>
         </div>
 
@@ -46,5 +58,5 @@ export default function TripDetail({ trip, onBack }: TripDetailProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

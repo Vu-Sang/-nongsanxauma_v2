@@ -1,11 +1,11 @@
-import React from 'react';
-import { Plus, Gift } from 'lucide-react';
-import type { FarmerVoucher } from './types';
+import React from 'react'
+import { Plus, Gift } from 'lucide-react'
+import type { FarmerVoucher } from './types'
 
 interface VouchersProps {
-  vouchers: FarmerVoucher[];
-  onOpenCreateVoucher: () => void;
-  onInfo?: (msg: string) => void;
+  vouchers: FarmerVoucher[]
+  onOpenCreateVoucher: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function Vouchers({ vouchers, onOpenCreateVoucher }: VouchersProps) {
@@ -13,7 +13,9 @@ export default function Vouchers({ vouchers, onOpenCreateVoucher }: VouchersProp
     <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center justify-between pb-4 border-b border-[#f1f4ed]">
         <div>
-          <h3 className="text-2xl font-black text-[#1c2216]">Mã Giảm Giá &amp; Khuyến Mãi Của Shop</h3>
+          <h3 className="text-2xl font-black text-[#1c2216]">
+            Mã Giảm Giá &amp; Khuyến Mãi Của Shop
+          </h3>
           <p className="text-xs text-[#7e8779]">Tạo mã giảm giá kích cầu giải cứu nông sản</p>
         </div>
 
@@ -51,5 +53,5 @@ export default function Vouchers({ vouchers, onOpenCreateVoucher }: VouchersProp
         ))}
       </div>
     </div>
-  );
+  )
 }

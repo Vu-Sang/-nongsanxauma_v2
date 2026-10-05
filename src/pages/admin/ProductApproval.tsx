@@ -1,106 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { Check, X, Eye, ArrowLeft, AlertCircle, Loader2, RefreshCw, Package, Star } from 'lucide-react';
-import { productService, ProductResponse, ProductImageResponse } from '../../services';
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext';
-import { getErrorMessage } from '../../lib/errors';
+import React, { useState, useEffect } from 'react'
+import {
+  Check,
+  X,
+  Eye,
+  ArrowLeft,
+  AlertCircle,
+  Loader2,
+  RefreshCw,
+  Package,
+  Star,
+} from 'lucide-react'
+import { productService, ProductResponse, ProductImageResponse } from '../../services'
+import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+import { getErrorMessage } from '../../lib/errors'
 
 const ProductApproval: React.FC = () => {
-  const [products, setProducts] = useState<ProductResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<ProductResponse | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const [rejectingProductId, setRejectingProductId] = useState<number | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [galleryImages, setGalleryImages] = useState<ProductImageResponse[]>([]);
-  const [galleryLoading, setGalleryLoading] = useState(false);
-  const [previewIdx, setPreviewIdx] = useState(0);
+  const [products, setProducts] = useState<ProductResponse[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<ProductResponse | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
+  const [showRejectModal, setShowRejectModal] = useState(false)
+  const [rejectingProductId, setRejectingProductId] = useState<number | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [galleryImages, setGalleryImages] = useState<ProductImageResponse[]>([])
+  const [galleryLoading, setGalleryLoading] = useState(false)
+  const [previewIdx, setPreviewIdx] = useState(0)
 
   const fetchProducts = async () => {
     try {
-      setIsLoading(true);
-      setError(null);
-      const response = await productService.getPendingProducts();
-      if (response.result) setProducts(response.result);
+      setIsLoading(true)
+      setError(null)
+      const response = await productService.getPendingProducts()
+      if (response.result) setProducts(response.result)
     } catch (err) {
-      console.error('Failed to fetch pending products', err);
-      setError('Mất kết nối tải dữ liệu. Vui lòng thử lại sau.');
+      console.error('Failed to fetch pending products', err)
+      setError('Mất kết nối tải dữ liệu. Vui lòng thử lại sau.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => {
+    fetchProducts()
+  }, [])
 
   // Load gallery khi admin mở xem chi tiết sản phẩm
   useEffect(() => {
-    if (!selectedProduct) { setGalleryImages([]); setPreviewIdx(0); return; }
-    setGalleryLoading(true);
-    productService.getImages(selectedProduct.id)
-      .then(res => {
+    if (!selectedProduct) {
+      setGalleryImages([])
+      setPreviewIdx(0)
+      return
+    }
+    setGalleryLoading(true)
+    productService
+      .getImages(selectedProduct.id)
+      .then((res) => {
         const imgs = (res.result ?? []).slice().sort((a, b) => {
-          if (a.isPrimary) return -1;
-          if (b.isPrimary) return 1;
-          return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
-        });
-        setGalleryImages(imgs);
-        setPreviewIdx(0);
+          if (a.isPrimary) return -1
+          if (b.isPrimary) return 1
+          return (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
+        })
+        setGalleryImages(imgs)
+        setPreviewIdx(0)
       })
       .catch(() => setGalleryImages([]))
-      .finally(() => setGalleryLoading(false));
-  }, [selectedProduct?.id]);
+      .finally(() => setGalleryLoading(false))
+  }, [selectedProduct?.id])
 
   const handleApprove = async (product: ProductResponse) => {
-    if (!await globalShowConfirm(`Duyệt sản phẩm "${product.productName}"?`)) return;
+    if (!(await globalShowConfirm(`Duyệt sản phẩm "${product.productName}"?`))) return
     try {
-      setIsProcessing(true);
-      await productService.approveProduct(product.id);
-      globalShowAlert(`Đã duyệt sản phẩm "${product.productName}"`, 'Thành công', 'success');
-      setSelectedProduct(null);
-      fetchProducts();
+      setIsProcessing(true)
+      await productService.approveProduct(product.id)
+      globalShowAlert(`Đã duyệt sản phẩm "${product.productName}"`, 'Thành công', 'success')
+      setSelectedProduct(null)
+      fetchProducts()
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Có lỗi khi duyệt sản phẩm'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Có lỗi khi duyệt sản phẩm'), 'Lỗi', 'error')
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
   const confirmReject = async () => {
     if (!rejectReason.trim()) {
-      globalShowAlert('Vui lòng nhập lý do từ chối', 'Lỗi', 'error');
-      return;
+      globalShowAlert('Vui lòng nhập lý do từ chối', 'Lỗi', 'error')
+      return
     }
-    if (!rejectingProductId) return;
+    if (!rejectingProductId) return
     try {
-      setIsProcessing(true);
-      await productService.rejectProduct(rejectingProductId, rejectReason);
-      globalShowAlert(`Đã từ chối sản phẩm #${rejectingProductId}`, 'Thành công', 'success');
-      setShowRejectModal(false);
-      setRejectReason('');
-      setRejectingProductId(null);
-      setSelectedProduct(null);
-      fetchProducts();
+      setIsProcessing(true)
+      await productService.rejectProduct(rejectingProductId, rejectReason)
+      globalShowAlert(`Đã từ chối sản phẩm #${rejectingProductId}`, 'Thành công', 'success')
+      setShowRejectModal(false)
+      setRejectReason('')
+      setRejectingProductId(null)
+      setSelectedProduct(null)
+      fetchProducts()
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Có lỗi khi từ chối sản phẩm'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Có lỗi khi từ chối sản phẩm'), 'Lỗi', 'error')
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
-  const filtered = products.filter(p =>
-    p.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.id.toString().includes(searchQuery)
-  );
+  const filtered = products.filter(
+    (p) =>
+      p.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.id.toString().includes(searchQuery),
+  )
 
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[600px] gap-4">
         <Loader2 className="size-10 text-primary animate-spin" />
-        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Đang tải danh sách chờ duyệt...</p>
+        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">
+          Đang tải danh sách chờ duyệt...
+        </p>
       </div>
-    );
+    )
   }
 
   if (selectedProduct) {
@@ -115,7 +135,9 @@ const ProductApproval: React.FC = () => {
           </button>
           <div>
             <h2 className="text-3xl font-black font-display text-gray-900">Chi Tiết Sản Phẩm</h2>
-            <p className="text-gray-400 font-medium text-sm mt-1">Duyệt hoặc từ chối sản phẩm này</p>
+            <p className="text-gray-400 font-medium text-sm mt-1">
+              Duyệt hoặc từ chối sản phẩm này
+            </p>
           </div>
         </div>
 
@@ -153,7 +175,9 @@ const ProductApproval: React.FC = () => {
                           key={img.id}
                           onClick={() => setPreviewIdx(idx)}
                           className={`relative size-14 rounded-xl overflow-hidden border-2 transition-all ${
-                            idx === previewIdx ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
+                            idx === previewIdx
+                              ? 'border-primary'
+                              : 'border-transparent opacity-60 hover:opacity-100'
                           }`}
                         >
                           <img src={img.imageUrl} alt="" className="w-full h-full object-cover" />
@@ -176,17 +200,24 @@ const ProductApproval: React.FC = () => {
               )}
               <div className="space-y-3">
                 <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-100">
-                  <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-1">TRẠNG THÁI</p>
+                  <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-1">
+                    TRẠNG THÁI
+                  </p>
                   <p className="text-sm font-black text-yellow-700">Chờ duyệt</p>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">ID SẢN PHẨM</p>
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">
+                    ID SẢN PHẨM
+                  </p>
                   <p className="text-sm font-bold text-gray-900">#{selectedProduct.id}</p>
                 </div>
                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">SHOP</p>
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">
+                    SHOP
+                  </p>
                   <p className="text-sm font-bold text-gray-900">
-                    {selectedProduct.shopName || `#${selectedProduct.shopOwnerId || selectedProduct.shopId || '?'}`}
+                    {selectedProduct.shopName ||
+                      `#${selectedProduct.shopOwnerId || selectedProduct.shopId || '?'}`}
                   </p>
                 </div>
               </div>
@@ -198,43 +229,84 @@ const ProductApproval: React.FC = () => {
               <h3 className="text-xl font-black text-gray-900 mb-6">Thông Tin Sản Phẩm</h3>
               <div className="space-y-5">
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Tên sản phẩm</label>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">
+                    Tên sản phẩm
+                  </label>
                   <p className="text-lg font-black text-gray-900">{selectedProduct.productName}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Giá bán</label>
-                    {selectedProduct.discountPercent != null && selectedProduct.discountPercent > 0 ? (
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">
+                      Giá bán
+                    </label>
+                    {selectedProduct.discountPercent != null &&
+                    selectedProduct.discountPercent > 0 ? (
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-red-500 line-through font-semibold">{(selectedProduct.sellingPrice || 0).toLocaleString('vi-VN')}đ</span>
-                          <span className="bg-primary text-white text-[9px] font-black px-2 py-0.5 rounded-full">-{selectedProduct.discountPercent}%</span>
+                          <span className="text-sm text-red-500 line-through font-semibold">
+                            {(selectedProduct.sellingPrice || 0).toLocaleString('vi-VN')}đ
+                          </span>
+                          <span className="bg-primary text-white text-[9px] font-black px-2 py-0.5 rounded-full">
+                            -{selectedProduct.discountPercent}%
+                          </span>
                         </div>
                         <p className="text-lg font-black text-primary">
-                          {(selectedProduct.salePrice ?? Math.round(((selectedProduct.pricePerKg ?? selectedProduct.sellingPrice) || 0) * (1 - selectedProduct.discountPercent / 100))).toLocaleString('vi-VN')}đ / kg
+                          {(
+                            selectedProduct.salePrice ??
+                            Math.round(
+                              ((selectedProduct.pricePerKg ?? selectedProduct.sellingPrice) || 0) *
+                                (1 - selectedProduct.discountPercent / 100),
+                            )
+                          ).toLocaleString('vi-VN')}
+                          đ / kg
                         </p>
                         {selectedProduct.discountEndDate && (
-                          <p className="text-[10px] text-primary font-bold">Còn đến {new Date(selectedProduct.discountEndDate).toLocaleDateString('vi-VN')}</p>
+                          <p className="text-[10px] text-primary font-bold">
+                            Còn đến{' '}
+                            {new Date(selectedProduct.discountEndDate).toLocaleDateString('vi-VN')}
+                          </p>
                         )}
                       </div>
                     ) : (
-                      <p className="text-lg font-black text-primary">{((selectedProduct.pricePerKg ?? selectedProduct.sellingPrice) || 0).toLocaleString('vi-VN')}đ / kg</p>
+                      <p className="text-lg font-black text-primary">
+                        {(
+                          (selectedProduct.pricePerKg ?? selectedProduct.sellingPrice) ||
+                          0
+                        ).toLocaleString('vi-VN')}
+                        đ / kg
+                      </p>
                     )}
                   </div>
                   <div>
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Tồn kho</label>
-                    <p className="text-lg font-black text-gray-900">{((selectedProduct.stockKg ?? selectedProduct.stockQuantity ?? selectedProduct.stock) || 0).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} kg</p>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">
+                      Tồn kho
+                    </label>
+                    <p className="text-lg font-black text-gray-900">
+                      {(
+                        (selectedProduct.stockKg ??
+                          selectedProduct.stockQuantity ??
+                          selectedProduct.stock) ||
+                        0
+                      ).toLocaleString('vi-VN', { maximumFractionDigits: 2 })}{' '}
+                      kg
+                    </p>
                   </div>
                 </div>
                 {selectedProduct.expiryDate && (
                   <div>
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Hạn sử dụng</label>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">
+                      Hạn sử dụng
+                    </label>
                     <p className="text-sm font-bold text-gray-900">{selectedProduct.expiryDate}</p>
                   </div>
                 )}
                 <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Mô tả</label>
-                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedProduct.description || '—'}</p>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 block">
+                    Mô tả
+                  </label>
+                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+                    {selectedProduct.description || '—'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -247,12 +319,19 @@ const ProductApproval: React.FC = () => {
                   onClick={() => handleApprove(selectedProduct)}
                   className="flex-1 px-6 py-4 bg-emerald-50 text-emerald-600 text-sm font-black rounded-2xl uppercase tracking-widest hover:bg-emerald-100 transition-colors flex items-center justify-center gap-3 border border-emerald-200 disabled:opacity-50"
                 >
-                  {isProcessing ? <Loader2 className="size-5 animate-spin" /> : <Check className="size-5" />}
+                  {isProcessing ? (
+                    <Loader2 className="size-5 animate-spin" />
+                  ) : (
+                    <Check className="size-5" />
+                  )}
                   Duyệt Sản Phẩm
                 </button>
                 <button
                   disabled={isProcessing}
-                  onClick={() => { setRejectingProductId(selectedProduct.id); setShowRejectModal(true); }}
+                  onClick={() => {
+                    setRejectingProductId(selectedProduct.id)
+                    setShowRejectModal(true)
+                  }}
                   className="flex-1 px-6 py-4 bg-red-50 text-red-600 text-sm font-black rounded-2xl uppercase tracking-widest hover:bg-red-100 transition-colors flex items-center justify-center gap-3 border border-red-200 disabled:opacity-50"
                 >
                   <X className="size-5" /> Từ Chối
@@ -262,7 +341,7 @@ const ProductApproval: React.FC = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -271,7 +350,9 @@ const ProductApproval: React.FC = () => {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-[32px] shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200">
             <h3 className="text-2xl font-black text-gray-900 mb-2">Lý Do Từ Chối</h3>
-            <p className="text-sm text-gray-400 mb-6">Nông dân sẽ nhận được thông báo kèm lý do này.</p>
+            <p className="text-sm text-gray-400 mb-6">
+              Nông dân sẽ nhận được thông báo kèm lý do này.
+            </p>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
@@ -282,7 +363,11 @@ const ProductApproval: React.FC = () => {
             <div className="flex gap-3">
               <button
                 disabled={isProcessing}
-                onClick={() => { setShowRejectModal(false); setRejectReason(''); setRejectingProductId(null); }}
+                onClick={() => {
+                  setShowRejectModal(false)
+                  setRejectReason('')
+                  setRejectingProductId(null)
+                }}
                 className="flex-1 py-4 bg-gray-50 text-gray-600 text-sm font-black rounded-2xl hover:bg-gray-100 transition-colors disabled:opacity-50"
               >
                 Hủy
@@ -292,7 +377,11 @@ const ProductApproval: React.FC = () => {
                 onClick={confirmReject}
                 className="flex-[2] py-4 bg-red-600 text-white text-sm font-black rounded-2xl hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {isProcessing ? <Loader2 className="size-4 animate-spin" /> : <X className="size-4" />}
+                {isProcessing ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <X className="size-4" />
+                )}
                 Xác Nhận Từ Chối
               </button>
             </div>
@@ -304,13 +393,17 @@ const ProductApproval: React.FC = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-black font-display text-gray-900">Duyệt Sản Phẩm</h2>
-            <p className="text-gray-400 font-medium text-sm mt-1">Các sản phẩm nông dân đăng lên đang chờ phê duyệt.</p>
+            <p className="text-gray-400 font-medium text-sm mt-1">
+              Các sản phẩm nông dân đăng lên đang chờ phê duyệt.
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="bg-yellow-50 border border-yellow-100 px-5 py-3 rounded-2xl flex items-center gap-3">
               <Package className="size-5 text-yellow-600" />
               <div>
-                <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">Chờ duyệt</p>
+                <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest">
+                  Chờ duyệt
+                </p>
                 <p className="text-xl font-black text-gray-900">{products.length}</p>
               </div>
             </div>
@@ -343,11 +436,21 @@ const ProductApproval: React.FC = () => {
             <table className="w-full text-left">
               <thead className="bg-gray-50/50">
                 <tr>
-                  <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Sản phẩm</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Shop</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Giá / Tồn kho</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Hạn SD</th>
-                  <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Thao tác</th>
+                  <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Sản phẩm
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Shop
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">
+                    Giá / Tồn kho
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Hạn SD
+                  </th>
+                  <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">
+                    Thao tác
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -355,81 +458,111 @@ const ProductApproval: React.FC = () => {
                   <tr>
                     <td colSpan={5} className="px-8 py-16 text-center">
                       <Package className="size-12 text-gray-200 mx-auto mb-4" />
-                      <p className="text-gray-400 font-bold text-sm">Không có sản phẩm nào đang chờ duyệt.</p>
+                      <p className="text-gray-400 font-bold text-sm">
+                        Không có sản phẩm nào đang chờ duyệt.
+                      </p>
                     </td>
                   </tr>
-                ) : filtered.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50/30 transition-colors">
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-4">
-                        <img
-                          src={product.imageUrl || 'https://picsum.photos/seed/product/80/80'}
-                          className="size-12 rounded-xl object-cover border border-gray-100 bg-gray-50"
-                          alt={product.productName}
-                        />
-                        <div>
-                          <p className="text-sm font-black text-gray-900 line-clamp-1 max-w-[200px]">{product.productName}</p>
-                          <p className="text-[10px] text-gray-400 font-bold">ID: {product.id}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="text-sm font-bold text-gray-700">
-                        {product.shopName || `Shop #${product.shopOwnerId || product.shopId || '?'}`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5 text-center">
-                      {product.discountPercent != null && product.discountPercent > 0 ? (
-                        <div className="flex flex-col items-center gap-0.5">
-                          <div className="flex items-center gap-1">
-                            <span className="text-xs text-red-500 line-through font-semibold">{(product.sellingPrice || 0).toLocaleString('vi-VN')}đ</span>
-                            <span className="bg-primary text-white text-[8px] font-black px-1 py-0.5 rounded-full">-{product.discountPercent}%</span>
+                ) : (
+                  filtered.map((product) => (
+                    <tr key={product.id} className="hover:bg-gray-50/30 transition-colors">
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={product.imageUrl || 'https://picsum.photos/seed/product/80/80'}
+                            className="size-12 rounded-xl object-cover border border-gray-100 bg-gray-50"
+                            alt={product.productName}
+                          />
+                          <div>
+                            <p className="text-sm font-black text-gray-900 line-clamp-1 max-w-[200px]">
+                              {product.productName}
+                            </p>
+                            <p className="text-[10px] text-gray-400 font-bold">ID: {product.id}</p>
                           </div>
-                          <p className="text-sm font-black text-primary">
-                            {(product.salePrice ?? Math.round((product.sellingPrice || 0) * (1 - product.discountPercent / 100))).toLocaleString('vi-VN')}đ
-                          </p>
                         </div>
-                      ) : (
-                        <p className="text-sm font-black text-primary">{(product.sellingPrice || 0).toLocaleString('vi-VN')}đ</p>
-                      )}
-                      <p className="text-[10px] text-gray-400">{((product.stockKg ?? product.stockQuantity ?? product.stock) || 0).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} kg</p>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="text-xs font-bold text-gray-600">{product.expiryDate || '—'}</span>
-                    </td>
-                    <td className="px-8 py-5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setSelectedProduct(product)}
-                          className="px-3 py-2 bg-blue-50 text-blue-600 text-[10px] font-black rounded-xl uppercase hover:bg-blue-100 transition-colors flex items-center gap-1.5"
-                        >
-                          <Eye className="size-3.5" /> Xem
-                        </button>
-                        <button
-                          disabled={isProcessing}
-                          onClick={() => handleApprove(product)}
-                          className="px-3 py-2 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-xl uppercase hover:bg-emerald-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                        >
-                          <Check className="size-3.5" /> Duyệt
-                        </button>
-                        <button
-                          disabled={isProcessing}
-                          onClick={() => { setRejectingProductId(product.id); setShowRejectModal(true); }}
-                          className="px-3 py-2 bg-red-50 text-red-600 text-[10px] font-black rounded-xl uppercase hover:bg-red-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                        >
-                          <X className="size-3.5" /> Từ chối
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-5">
+                        <span className="text-sm font-bold text-gray-700">
+                          {product.shopName ||
+                            `Shop #${product.shopOwnerId || product.shopId || '?'}`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-5 text-center">
+                        {product.discountPercent != null && product.discountPercent > 0 ? (
+                          <div className="flex flex-col items-center gap-0.5">
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-red-500 line-through font-semibold">
+                                {(product.sellingPrice || 0).toLocaleString('vi-VN')}đ
+                              </span>
+                              <span className="bg-primary text-white text-[8px] font-black px-1 py-0.5 rounded-full">
+                                -{product.discountPercent}%
+                              </span>
+                            </div>
+                            <p className="text-sm font-black text-primary">
+                              {(
+                                product.salePrice ??
+                                Math.round(
+                                  (product.sellingPrice || 0) * (1 - product.discountPercent / 100),
+                                )
+                              ).toLocaleString('vi-VN')}
+                              đ
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-sm font-black text-primary">
+                            {(product.sellingPrice || 0).toLocaleString('vi-VN')}đ
+                          </p>
+                        )}
+                        <p className="text-[10px] text-gray-400">
+                          {(
+                            (product.stockKg ?? product.stockQuantity ?? product.stock) ||
+                            0
+                          ).toLocaleString('vi-VN', { maximumFractionDigits: 2 })}{' '}
+                          kg
+                        </p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <span className="text-xs font-bold text-gray-600">
+                          {product.expiryDate || '—'}
+                        </span>
+                      </td>
+                      <td className="px-8 py-5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setSelectedProduct(product)}
+                            className="px-3 py-2 bg-blue-50 text-blue-600 text-[10px] font-black rounded-xl uppercase hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+                          >
+                            <Eye className="size-3.5" /> Xem
+                          </button>
+                          <button
+                            disabled={isProcessing}
+                            onClick={() => handleApprove(product)}
+                            className="px-3 py-2 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-xl uppercase hover:bg-emerald-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                          >
+                            <Check className="size-3.5" /> Duyệt
+                          </button>
+                          <button
+                            disabled={isProcessing}
+                            onClick={() => {
+                              setRejectingProductId(product.id)
+                              setShowRejectModal(true)
+                            }}
+                            className="px-3 py-2 bg-red-50 text-red-600 text-[10px] font-black rounded-xl uppercase hover:bg-red-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                          >
+                            <X className="size-3.5" /> Từ chối
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ProductApproval;
+export default ProductApproval

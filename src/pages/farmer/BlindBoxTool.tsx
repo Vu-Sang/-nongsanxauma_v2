@@ -1,23 +1,23 @@
-import React, { useState, type FormEvent } from 'react';
-import { Gift, Plus, Sparkles, X } from 'lucide-react';
-import type { FarmerProduct } from './types';
+import React, { useState, type FormEvent } from 'react'
+import { Gift, Plus, Sparkles, X } from 'lucide-react'
+import type { FarmerProduct } from './types'
 
 interface BlindBoxToolProps {
-  onAddBox: (box: FarmerProduct) => void;
-  onClose: () => void;
-  onInfo?: (msg: string) => void;
+  onAddBox: (box: FarmerProduct) => void
+  onClose: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function BlindBoxTool({ onAddBox, onClose, onInfo }: BlindBoxToolProps) {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('79000');
-  const [originalPrice, setOriginalPrice] = useState('150000');
-  const [weight, setWeight] = useState('5kg');
-  const [stock, setStock] = useState('30');
+  const [name, setName] = useState('')
+  const [price, setPrice] = useState('79000')
+  const [originalPrice, setOriginalPrice] = useState('150000')
+  const [weight, setWeight] = useState('5kg')
+  const [stock, setStock] = useState('30')
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
+    e.preventDefault()
+    if (!name.trim()) return
 
     const newBox: FarmerProduct = {
       id: Date.now().toString(),
@@ -30,13 +30,14 @@ export default function BlindBoxTool({ onAddBox, onClose, onInfo }: BlindBoxTool
       stock: Number(stock) || 30,
       unit: 'hộp',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80',
-    };
+      image:
+        'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80',
+    }
 
-    onAddBox(newBox);
-    onClose();
-    onInfo?.(`Đã tạo thành công Túi Mù: ${newBox.name}`);
-  };
+    onAddBox(newBox)
+    onClose()
+    onInfo?.(`Đã tạo thành công Túi Mù: ${newBox.name}`)
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -61,7 +62,9 @@ export default function BlindBoxTool({ onAddBox, onClose, onInfo }: BlindBoxTool
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-bold text-[#353d2f] mb-1">Tên túi mù / combo *</label>
+            <label className="block text-xs font-bold text-[#353d2f] mb-1">
+              Tên túi mù / combo *
+            </label>
             <input
               type="text"
               required
@@ -74,7 +77,9 @@ export default function BlindBoxTool({ onAddBox, onClose, onInfo }: BlindBoxTool
 
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Giá giải cứu (đ) *</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Giá giải cứu (đ) *
+              </label>
               <input
                 type="number"
                 required
@@ -96,7 +101,9 @@ export default function BlindBoxTool({ onAddBox, onClose, onInfo }: BlindBoxTool
 
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Trọng lượng dự kiến</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Trọng lượng dự kiến
+              </label>
               <input
                 type="text"
                 value={weight}
@@ -106,7 +113,9 @@ export default function BlindBoxTool({ onAddBox, onClose, onInfo }: BlindBoxTool
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Số lượng hộp phát hành</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Số lượng hộp phát hành
+              </label>
               <input
                 type="number"
                 value={stock}
@@ -125,5 +134,5 @@ export default function BlindBoxTool({ onAddBox, onClose, onInfo }: BlindBoxTool
         </form>
       </div>
     </div>
-  );
+  )
 }

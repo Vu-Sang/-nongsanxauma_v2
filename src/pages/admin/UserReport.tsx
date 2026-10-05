@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Users,
   Store,
@@ -14,7 +14,7 @@ import {
   TrendingUp,
   CalendarRange,
   Truck,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   BarChart,
   Bar,
@@ -29,15 +29,11 @@ import {
   Cell,
   LineChart,
   Line,
-} from 'recharts';
-import {
-  userService,
-  AdminUserReport,
-  AdminUserReportType,
-} from '../../services';
-import { getErrorMessage } from '../../lib/errors';
+} from 'recharts'
+import { userService, AdminUserReport, AdminUserReportType } from '../../services'
+import { getErrorMessage } from '../../lib/errors'
 
-type PeriodPreset = AdminUserReportType | 'custom';
+type PeriodPreset = AdminUserReportType | 'custom'
 
 const PERIOD_OPTIONS: { id: PeriodPreset; label: string }[] = [
   { id: 'week', label: '7 ngày' },
@@ -45,101 +41,101 @@ const PERIOD_OPTIONS: { id: PeriodPreset; label: string }[] = [
   { id: 'year', label: '1 năm' },
   { id: 'all', label: 'Toàn bộ' },
   { id: 'custom', label: 'Tùy chọn' },
-];
+]
 
-const toInputDate = (d: Date) => d.toISOString().slice(0, 10);
+const toInputDate = (d: Date) => d.toISOString().slice(0, 10)
 
 const defaultCustomRange = () => {
-  const to = new Date();
-  const from = new Date();
-  from.setDate(from.getDate() - 30);
-  return { from: toInputDate(from), to: toInputDate(to) };
-};
+  const to = new Date()
+  const from = new Date()
+  from.setDate(from.getDate() - 30)
+  return { from: toInputDate(from), to: toInputDate(to) }
+}
 
 const CHART_COLORS = {
   buyers: '#10b981',
   shops: '#3b82f6',
   shippers: '#8b5cf6',
   locked: '#ef4444',
-};
+}
 
-const PIE_COLORS = ['#10b981', '#94a3b8', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const PIE_COLORS = ['#10b981', '#94a3b8', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
 
-const fmt = (n?: number | null) => (n ?? 0).toLocaleString('vi-VN');
+const fmt = (n?: number | null) => (n ?? 0).toLocaleString('vi-VN')
 
-type ChartViewType = 'column' | 'line';
+type ChartViewType = 'column' | 'line'
 
 const UserReport: React.FC = () => {
-  const [report, setReport] = useState<AdminUserReport | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [chartView, setChartView] = useState<ChartViewType>('column');
-  const [period, setPeriod] = useState<PeriodPreset>('month');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [appliedRange, setAppliedRange] = useState<{ from: string; to: string } | null>(null);
+  const [report, setReport] = useState<AdminUserReport | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [chartView, setChartView] = useState<ChartViewType>('column')
+  const [period, setPeriod] = useState<PeriodPreset>('month')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
+  const [appliedRange, setAppliedRange] = useState<{ from: string; to: string } | null>(null)
 
   const fetchReport = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
     try {
-      let res;
+      let res
       if (period === 'custom') {
         if (!appliedRange) {
-          setLoading(false);
-          return;
+          setLoading(false)
+          return
         }
         if (appliedRange.from > appliedRange.to) {
-          setError('Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.');
-          setLoading(false);
-          return;
+          setError('Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.')
+          setLoading(false)
+          return
         }
         res = await userService.generateAdminUserReport({
           from: appliedRange.from,
           to: appliedRange.to,
-        });
+        })
       } else {
-        res = await userService.generateAdminUserReport({ type: period });
+        res = await userService.generateAdminUserReport({ type: period })
       }
-      setReport(res.result ?? null);
+      setReport(res.result ?? null)
     } catch (err) {
-      console.error('Failed to load user report', err);
-      setError(getErrorMessage(err, 'Không thể tải báo cáo người dùng.'));
+      console.error('Failed to load user report', err)
+      setError(getErrorMessage(err, 'Không thể tải báo cáo người dùng.'))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [period, appliedRange]);
+  }, [period, appliedRange])
 
   useEffect(() => {
-    if (period === 'custom' && !appliedRange) return;
-    fetchReport();
-  }, [fetchReport, period, appliedRange]);
+    if (period === 'custom' && !appliedRange) return
+    fetchReport()
+  }, [fetchReport, period, appliedRange])
 
   const handlePeriodChange = (next: PeriodPreset) => {
-    setPeriod(next);
-    setError(null);
+    setPeriod(next)
+    setError(null)
     if (next === 'custom') {
-      const range = defaultCustomRange();
-      setFromDate(range.from);
-      setToDate(range.to);
-      setAppliedRange(range);
+      const range = defaultCustomRange()
+      setFromDate(range.from)
+      setToDate(range.to)
+      setAppliedRange(range)
     } else {
-      setAppliedRange(null);
+      setAppliedRange(null)
     }
-  };
+  }
 
   const handleApplyCustomRange = () => {
     if (!fromDate || !toDate) {
-      setError('Vui lòng chọn đủ ngày bắt đầu và ngày kết thúc.');
-      return;
+      setError('Vui lòng chọn đủ ngày bắt đầu và ngày kết thúc.')
+      return
     }
     if (fromDate > toDate) {
-      setError('Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.');
-      return;
+      setError('Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.')
+      return
     }
-    setError(null);
-    setAppliedRange({ from: fromDate, to: toDate });
-  };
+    setError(null)
+    setAppliedRange({ from: fromDate, to: toDate })
+  }
 
   const chartData = useMemo(
     () =>
@@ -150,22 +146,22 @@ const UserReport: React.FC = () => {
         shippers: item.totalShipper ?? 0,
         locked: item.totalUserLock ?? 0,
       })),
-    [report?.userReports]
-  );
+    [report?.userReports],
+  )
 
   const rolePieData = useMemo(() => {
-    const totalUsers = report?.totalUsers ?? 0;
-    const buyers = report?.totalBuyers ?? 0;
-    const shops = report?.totalShops ?? 0;
-    const shippers = report?.totalShipper ?? 0;
-    const others = Math.max(0, totalUsers - buyers - shops - shippers);
+    const totalUsers = report?.totalUsers ?? 0
+    const buyers = report?.totalBuyers ?? 0
+    const shops = report?.totalShops ?? 0
+    const shippers = report?.totalShipper ?? 0
+    const others = Math.max(0, totalUsers - buyers - shops - shippers)
     return [
       { name: 'Người mua', value: buyers, color: PIE_COLORS[0] },
       { name: 'Cửa hàng', value: shops, color: PIE_COLORS[1] },
       { name: 'Shipper', value: shippers, color: PIE_COLORS[4] },
       { name: 'Khác', value: others, color: PIE_COLORS[2] },
-    ].filter((d) => d.value > 0);
-  }, [report]);
+    ].filter((d) => d.value > 0)
+  }, [report])
 
   const statusPieData = useMemo(
     () =>
@@ -175,8 +171,8 @@ const UserReport: React.FC = () => {
         { name: 'Chờ duyệt', value: report?.totalShopPending ?? 0, color: PIE_COLORS[3] },
         { name: 'Bị khóa', value: report?.totalUserLock ?? 0, color: PIE_COLORS[4] },
       ].filter((d) => d.value > 0),
-    [report]
-  );
+    [report],
+  )
 
   const shopPieData = useMemo(
     () =>
@@ -184,29 +180,91 @@ const UserReport: React.FC = () => {
         { name: 'Đang bán', value: report?.totalShopSelling ?? 0, color: PIE_COLORS[0] },
         { name: 'Tạm nghỉ', value: report?.totalShopNotSelling ?? 0, color: PIE_COLORS[2] },
       ].filter((d) => d.value > 0),
-    [report]
-  );
+    [report],
+  )
 
   const statCards = [
-    { label: 'Tổng người dùng', value: report?.totalUsers, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Người mua', value: report?.totalBuyers, icon: ShoppingBag, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Cửa hàng', value: report?.totalShops, icon: Store, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'Shipper', value: report?.totalShipper, icon: Truck, color: 'text-violet-600', bg: 'bg-violet-50' },
-    { label: 'Đang hoạt động', value: report?.totalActiveUsers, icon: UserCheck, color: 'text-teal-600', bg: 'bg-teal-50' },
-    { label: 'Không hoạt động', value: report?.totalInactiveUsers, icon: UserX, color: 'text-gray-600', bg: 'bg-gray-50' },
-    { label: 'Chờ duyệt KYC', value: report?.totalShopPending, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Cửa hàng đang bán', value: report?.totalShopSelling, icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Cửa hàng tạm nghỉ', value: report?.totalShopNotSelling, icon: Store, color: 'text-orange-600', bg: 'bg-orange-50' },
-    { label: 'Tài khoản bị khóa', value: report?.totalUserLock, icon: Lock, color: 'text-red-600', bg: 'bg-red-50' },
-  ];
+    {
+      label: 'Tổng người dùng',
+      value: report?.totalUsers,
+      icon: Users,
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+    },
+    {
+      label: 'Người mua',
+      value: report?.totalBuyers,
+      icon: ShoppingBag,
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50',
+    },
+    {
+      label: 'Cửa hàng',
+      value: report?.totalShops,
+      icon: Store,
+      color: 'text-indigo-600',
+      bg: 'bg-indigo-50',
+    },
+    {
+      label: 'Shipper',
+      value: report?.totalShipper,
+      icon: Truck,
+      color: 'text-violet-600',
+      bg: 'bg-violet-50',
+    },
+    {
+      label: 'Đang hoạt động',
+      value: report?.totalActiveUsers,
+      icon: UserCheck,
+      color: 'text-teal-600',
+      bg: 'bg-teal-50',
+    },
+    {
+      label: 'Không hoạt động',
+      value: report?.totalInactiveUsers,
+      icon: UserX,
+      color: 'text-gray-600',
+      bg: 'bg-gray-50',
+    },
+    {
+      label: 'Chờ duyệt KYC',
+      value: report?.totalShopPending,
+      icon: Clock,
+      color: 'text-amber-600',
+      bg: 'bg-amber-50',
+    },
+    {
+      label: 'Cửa hàng đang bán',
+      value: report?.totalShopSelling,
+      icon: TrendingUp,
+      color: 'text-green-600',
+      bg: 'bg-green-50',
+    },
+    {
+      label: 'Cửa hàng tạm nghỉ',
+      value: report?.totalShopNotSelling,
+      icon: Store,
+      color: 'text-orange-600',
+      bg: 'bg-orange-50',
+    },
+    {
+      label: 'Tài khoản bị khóa',
+      value: report?.totalUserLock,
+      icon: Lock,
+      color: 'text-red-600',
+      bg: 'bg-red-50',
+    },
+  ]
 
   if (loading && !report) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[600px] gap-4">
         <Loader2 className="size-10 text-primary animate-spin" />
-        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Đang tải báo cáo...</p>
+        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">
+          Đang tải báo cáo...
+        </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -217,7 +275,9 @@ const UserReport: React.FC = () => {
             <BarChart3 className="size-7 text-primary" />
             Báo cáo người dùng
           </h1>
-          <p className="text-sm text-gray-400 mt-1">Thống kê người mua, cửa hàng, shipper và tài khoản bị khóa</p>
+          <p className="text-sm text-gray-400 mt-1">
+            Thống kê người mua, cửa hàng, shipper và tài khoản bị khóa
+          </p>
         </div>
         <button
           type="button"
@@ -247,7 +307,9 @@ const UserReport: React.FC = () => {
               <card.icon className={`size-6 ${card.color}`} />
             </div>
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{card.label}</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                {card.label}
+              </p>
               <p className="text-2xl font-black text-gray-900">{fmt(card.value)}</p>
             </div>
           </div>
@@ -260,9 +322,12 @@ const UserReport: React.FC = () => {
           { title: 'Trạng thái tài khoản', data: statusPieData },
           { title: 'Trạng thái cửa hàng', data: shopPieData },
         ].map((pie) => {
-          const total = pie.data.reduce((sum, d) => sum + d.value, 0);
+          const total = pie.data.reduce((sum, d) => sum + d.value, 0)
           return (
-            <div key={pie.title} className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm">
+            <div
+              key={pie.title}
+              className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm"
+            >
               <h2 className="text-base font-black text-gray-900 mb-4">{pie.title}</h2>
               {pie.data.length > 0 ? (
                 <div className="flex flex-col items-center">
@@ -279,19 +344,28 @@ const UserReport: React.FC = () => {
                         nameKey="name"
                       >
                         {pie.data.map((entry, i) => (
-                          <Cell key={entry.name} fill={entry.color ?? PIE_COLORS[i % PIE_COLORS.length]} />
+                          <Cell
+                            key={entry.name}
+                            fill={entry.color ?? PIE_COLORS[i % PIE_COLORS.length]}
+                          />
                         ))}
                       </Pie>
                       <Tooltip
-                        formatter={(value: unknown, name: unknown) => [fmt(Number(value) || 0), String(name || '')]}
+                        formatter={(value: unknown, name: unknown) => [
+                          fmt(Number(value) || 0),
+                          String(name || ''),
+                        ]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
                   <ul className="w-full mt-3 space-y-2">
                     {pie.data.map((item) => {
-                      const pct = total ? Math.round((item.value / total) * 100) : 0;
+                      const pct = total ? Math.round((item.value / total) * 100) : 0
                       return (
-                        <li key={item.name} className="flex items-center justify-between gap-3 text-sm">
+                        <li
+                          key={item.name}
+                          className="flex items-center justify-between gap-3 text-sm"
+                        >
                           <span className="flex items-center gap-2 min-w-0">
                             <span
                               className="size-2.5 rounded-full shrink-0"
@@ -300,18 +374,21 @@ const UserReport: React.FC = () => {
                             <span className="text-gray-600 font-medium truncate">{item.name}</span>
                           </span>
                           <span className="font-bold text-gray-800 shrink-0">
-                            {pct}% <span className="text-gray-400 font-medium">({fmt(item.value)})</span>
+                            {pct}%{' '}
+                            <span className="text-gray-400 font-medium">({fmt(item.value)})</span>
                           </span>
                         </li>
-                      );
+                      )
                     })}
                   </ul>
                 </div>
               ) : (
-                <div className="h-[220px] flex items-center justify-center text-gray-400 text-sm">Không có dữ liệu</div>
+                <div className="h-[220px] flex items-center justify-center text-gray-400 text-sm">
+                  Không có dữ liệu
+                </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
 
@@ -336,7 +413,9 @@ const UserReport: React.FC = () => {
         {period === 'custom' && (
           <div className="flex flex-wrap items-end gap-4 pt-2 border-t border-gray-50">
             <label className="flex flex-col gap-1.5 min-w-[160px]">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Từ ngày</span>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Từ ngày
+              </span>
               <input
                 type="date"
                 value={fromDate}
@@ -346,7 +425,9 @@ const UserReport: React.FC = () => {
               />
             </label>
             <label className="flex flex-col gap-1.5 min-w-[160px]">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Đến ngày</span>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Đến ngày
+              </span>
               <input
                 type="date"
                 value={toDate}
@@ -378,10 +459,14 @@ const UserReport: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="text-lg font-black text-gray-900 mb-1">Tăng trưởng theo thời gian</h2>
-            <p className="text-xs text-gray-400">Người mua, cửa hàng, shipper mới và tài khoản bị khóa theo từng kỳ</p>
+            <p className="text-xs text-gray-400">
+              Người mua, cửa hàng, shipper mới và tài khoản bị khóa theo từng kỳ
+            </p>
           </div>
           <label className="flex items-center gap-2 shrink-0">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Kiểu biểu đồ</span>
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              Kiểu biểu đồ
+            </span>
             <select
               value={chartView}
               onChange={(e) => setChartView(e.target.value as ChartViewType)}
@@ -404,10 +489,30 @@ const UserReport: React.FC = () => {
                   formatter={(value: unknown) => [fmt(Number(value) || 0), '']}
                 />
                 <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                <Bar dataKey="buyers" name="Người mua mới" fill={CHART_COLORS.buyers} radius={[6, 6, 0, 0]} />
-                <Bar dataKey="shops" name="Cửa hàng mới" fill={CHART_COLORS.shops} radius={[6, 6, 0, 0]} />
-                <Bar dataKey="shippers" name="Shipper mới" fill={CHART_COLORS.shippers} radius={[6, 6, 0, 0]} />
-                <Bar dataKey="locked" name="Bị khóa" fill={CHART_COLORS.locked} radius={[6, 6, 0, 0]} />
+                <Bar
+                  dataKey="buyers"
+                  name="Người mua mới"
+                  fill={CHART_COLORS.buyers}
+                  radius={[6, 6, 0, 0]}
+                />
+                <Bar
+                  dataKey="shops"
+                  name="Cửa hàng mới"
+                  fill={CHART_COLORS.shops}
+                  radius={[6, 6, 0, 0]}
+                />
+                <Bar
+                  dataKey="shippers"
+                  name="Shipper mới"
+                  fill={CHART_COLORS.shippers}
+                  radius={[6, 6, 0, 0]}
+                />
+                <Bar
+                  dataKey="locked"
+                  name="Bị khóa"
+                  fill={CHART_COLORS.locked}
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             ) : (
               <LineChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -419,19 +524,49 @@ const UserReport: React.FC = () => {
                   formatter={(value: unknown) => [fmt(Number(value) || 0), '']}
                 />
                 <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                <Line type="monotone" dataKey="buyers" name="Người mua mới" stroke={CHART_COLORS.buyers} strokeWidth={2.5} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="shops" name="Cửa hàng mới" stroke={CHART_COLORS.shops} strokeWidth={2.5} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="shippers" name="Shipper mới" stroke={CHART_COLORS.shippers} strokeWidth={2.5} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="locked" name="Bị khóa" stroke={CHART_COLORS.locked} strokeWidth={2.5} dot={{ r: 4 }} />
+                <Line
+                  type="monotone"
+                  dataKey="buyers"
+                  name="Người mua mới"
+                  stroke={CHART_COLORS.buyers}
+                  strokeWidth={2.5}
+                  dot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="shops"
+                  name="Cửa hàng mới"
+                  stroke={CHART_COLORS.shops}
+                  strokeWidth={2.5}
+                  dot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="shippers"
+                  name="Shipper mới"
+                  stroke={CHART_COLORS.shippers}
+                  strokeWidth={2.5}
+                  dot={{ r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="locked"
+                  name="Bị khóa"
+                  stroke={CHART_COLORS.locked}
+                  strokeWidth={2.5}
+                  dot={{ r: 4 }}
+                />
               </LineChart>
             )}
           </ResponsiveContainer>
         ) : (
-          <div className="h-[360px] flex items-center justify-center text-gray-400 text-sm">Chưa có dữ liệu biểu đồ</div>
+          <div className="h-[360px] flex items-center justify-center text-gray-400 text-sm">
+            Chưa có dữ liệu biểu đồ
+          </div>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserReport;
+export default UserReport

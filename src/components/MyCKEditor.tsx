@@ -1,11 +1,20 @@
-import React, { useRef } from 'react';
-import { Bold, Italic, List, Heading1, Heading2, Quote, Link as LinkIcon, Image as ImageIcon } from 'lucide-react';
+import React, { useRef } from 'react'
+import {
+  Bold,
+  Italic,
+  List,
+  Heading1,
+  Heading2,
+  Quote,
+  Link as LinkIcon,
+  Image as ImageIcon,
+} from 'lucide-react'
 
 export interface MyCKEditorProps {
-  data?: string;
-  value?: string;
-  onChange: (data: string) => void;
-  placeholder?: string;
+  data?: string
+  value?: string
+  onChange: (data: string) => void
+  placeholder?: string
 }
 
 const MyCKEditor: React.FC<MyCKEditorProps> = ({
@@ -14,31 +23,31 @@ const MyCKEditor: React.FC<MyCKEditorProps> = ({
   onChange,
   placeholder = 'Nhập nội dung bài viết chi tiết tại đây...',
 }) => {
-  const contentValue = value !== undefined ? value : data !== undefined ? data : '';
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const contentValue = value !== undefined ? value : data !== undefined ? data : ''
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const applyFormat = (prefix: string, suffix: string = '') => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+    const textarea = textareaRef.current
+    if (!textarea) return
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = contentValue.substring(start, end);
-    const before = contentValue.substring(0, start);
-    const after = contentValue.substring(end);
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const selectedText = contentValue.substring(start, end)
+    const before = contentValue.substring(0, start)
+    const after = contentValue.substring(end)
 
-    const replacement = `${prefix}${selectedText || 'nội dung'}${suffix}`;
-    const newContent = `${before}${replacement}${after}`;
-    onChange(newContent);
+    const replacement = `${prefix}${selectedText || 'nội dung'}${suffix}`
+    const newContent = `${before}${replacement}${after}`
+    onChange(newContent)
 
     setTimeout(() => {
-      textarea.focus();
+      textarea.focus()
       textarea.setSelectionRange(
         start + prefix.length,
-        start + prefix.length + (selectedText.length || 7)
-      );
-    }, 0);
-  };
+        start + prefix.length + (selectedText.length || 7),
+      )
+    }, 0)
+  }
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-xs focus-within:border-[#326318] focus-within:ring-2 focus-within:ring-[#326318]/20 transition-all">
@@ -97,8 +106,12 @@ const MyCKEditor: React.FC<MyCKEditorProps> = ({
         <button
           type="button"
           onClick={() => {
-            const url = prompt('Nhập địa chỉ liên kết (URL):', 'https://');
-            if (url) applyFormat(`<a href="${url}" target="_blank" class="text-emerald-600 underline">`, '</a>');
+            const url = prompt('Nhập địa chỉ liên kết (URL):', 'https://')
+            if (url)
+              applyFormat(
+                `<a href="${url}" target="_blank" class="text-emerald-600 underline">`,
+                '</a>',
+              )
           }}
           className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-700 transition-colors"
           title="Chèn liên kết"
@@ -108,8 +121,11 @@ const MyCKEditor: React.FC<MyCKEditorProps> = ({
         <button
           type="button"
           onClick={() => {
-            const url = prompt('Nhập URL hình ảnh:', 'https://images.unsplash.com/...');
-            if (url) applyFormat(`<img src="${url}" alt="Hình ảnh" class="rounded-xl my-3 max-w-full" />\n`);
+            const url = prompt('Nhập URL hình ảnh:', 'https://images.unsplash.com/...')
+            if (url)
+              applyFormat(
+                `<img src="${url}" alt="Hình ảnh" class="rounded-xl my-3 max-w-full" />\n`,
+              )
           }}
           className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-700 transition-colors"
           title="Chèn hình ảnh"
@@ -128,7 +144,7 @@ const MyCKEditor: React.FC<MyCKEditorProps> = ({
         className="w-full p-4 text-sm text-gray-800 focus:outline-hidden resize-y font-sans leading-relaxed"
       />
     </div>
-  );
-};
+  )
+}
 
-export default MyCKEditor;
+export default MyCKEditor

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
   Grid,
@@ -24,219 +24,271 @@ import {
   Facebook,
   ThumbsUp,
   ThumbsDown,
-} from 'lucide-react';
-import { productService, ProductResponse, userService, UserResponse, cartService, reviewService, ReviewResponse, mysteryBoxService, MysteryBox, voucherService, VoucherResponse } from '../../services';
-import { globalShowAlert } from '../../contexts/PopupContext';
+} from 'lucide-react'
+import {
+  productService,
+  ProductResponse,
+  userService,
+  UserResponse,
+  cartService,
+  reviewService,
+  ReviewResponse,
+  mysteryBoxService,
+  MysteryBox,
+  voucherService,
+  VoucherResponse,
+} from '../../services'
+import { globalShowAlert } from '../../contexts/PopupContext'
 
 interface ShopProductsProps {
-  shopId: number;
-  onBack: () => void;
-  isAuthenticated?: boolean;
-  onOpenLogin?: () => void;
+  shopId: number
+  onBack: () => void
+  isAuthenticated?: boolean
+  onOpenLogin?: () => void
 }
 
 const ShopProducts: React.FC<ShopProductsProps> = ({
   shopId,
   onBack,
   isAuthenticated = false,
-  onOpenLogin = () => { }
+  onOpenLogin = () => {},
 }) => {
-  const navigate = useNavigate();
-  const [products, setProducts] = useState<ProductResponse[]>([]);
-  const [mysteryBoxes, setMysteryBoxes] = useState<MysteryBox[]>([]);
-  const [shopInfo, setShopInfo] = useState<UserResponse | null>(null);
-  const [reviews, setReviews] = useState<ReviewResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState('default');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [addingToCart, setAddingToCart] = useState<number | null>(null);
-  const [addingBoxToCart, setAddingBoxToCart] = useState<number | null>(null);
-  const [showShareMenu, setShowShareMenu] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [shopVouchers, setShopVouchers] = useState<VoucherResponse[]>([]);
-  const [receivingVoucher, setReceivingVoucher] = useState<string | null>(null);
-  const [canReceiveMap, setCanReceiveMap] = useState<Record<string, boolean>>({});
-  const [voucherLoading, setVoucherLoading] = useState(false);
-  const [voucherError, setVoucherError] = useState<string | null>(null);
-  const [reactingReviewId, setReactingReviewId] = useState<number | null>(null);
+  const navigate = useNavigate()
+  const [products, setProducts] = useState<ProductResponse[]>([])
+  const [mysteryBoxes, setMysteryBoxes] = useState<MysteryBox[]>([])
+  const [shopInfo, setShopInfo] = useState<UserResponse | null>(null)
+  const [reviews, setReviews] = useState<ReviewResponse[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState('default')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [addingToCart, setAddingToCart] = useState<number | null>(null)
+  const [addingBoxToCart, setAddingBoxToCart] = useState<number | null>(null)
+  const [showShareMenu, setShowShareMenu] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [shopVouchers, setShopVouchers] = useState<VoucherResponse[]>([])
+  const [receivingVoucher, setReceivingVoucher] = useState<string | null>(null)
+  const [canReceiveMap, setCanReceiveMap] = useState<Record<string, boolean>>({})
+  const [voucherLoading, setVoucherLoading] = useState(false)
+  const [voucherError, setVoucherError] = useState<string | null>(null)
+  const [reactingReviewId, setReactingReviewId] = useState<number | null>(null)
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, []);
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [])
 
   useEffect(() => {
     const fetchShopData = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         const [productsRes, shopRes, reviewsRes, boxesRes] = await Promise.all([
           productService.getForBuyer().catch(() => ({ result: [] })),
           userService.getUserById(shopId).catch(() => ({ result: null })),
           reviewService.getByShopId(shopId).catch(() => ({ result: [] })),
           mysteryBoxService.getForBuyer().catch(() => ({ result: [] })),
-        ]);
+        ])
 
         if (productsRes.result) {
           setProducts(
-            productsRes.result.filter((p: ProductResponse) =>
-              (p.shopOwnerId === shopId || p.shopId === shopId)
-            )
-          );
+            productsRes.result.filter(
+              (p: ProductResponse) => p.shopOwnerId === shopId || p.shopId === shopId,
+            ),
+          )
         }
         if (reviewsRes.result) {
-          setReviews(reviewsRes.result);
+          setReviews(reviewsRes.result)
         }
         if (shopRes.result) {
-          setShopInfo(shopRes.result);
+          setShopInfo(shopRes.result)
         }
         // Filter mystery boxes belonging to this shop and only active ones
         if (boxesRes.result) {
           setMysteryBoxes(
-            boxesRes.result.filter((b: MysteryBox) => b.shopOwnerId === shopId || b.shopId === shopId)
-          );
+            boxesRes.result.filter(
+              (b: MysteryBox) => b.shopOwnerId === shopId || b.shopId === shopId,
+            ),
+          )
         }
       } catch (error) {
-        console.error('Failed to load shop data', error);
+        console.error('Failed to load shop data', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchShopData();
-  }, [shopId]);
+    fetchShopData()
+  }, [shopId])
 
   useEffect(() => {
     const fetchShopVouchers = async () => {
       try {
-        setVoucherLoading(true);
-        setVoucherError(null);
-        const response = await voucherService.getBuyerShopVouchers(shopId, 0, 3);
-        const result = response.result;
-        const vouchers = (Array.isArray(result) ? result : result?.content || [])
-          .filter((voucher) => voucher.voucherType === 'SHOP' && Number(voucher.shopId) === Number(shopId));
-        setShopVouchers(vouchers);
+        setVoucherLoading(true)
+        setVoucherError(null)
+        const response = await voucherService.getBuyerShopVouchers(shopId, 0, 3)
+        const result = response.result
+        const vouchers = (Array.isArray(result) ? result : result?.content || []).filter(
+          (voucher) => voucher.voucherType === 'SHOP' && Number(voucher.shopId) === Number(shopId),
+        )
+        setShopVouchers(vouchers)
 
         if (isAuthenticated && vouchers.length > 0) {
           const statuses = await Promise.all(
             vouchers.map(async (voucher) => {
               try {
-                const canReceive = await voucherService.canReceiveVoucher(voucher.voucherCode);
-                return [voucher.voucherCode, Boolean(canReceive.result)] as const;
+                const canReceive = await voucherService.canReceiveVoucher(voucher.voucherCode)
+                return [voucher.voucherCode, Boolean(canReceive.result)] as const
               } catch {
-                return [voucher.voucherCode, false] as const;
+                return [voucher.voucherCode, false] as const
               }
-            })
-          );
-          setCanReceiveMap(Object.fromEntries(statuses));
+            }),
+          )
+          setCanReceiveMap(Object.fromEntries(statuses))
         } else {
-          setCanReceiveMap({});
+          setCanReceiveMap({})
         }
       } catch (err) {
-        console.error('Failed to load shop vouchers', err);
-        setShopVouchers([]);
-        setCanReceiveMap({});
-        setVoucherError('Không tải được voucher của shop.');
+        console.error('Failed to load shop vouchers', err)
+        setShopVouchers([])
+        setCanReceiveMap({})
+        setVoucherError('Không tải được voucher của shop.')
       } finally {
-        setVoucherLoading(false);
+        setVoucherLoading(false)
       }
-    };
+    }
 
-    fetchShopVouchers();
-  }, [shopId, isAuthenticated]);
+    fetchShopVouchers()
+  }, [shopId, isAuthenticated])
 
   const handleAddToCart = async (productId: number) => {
-    if (!isAuthenticated) { onOpenLogin(); return; }
-    setAddingToCart(productId);
+    if (!isAuthenticated) {
+      onOpenLogin()
+      return
+    }
+    setAddingToCart(productId)
     try {
-      await cartService.addToCart({ productId, quantity: 1, quantityKg: 1 });
-      window.dispatchEvent(new Event('cart-updated'));
-      globalShowAlert('Đã thêm vào giỏ hàng!', 'Thành công', 'success');
+      await cartService.addToCart({ productId, quantity: 1, quantityKg: 1 })
+      window.dispatchEvent(new Event('cart-updated'))
+      globalShowAlert('Đã thêm vào giỏ hàng!', 'Thành công', 'success')
     } catch (error) {
-      globalShowAlert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.', 'Lỗi', 'error');
+      globalShowAlert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.', 'Lỗi', 'error')
     } finally {
-      setAddingToCart(null);
+      setAddingToCart(null)
     }
-  };
-
-  const handleAddBoxToCart = async (boxId: number) => {
-    if (!isAuthenticated) { onOpenLogin(); return; }
-    setAddingBoxToCart(boxId);
-    try {
-      await cartService.addToCart({ mysteryBoxId: boxId, quantity: 1 });
-      window.dispatchEvent(new Event('cart-updated'));
-      globalShowAlert('Đã thêm túi mù vào giỏ hàng!', 'Thành công', 'success');
-    } catch (error) {
-      globalShowAlert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.', 'Lỗi', 'error');
-    } finally {
-      setAddingBoxToCart(null);
-    }
-  };
-
-
-  const handleReceiveVoucher = async (voucherCode: string) => {
-    if (!isAuthenticated) { onOpenLogin(); return; }
-    try {
-      setReceivingVoucher(voucherCode);
-      await voucherService.receiveVoucher(voucherCode);
-      setCanReceiveMap((prev) => ({ ...prev, [voucherCode]: false }));
-      setShopVouchers((prev) => prev.map((voucher) => (
-        voucher.voucherCode === voucherCode
-          ? { ...voucher, claimedCount: (voucher.claimedCount ?? 0) + 1 }
-          : voucher
-      )));
-      globalShowAlert('Đã lưu voucher vào kho của bạn.', 'Thành công', 'success');
-    } catch (err: any) {
-      globalShowAlert(err?.data?.message || 'Không thể nhận voucher. Vui lòng thử lại.', 'Lỗi', 'error');
-    } finally {
-      setReceivingVoucher(null);
-    }
-  };
-
-  const handleReact = async (reviewId: number, reactionType: 'LIKE' | 'DISLIKE') => {
-    if (!isAuthenticated) { onOpenLogin(); return; }
-    if (reactingReviewId === reviewId) return;
-    try {
-      setReactingReviewId(reviewId);
-      const res = await reviewService.reactToReview(reviewId, reactionType);
-      if (res.result) setReviews(prev => prev.map(r => r.id === reviewId ? res.result! : r));
-    } catch { } finally { setReactingReviewId(null); }
-  };
-
-  const handleChatNow = () => {
-    if (!isAuthenticated) { onOpenLogin(); return; }
-    window.dispatchEvent(new CustomEvent('open-chat-with-user', {
-      detail: { userId: shopId, userName: shopName }
-    }));
-  };
-
-  // Filter and sort products
-  let filteredProducts = products;
-
-  if (sortBy === 'asc') {
-    filteredProducts = [...filteredProducts].sort((a, b) => ((a.pricePerKg ?? a.sellingPrice ?? a.price ?? 0) - (b.pricePerKg ?? b.sellingPrice ?? b.price ?? 0)));
-  } else if (sortBy === 'desc') {
-    filteredProducts = [...filteredProducts].sort((a, b) => ((b.pricePerKg ?? b.sellingPrice ?? b.price ?? 0) - (a.pricePerKg ?? a.sellingPrice ?? a.price ?? 0)));
-  } else if (sortBy === 'name') {
-    filteredProducts = [...filteredProducts].sort((a, b) => a.productName.localeCompare(b.productName));
   }
 
-  const activeProducts = products.filter(p => ((p.stockKg ?? p.stockQuantity ?? p.stock ?? 0) > 0)).length;
+  const handleAddBoxToCart = async (boxId: number) => {
+    if (!isAuthenticated) {
+      onOpenLogin()
+      return
+    }
+    setAddingBoxToCart(boxId)
+    try {
+      await cartService.addToCart({ mysteryBoxId: boxId, quantity: 1 })
+      window.dispatchEvent(new Event('cart-updated'))
+      globalShowAlert('Đã thêm túi mù vào giỏ hàng!', 'Thành công', 'success')
+    } catch (error) {
+      globalShowAlert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.', 'Lỗi', 'error')
+    } finally {
+      setAddingBoxToCart(null)
+    }
+  }
+
+  const handleReceiveVoucher = async (voucherCode: string) => {
+    if (!isAuthenticated) {
+      onOpenLogin()
+      return
+    }
+    try {
+      setReceivingVoucher(voucherCode)
+      await voucherService.receiveVoucher(voucherCode)
+      setCanReceiveMap((prev) => ({ ...prev, [voucherCode]: false }))
+      setShopVouchers((prev) =>
+        prev.map((voucher) =>
+          voucher.voucherCode === voucherCode
+            ? { ...voucher, claimedCount: (voucher.claimedCount ?? 0) + 1 }
+            : voucher,
+        ),
+      )
+      globalShowAlert('Đã lưu voucher vào kho của bạn.', 'Thành công', 'success')
+    } catch (err: any) {
+      globalShowAlert(
+        err?.data?.message || 'Không thể nhận voucher. Vui lòng thử lại.',
+        'Lỗi',
+        'error',
+      )
+    } finally {
+      setReceivingVoucher(null)
+    }
+  }
+
+  const handleReact = async (reviewId: number, reactionType: 'LIKE' | 'DISLIKE') => {
+    if (!isAuthenticated) {
+      onOpenLogin()
+      return
+    }
+    if (reactingReviewId === reviewId) return
+    try {
+      setReactingReviewId(reviewId)
+      const res = await reviewService.reactToReview(reviewId, reactionType)
+      if (res.result) setReviews((prev) => prev.map((r) => (r.id === reviewId ? res.result! : r)))
+    } catch {
+    } finally {
+      setReactingReviewId(null)
+    }
+  }
+
+  const handleChatNow = () => {
+    if (!isAuthenticated) {
+      onOpenLogin()
+      return
+    }
+    window.dispatchEvent(
+      new CustomEvent('open-chat-with-user', {
+        detail: { userId: shopId, userName: shopName },
+      }),
+    )
+  }
+
+  // Filter and sort products
+  let filteredProducts = products
+
+  if (sortBy === 'asc') {
+    filteredProducts = [...filteredProducts].sort(
+      (a, b) =>
+        (a.pricePerKg ?? a.sellingPrice ?? a.price ?? 0) -
+        (b.pricePerKg ?? b.sellingPrice ?? b.price ?? 0),
+    )
+  } else if (sortBy === 'desc') {
+    filteredProducts = [...filteredProducts].sort(
+      (a, b) =>
+        (b.pricePerKg ?? b.sellingPrice ?? b.price ?? 0) -
+        (a.pricePerKg ?? a.sellingPrice ?? a.price ?? 0),
+    )
+  } else if (sortBy === 'name') {
+    filteredProducts = [...filteredProducts].sort((a, b) =>
+      a.productName.localeCompare(b.productName),
+    )
+  }
+
+  const activeProducts = products.filter(
+    (p) => (p.stockKg ?? p.stockQuantity ?? p.stock ?? 0) > 0,
+  ).length
 
   // Calculate average rating
   const calculateAverageRating = () => {
-    if (reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, rev) => acc + rev.ratingStar, 0);
-    return (sum / reviews.length).toFixed(1);
-  };
+    if (reviews.length === 0) return 0
+    const sum = reviews.reduce((acc, rev) => acc + rev.ratingStar, 0)
+    return (sum / reviews.length).toFixed(1)
+  }
 
-  const averageRating = calculateAverageRating();
+  const averageRating = calculateAverageRating()
 
   // Get shop name from shopInfo first, then from first product, then fallback
-  const shopName = shopInfo?.shopName
-    || shopInfo?.fullName
-    || (products.length > 0 ? products[0].shopName : null)
-    || 'Cửa hàng';
-
+  const shopName =
+    shopInfo?.shopName ||
+    shopInfo?.fullName ||
+    (products.length > 0 ? products[0].shopName : null) ||
+    'Cửa hàng'
 
   if (loading) {
     return (
@@ -246,7 +298,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
           <p className="text-sm text-gray-600 font-medium">Đang tải thông tin cửa hàng...</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -265,15 +317,21 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
           <div className="flex gap-2">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100 text-gray-400'
-                }`}
+              className={`p-2 rounded-lg transition-colors ${
+                viewMode === 'grid'
+                  ? 'bg-primary/10 text-primary'
+                  : 'hover:bg-gray-100 text-gray-400'
+              }`}
             >
               <Grid className="size-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100 text-gray-400'
-                }`}
+              className={`p-2 rounded-lg transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-primary/10 text-primary'
+                  : 'hover:bg-gray-100 text-gray-400'
+              }`}
             >
               <List className="size-4" />
             </button>
@@ -373,7 +431,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                 </button>
                 <div className="relative">
                   <button
-                    onClick={() => setShowShareMenu(v => !v)}
+                    onClick={() => setShowShareMenu((v) => !v)}
                     className="px-4 py-2 bg-white text-gray-700 font-bold text-xs rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2 border border-gray-200"
                   >
                     <Share2 className="size-3.5" />
@@ -382,59 +440,84 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                   {showShareMenu && (
                     <div className="absolute left-0 top-11 z-30 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 w-52 animate-in fade-in slide-in-from-top-2">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Chia sẻ cửa hàng</p>
-                        <button onClick={() => setShowShareMenu(false)} className="size-5 flex items-center justify-center hover:bg-gray-100 rounded-lg">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                          Chia sẻ cửa hàng
+                        </p>
+                        <button
+                          onClick={() => setShowShareMenu(false)}
+                          className="size-5 flex items-center justify-center hover:bg-gray-100 rounded-lg"
+                        >
                           <X className="size-3 text-gray-400" />
                         </button>
                       </div>
                       <div className="space-y-1">
                         <button
                           onClick={async () => {
-                            await navigator.clipboard.writeText(`${window.location.origin}/cua-hang/${shopId}`);
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 2000);
+                            await navigator.clipboard.writeText(
+                              `${window.location.origin}/cua-hang/${shopId}`,
+                            )
+                            setCopied(true)
+                            setTimeout(() => setCopied(false), 2000)
                           }}
                           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-xs font-bold text-gray-700 transition-colors"
                         >
-                          {copied ? <Check className="size-3.5 text-green-500" /> : <Copy className="size-3.5 text-gray-400" />}
+                          {copied ? (
+                            <Check className="size-3.5 text-green-500" />
+                          ) : (
+                            <Copy className="size-3.5 text-gray-400" />
+                          )}
                           {copied ? 'Đã sao chép!' : 'Sao chép link'}
                         </button>
                         <button
-                          onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/cua-hang/${shopId}`)}`, '_blank', 'width=600,height=400')}
+                          onClick={() =>
+                            window.open(
+                              `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/cua-hang/${shopId}`)}`,
+                              '_blank',
+                              'width=600,height=400',
+                            )
+                          }
                           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-xs font-bold text-blue-600 transition-colors"
                         >
                           <Facebook className="size-3.5" /> Facebook
                         </button>
                         <button
                           onClick={() => {
-                            const rawUrl = `${window.location.origin}/cua-hang/${shopId}`;
-                            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                            const rawUrl = `${window.location.origin}/cua-hang/${shopId}`
+                            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
                             if (isMobile) {
-                              window.location.href = `zalo://share?url=${encodeURIComponent(rawUrl)}`;
+                              window.location.href = `zalo://share?url=${encodeURIComponent(rawUrl)}`
                             } else {
-                              navigator.clipboard.writeText(rawUrl);
-                              alert('Đã sao chép link! Mở Zalo và dán vào hội thoại để chia sẻ.');
+                              navigator.clipboard.writeText(rawUrl)
+                              alert('Đã sao chép link! Mở Zalo và dán vào hội thoại để chia sẻ.')
                             }
                           }}
                           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-xs font-bold text-blue-500 transition-colors"
                         >
-                          <span className="size-3.5 rounded-full bg-blue-500 text-white text-[7px] font-black flex items-center justify-center flex-shrink-0">Z</span>
+                          <span className="size-3.5 rounded-full bg-blue-500 text-white text-[7px] font-black flex items-center justify-center flex-shrink-0">
+                            Z
+                          </span>
                           Zalo
                         </button>
                         <button
                           onClick={() => {
-                            const rawUrl = `${window.location.origin}/cua-hang/${shopId}`;
-                            const url = encodeURIComponent(rawUrl);
-                            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                            const rawUrl = `${window.location.origin}/cua-hang/${shopId}`
+                            const url = encodeURIComponent(rawUrl)
+                            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
                             if (isMobile) {
-                              window.location.href = `fb-messenger://share?link=${url}`;
+                              window.location.href = `fb-messenger://share?link=${url}`
                             } else {
-                              window.open(`https://www.facebook.com/dialog/send?link=${url}&app_id=&redirect_uri=${url}`, '_blank', 'width=600,height=400');
+                              window.open(
+                                `https://www.facebook.com/dialog/send?link=${url}&app_id=&redirect_uri=${url}`,
+                                '_blank',
+                                'width=600,height=400',
+                              )
                             }
                           }}
                           className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-indigo-50 text-xs font-bold text-indigo-600 transition-colors"
                         >
-                          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.913 1.405 5.514 3.608 7.24V22l3.259-1.793c.872.242 1.795.372 2.748.372 5.523 0 10-4.145 10-9.336C21.615 6.145 17.523 2 12 2zm1.067 12.573l-2.545-2.715-4.965 2.715 5.463-5.8 2.609 2.715 4.9-2.715-5.462 5.8z"/></svg>
+                          <svg className="size-3.5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.913 1.405 5.514 3.608 7.24V22l3.259-1.793c.872.242 1.795.372 2.748.372 5.523 0 10-4.145 10-9.336C21.615 6.145 17.523 2 12 2zm1.067 12.573l-2.545-2.715-4.965 2.715 5.463-5.8 2.609 2.715 4.9-2.715-5.462 5.8z" />
+                          </svg>
                           Messenger
                         </button>
                       </div>
@@ -481,19 +564,28 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {shopVouchers.map((voucher) => {
-                  const canReceive = canReceiveMap[voucher.voucherCode] !== false;
+                  const canReceive = canReceiveMap[voucher.voucherCode] !== false
                   return (
-                    <div key={voucher.voucherCode} className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-4 flex flex-col gap-3">
+                    <div
+                      key={voucher.voucherCode}
+                      className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-4 flex flex-col gap-3"
+                    >
                       <div>
                         <p className="text-xs font-black text-primary">{voucher.voucherCode}</p>
-                        <p className="mt-1 text-lg font-black text-gray-900">Giảm {voucher.discountValue}%</p>
+                        <p className="mt-1 text-lg font-black text-gray-900">
+                          Giảm {voucher.discountValue}%
+                        </p>
                         <p className="text-xs text-gray-500 font-bold">
-                          Tối đa {Number(voucher.maxDiscount).toLocaleString('vi-VN')}đ · Đơn từ {Number(voucher.minOrderValue).toLocaleString('vi-VN')}đ
+                          Tối đa {Number(voucher.maxDiscount).toLocaleString('vi-VN')}đ · Đơn từ{' '}
+                          {Number(voucher.minOrderValue).toLocaleString('vi-VN')}đ
                         </p>
                       </div>
                       <button
                         onClick={() => handleReceiveVoucher(voucher.voucherCode)}
-                        disabled={receivingVoucher === voucher.voucherCode || (isAuthenticated && !canReceive)}
+                        disabled={
+                          receivingVoucher === voucher.voucherCode ||
+                          (isAuthenticated && !canReceive)
+                        }
                         className="w-full rounded-xl bg-primary px-3 py-2 text-xs font-black text-white hover:bg-primary-dark disabled:bg-gray-200 disabled:text-gray-500"
                       >
                         {receivingVoucher === voucher.voucherCode
@@ -503,7 +595,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                             : 'Nhận voucher'}
                       </button>
                     </div>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -523,7 +615,9 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
               </div>
 
               <div className="rounded-2xl bg-primary/5 border border-primary/10 p-4">
-                <h4 className="font-black text-gray-700 text-xs mb-2 uppercase">Đơn vị thống nhất</h4>
+                <h4 className="font-black text-gray-700 text-xs mb-2 uppercase">
+                  Đơn vị thống nhất
+                </h4>
                 <p className="text-xs font-bold text-gray-500">Tất cả sản phẩm được bán theo kg.</p>
               </div>
             </div>
@@ -535,7 +629,9 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
               {/* Controls */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-5 border-b border-gray-100">
                 <p className="text-sm font-bold text-gray-600">
-                  Hiển thị <span className="text-primary font-black">{filteredProducts.length}</span> sản phẩm
+                  Hiển thị{' '}
+                  <span className="text-primary font-black">{filteredProducts.length}</span> sản
+                  phẩm
                 </p>
                 <select
                   value={sortBy}
@@ -551,79 +647,112 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
 
               {/* Products */}
               {filteredProducts.length > 0 ? (
-                <div className={`grid gap-5 ${viewMode === 'grid'
-                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-                  : 'grid-cols-1'
-                  }`}>
-                  {filteredProducts.map(product => {
-                    const basePricePerKg = product.pricePerKg ?? product.sellingPrice ?? 0;
+                <div
+                  className={`grid gap-5 ${
+                    viewMode === 'grid'
+                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                      : 'grid-cols-1'
+                  }`}
+                >
+                  {filteredProducts.map((product) => {
+                    const basePricePerKg = product.pricePerKg ?? product.sellingPrice ?? 0
                     return (
-                    <div
-                      key={product.id}
-                      className={`group ${viewMode === 'list' ? 'flex gap-4' : ''
-                        }`}
-                    >
-                      {/* Image */}
-                      <div className={`relative ${viewMode === 'list' ? 'w-32 h-32' : 'aspect-square'
-                        } rounded-xl overflow-hidden bg-gray-100 border border-gray-100 group-hover:border-primary/50 transition-all flex-shrink-0`}>
-                        <img
-                          src={product.imageUrl || `https://picsum.photos/seed/${product.id}/400/400`}
-                          alt={product.productName}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {((product.stockKg ?? product.stockQuantity ?? product.stock ?? 0) <= 0) && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <span className="text-white text-xs font-black">Hết hàng</span>
-                          </div>
-                        )}
-                        <button
-                          onClick={() => handleAddToCart(product.id)}
-                          disabled={(product.stockKg ?? product.stockQuantity ?? product.stock ?? 0) <= 0 || addingToCart === product.id}
-                          className={`absolute ${viewMode === 'list' ? 'bottom-2 right-2 size-8' : 'bottom-3 right-3 size-10'
-                            } bg-primary text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
+                      <div
+                        key={product.id}
+                        className={`group ${viewMode === 'list' ? 'flex gap-4' : ''}`}
+                      >
+                        {/* Image */}
+                        <div
+                          className={`relative ${
+                            viewMode === 'list' ? 'w-32 h-32' : 'aspect-square'
+                          } rounded-xl overflow-hidden bg-gray-100 border border-gray-100 group-hover:border-primary/50 transition-all flex-shrink-0`}
                         >
-                          {addingToCart === product.id ? (
-                            <Loader2 className={`${viewMode === 'list' ? 'size-4' : 'size-5'} animate-spin`} />
-                          ) : (
-                            <ShoppingCart className={viewMode === 'list' ? 'size-4' : 'size-5'} />
+                          <img
+                            src={
+                              product.imageUrl || `https://picsum.photos/seed/${product.id}/400/400`
+                            }
+                            alt={product.productName}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          {(product.stockKg ?? product.stockQuantity ?? product.stock ?? 0) <=
+                            0 && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                              <span className="text-white text-xs font-black">Hết hàng</span>
+                            </div>
                           )}
-                        </button>
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 mt-3">
-                        <h4 className="font-bold text-gray-800 text-sm mb-1 line-clamp-2 group-hover:text-primary transition-colors">
-                          {product.productName}
-                        </h4>
-                        <p className="text-xs text-gray-500 font-medium mb-2">Đơn vị: kg</p>
-
-                        <div className="flex flex-col gap-0.5 mb-2">
-                          {product.salePrice != null && product.salePrice > 0 ? (
-                            <>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-red-500 line-through font-semibold">{basePricePerKg.toLocaleString('vi-VN')}đ/kg</span>
-                                <span className="bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">-{product.discountPercent}%</span>
-                              </div>
-                              <span className="text-lg font-black text-primary">{product.salePrice.toLocaleString('vi-VN')}đ/kg</span>
-                            </>
-                          ) : (
-                            <span className="text-lg font-black text-primary">{basePricePerKg.toLocaleString('vi-VN')}đ/kg</span>
-                          )}
+                          <button
+                            onClick={() => handleAddToCart(product.id)}
+                            disabled={
+                              (product.stockKg ?? product.stockQuantity ?? product.stock ?? 0) <=
+                                0 || addingToCart === product.id
+                            }
+                            className={`absolute ${
+                              viewMode === 'list'
+                                ? 'bottom-2 right-2 size-8'
+                                : 'bottom-3 right-3 size-10'
+                            } bg-primary text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            {addingToCart === product.id ? (
+                              <Loader2
+                                className={`${viewMode === 'list' ? 'size-4' : 'size-5'} animate-spin`}
+                              />
+                            ) : (
+                              <ShoppingCart className={viewMode === 'list' ? 'size-4' : 'size-5'} />
+                            )}
+                          </button>
                         </div>
 
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 font-medium">
-                            Còn: {((product.stockKg ?? product.stockQuantity ?? product.stock ?? 0)).toLocaleString('vi-VN', { maximumFractionDigits: 2 })} kg
-                          </span>
-                          {(product.stockKg ?? product.stockQuantity ?? product.stock ?? 0) > 0 ? (
-                            <span className="text-[10px] text-primary font-bold">Còn hàng</span>
-                          ) : (
-                            <span className="text-[10px] text-red-600 font-bold">Hết hàng</span>
-                          )}
+                        {/* Info */}
+                        <div className="flex-1 mt-3">
+                          <h4 className="font-bold text-gray-800 text-sm mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                            {product.productName}
+                          </h4>
+                          <p className="text-xs text-gray-500 font-medium mb-2">Đơn vị: kg</p>
+
+                          <div className="flex flex-col gap-0.5 mb-2">
+                            {product.salePrice != null && product.salePrice > 0 ? (
+                              <>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs text-red-500 line-through font-semibold">
+                                    {basePricePerKg.toLocaleString('vi-VN')}đ/kg
+                                  </span>
+                                  <span className="bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+                                    -{product.discountPercent}%
+                                  </span>
+                                </div>
+                                <span className="text-lg font-black text-primary">
+                                  {product.salePrice.toLocaleString('vi-VN')}đ/kg
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-lg font-black text-primary">
+                                {basePricePerKg.toLocaleString('vi-VN')}đ/kg
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-gray-500 font-medium">
+                              Còn:{' '}
+                              {(
+                                product.stockKg ??
+                                product.stockQuantity ??
+                                product.stock ??
+                                0
+                              ).toLocaleString('vi-VN', { maximumFractionDigits: 2 })}{' '}
+                              kg
+                            </span>
+                            {(product.stockKg ?? product.stockQuantity ?? product.stock ?? 0) >
+                            0 ? (
+                              <span className="text-[10px] text-primary font-bold">Còn hàng</span>
+                            ) : (
+                              <span className="text-[10px] text-red-600 font-bold">Hết hàng</span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )})}
+                    )
+                  })}
                 </div>
               ) : (
                 <div className="py-16 text-center">
@@ -645,17 +774,26 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-gray-900">Túi Mù Của Shop</h3>
-                  <p className="text-xs text-gray-400 font-bold">{mysteryBoxes.length} túi mù đang bán</p>
+                  <p className="text-xs text-gray-400 font-bold">
+                    {mysteryBoxes.length} túi mù đang bán
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {mysteryBoxes.map((box) => (
-                  <div key={box.id} className="group relative bg-gradient-to-br from-purple-50 to-white rounded-2xl border border-purple-100 overflow-hidden hover:shadow-lg hover:border-purple-200 transition-all">
+                  <div
+                    key={box.id}
+                    className="group relative bg-gradient-to-br from-purple-50 to-white rounded-2xl border border-purple-100 overflow-hidden hover:shadow-lg hover:border-purple-200 transition-all"
+                  >
                     {/* Image */}
                     <div className="relative aspect-square overflow-hidden bg-purple-100">
                       {box.imageUrl ? (
-                        <img src={box.imageUrl} alt={box.boxType} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <img
+                          src={box.imageUrl}
+                          alt={box.boxType}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-purple-300">
                           <Gift className="size-16" />
@@ -664,7 +802,9 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                       )}
                       <div className="absolute top-3 left-3 bg-black/60 backdrop-blur text-white px-2.5 py-1 rounded-full flex items-center gap-1.5">
                         <Gift className="size-3 text-yellow-400" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Bí ẩn</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">
+                          Bí ẩn
+                        </span>
                       </div>
                       <button
                         onClick={() => handleAddBoxToCart(box.id)}
@@ -681,18 +821,28 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
 
                     {/* Info */}
                     <div className="p-4">
-                      <h4 className="font-black text-gray-800 text-sm mb-1 line-clamp-1">{box.boxType}</h4>
+                      <h4 className="font-black text-gray-800 text-sm mb-1 line-clamp-1">
+                        {box.boxType}
+                      </h4>
                       {box.description && (
-                        <p className="text-xs text-gray-500 font-medium mb-2 line-clamp-2">{box.description}</p>
+                        <p className="text-xs text-gray-500 font-medium mb-2 line-clamp-2">
+                          {box.description}
+                        </p>
                       )}
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-lg font-black text-primary">{box.price.toLocaleString('vi-VN')}đ</span>
+                        <span className="text-lg font-black text-primary">
+                          {box.price.toLocaleString('vi-VN')}đ
+                        </span>
                         <button
                           onClick={() => handleAddBoxToCart(box.id)}
                           disabled={addingBoxToCart === box.id}
                           className="px-3 py-1.5 bg-primary text-white text-[10px] font-black rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center gap-1"
                         >
-                          {addingBoxToCart === box.id ? <Loader2 className="size-3 animate-spin" /> : <ShoppingCart className="size-3" />}
+                          {addingBoxToCart === box.id ? (
+                            <Loader2 className="size-3 animate-spin" />
+                          ) : (
+                            <ShoppingCart className="size-3" />
+                          )}
                           Thêm vào giỏ
                         </button>
                       </div>
@@ -703,7 +853,6 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
             </div>
           </div>
         )}
-
 
         {/* Reviews Section */}
         {reviews.length > 0 && (
@@ -719,7 +868,10 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                 <div className="flex items-center gap-2">
                   <div className="flex text-yellow-400">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={`size-5 ${i < Math.round(Number(averageRating)) ? 'fill-yellow-400' : 'text-gray-200'}`} />
+                      <Star
+                        key={i}
+                        className={`size-5 ${i < Math.round(Number(averageRating)) ? 'fill-yellow-400' : 'text-gray-200'}`}
+                      />
                     ))}
                   </div>
                   <span className="text-2xl font-black text-gray-900">{averageRating}</span>
@@ -728,11 +880,14 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
 
               <div className="space-y-6">
                 {reviews.map((review) => {
-                  const isLiked    = review.currentUserReaction === 'LIKE';
-                  const isDisliked = review.currentUserReaction === 'DISLIKE';
-                  const isReacting = reactingReviewId === review.id;
+                  const isLiked = review.currentUserReaction === 'LIKE'
+                  const isDisliked = review.currentUserReaction === 'DISLIKE'
+                  const isReacting = reactingReviewId === review.id
                   return (
-                    <div key={review.id} className="flex gap-4 pb-6 border-b border-gray-50 last:border-0 last:pb-0">
+                    <div
+                      key={review.id}
+                      className="flex gap-4 pb-6 border-b border-gray-50 last:border-0 last:pb-0"
+                    >
                       {/* Avatar */}
                       <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary text-sm border border-primary/20 shrink-0">
                         {review.fullName ? review.fullName.charAt(0).toUpperCase() : 'U'}
@@ -745,21 +900,30 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                               {review.fullName || `Khách hàng #${review.buyerId}`}
                             </h4>
                             <p className="text-[10px] text-gray-400 mt-0.5">
-                              {review.createAt ? new Date(review.createAt).toLocaleDateString('vi-VN') : 'Gần đây'}
+                              {review.createAt
+                                ? new Date(review.createAt).toLocaleDateString('vi-VN')
+                                : 'Gần đây'}
                             </p>
                             <div className="flex text-yellow-400 mt-1">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`size-3 ${i < review.ratingStar ? 'fill-yellow-400' : 'text-gray-200'}`} />
+                                <Star
+                                  key={i}
+                                  className={`size-3 ${i < review.ratingStar ? 'fill-yellow-400' : 'text-gray-200'}`}
+                                />
                               ))}
                             </div>
                             {(review.productName || review.boxType) && (
                               <p className="text-[10px] text-gray-400 mt-0.5 italic">
-                                {review.productName ? `SP: ${review.productName}` : `Túi mù: ${review.boxType}`}
+                                {review.productName
+                                  ? `SP: ${review.productName}`
+                                  : `Túi mù: ${review.boxType}`}
                               </p>
                             )}
                           </div>
                           <div className="flex items-center gap-1.5 flex-shrink-0">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Hữu ích?</span>
+                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                              Hữu ích?
+                            </span>
                             <button
                               onClick={() => handleReact(review.id, 'LIKE')}
                               disabled={isReacting}
@@ -777,11 +941,17 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                           </div>
                         </div>
 
-                        <p className="text-gray-700 text-sm leading-relaxed mb-3">{review.comment}</p>
+                        <p className="text-gray-700 text-sm leading-relaxed mb-3">
+                          {review.comment}
+                        </p>
 
                         {review.evidence && (
                           <div className="mb-3 rounded-xl overflow-hidden border border-gray-200 w-24 aspect-square">
-                            <img src={review.evidence} alt="Bằng chứng" className="w-full h-full object-cover" />
+                            <img
+                              src={review.evidence}
+                              alt="Bằng chứng"
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                         )}
 
@@ -792,14 +962,18 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
                               <div className="size-5 bg-primary rounded-full flex items-center justify-center text-white">
                                 <MessageCircle className="size-3" />
                               </div>
-                              <span className="text-xs font-black text-gray-900">Phản hồi từ Shop</span>
+                              <span className="text-xs font-black text-gray-900">
+                                Phản hồi từ Shop
+                              </span>
                             </div>
-                            <p className="text-gray-600 text-sm pl-7 italic">{review.replyFromShop}</p>
+                            <p className="text-gray-600 text-sm pl-7 italic">
+                              {review.replyFromShop}
+                            </p>
                           </div>
                         )}
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -807,7 +981,7 @@ const ShopProducts: React.FC<ShopProductsProps> = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ShopProducts;
+export default ShopProducts

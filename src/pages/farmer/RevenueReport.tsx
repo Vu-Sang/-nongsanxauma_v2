@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Coins, ShoppingCart, Star, Leaf, BarChart3, TrendingUp, ArrowUpRight } from 'lucide-react';
+import React, { useState } from 'react'
+import { Coins, ShoppingCart, Star, Leaf, BarChart3, TrendingUp, ArrowUpRight } from 'lucide-react'
 
 export default function RevenueReport() {
-  const [period, setPeriod] = useState<'week' | 'month' | 'all'>('week');
+  const [period, setPeriod] = useState<'week' | 'month' | 'all'>('week')
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -15,14 +15,19 @@ export default function RevenueReport() {
           </p>
         </div>
 
-        <div id="tour-revenue-filter" className="flex items-center gap-1 bg-[#f0f4ec] p-1 rounded-2xl">
+        <div
+          id="tour-revenue-filter"
+          className="flex items-center gap-1 bg-[#f0f4ec] p-1 rounded-2xl"
+        >
           {(['week', 'month', 'all'] as const).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
               className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                period === p ? 'bg-white text-[#326318] shadow-sm' : 'text-[#677261] hover:text-[#1c2216]'
+                period === p
+                  ? 'bg-white text-[#326318] shadow-sm'
+                  : 'text-[#677261] hover:text-[#1c2216]'
               }`}
             >
               {p === 'week' ? 'Tuần Này' : p === 'month' ? 'Tháng Này' : '6 Tháng'}
@@ -62,7 +67,9 @@ export default function RevenueReport() {
 
         <div className="bg-white rounded-3xl p-5 border border-[#e8ece3] shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-[#7e8779] uppercase">NÔNG SẢN GIẢI CỨU</span>
+            <span className="text-[11px] font-bold text-[#7e8779] uppercase">
+              NÔNG SẢN GIẢI CỨU
+            </span>
             <Leaf size={20} className="text-[#326318]" />
           </div>
           <div className="text-2xl font-black text-[#1c2216] mt-2">1,250 kg</div>
@@ -71,8 +78,13 @@ export default function RevenueReport() {
       </div>
 
       {/* Chart simulation */}
-      <div id="tour-revenue-chart" className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4">
-        <h4 className="text-base font-black text-[#1c2216]">Biểu Đồ Doanh Số Theo Ngày Trong Tuần</h4>
+      <div
+        id="tour-revenue-chart"
+        className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4"
+      >
+        <h4 className="text-base font-black text-[#1c2216]">
+          Biểu Đồ Doanh Số Theo Ngày Trong Tuần
+        </h4>
         <div className="h-48 flex items-end justify-between gap-3 pt-6 px-4 border-b border-[#f1f4ed]">
           {[
             { day: 'T2', val: 65, amount: '2.1 tr' },
@@ -97,5 +109,5 @@ export default function RevenueReport() {
         </div>
       </div>
     </div>
-  );
+  )
 }

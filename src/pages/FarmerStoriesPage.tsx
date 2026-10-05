@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react'
 import {
   Heart,
   MessageCircle,
@@ -21,82 +21,87 @@ import {
   User,
   X,
   Plus,
-} from 'lucide-react';
+} from 'lucide-react'
 
-import heroFarmerImg from '../assets/hero-farmer.jpg';
-import freshFarmerBannerImg from '../assets/fresh-farmer-banner.jpg';
-import fullBannerImg from '../assets/full-ecosystem-banner.jpg';
-import aiFarmerImg from '../assets/ai-farmer.jpg';
-import comboMysteryImg from '../assets/combo-mystery.jpg';
-import comboGreenImg from '../assets/combo-green.jpg';
-import farmerForumBanner from '../assets/farmer-forum-banner.jpg';
+import heroFarmerImg from '../assets/hero-farmer.jpg'
+import freshFarmerBannerImg from '../assets/fresh-farmer-banner.jpg'
+import fullBannerImg from '../assets/full-ecosystem-banner.jpg'
+import aiFarmerImg from '../assets/ai-farmer.jpg'
+import comboMysteryImg from '../assets/combo-mystery.jpg'
+import comboGreenImg from '../assets/combo-green.jpg'
+import farmerForumBanner from '../assets/farmer-forum-banner.jpg'
 
 interface FarmerStoriesPageProps {
-  onAdd?: (id: string) => void;
-  onInfo?: (msg: string) => void;
+  onAdd?: (id: string) => void
+  onInfo?: (msg: string) => void
 }
 
 interface ForumPost {
-  id: string;
-  title: string;
-  author: string;
-  authorRole: string;
-  location: string;
-  date: string;
-  category: 'rescue' | 'story' | 'news' | 'tips';
-  readTime: string;
-  image: string;
-  summary: string;
-  content: string[];
-  likes: number;
-  commentsCount: number;
-  featured?: boolean;
-  relatedProductId?: string;
-  relatedProductName?: string;
-  relatedProductPrice?: string;
-  comments: { user: string; text: string; time: string }[];
+  id: string
+  title: string
+  author: string
+  authorRole: string
+  location: string
+  date: string
+  category: 'rescue' | 'story' | 'news' | 'tips'
+  readTime: string
+  image: string
+  summary: string
+  content: string[]
+  likes: number
+  commentsCount: number
+  featured?: boolean
+  relatedProductId?: string
+  relatedProductName?: string
+  relatedProductPrice?: string
+  comments: { user: string; text: string; time: string }[]
 }
 
 export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPageProps) {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'rescue' | 'story' | 'news' | 'tips'>('all');
-  const [selectedRegion, setSelectedRegion] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<
+    'all' | 'rescue' | 'story' | 'news' | 'tips'
+  >('all')
+  const [selectedRegion, setSelectedRegion] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Active Reading Post Modal
-  const [readingPost, setReadingPost] = useState<ForumPost | null>(null);
+  const [readingPost, setReadingPost] = useState<ForumPost | null>(null)
 
   // Active Comment Drawer
-  const [commentingPost, setCommentingPost] = useState<ForumPost | null>(null);
-  const [commentText, setCommentText] = useState('');
+  const [commentingPost, setCommentingPost] = useState<ForumPost | null>(null)
+  const [commentText, setCommentText] = useState('')
 
   // User Encouraging Note board
   const [notes, setNotes] = useState([
     {
       id: '1',
       sender: 'Chị Mai Lan (Quận 7, TP.HCM)',
-      message: 'Cà rốt 2 nhánh của chú Bảy ăn ngọt lịm và nhiều nước hơn hẳn hàng siêu thị. Cả nhà em làm nước ép ai cũng khen!',
+      message:
+        'Cà rốt 2 nhánh của chú Bảy ăn ngọt lịm và nhiều nước hơn hẳn hàng siêu thị. Cả nhà em làm nước ép ai cũng khen!',
       time: '15 phút trước',
       heart: 24,
     },
     {
       id: '2',
       sender: 'Anh Tuấn Kiệt (Cầu Giấy, Hà Nội)',
-      message: 'Mới nhận thùng bắp cải Cầu Đất, lá xanh cuộn chắc nịch. Cảm ơn các bác nông dân đã chăm sóc tận tâm dù thời tiết khắc nghiệt.',
+      message:
+        'Mới nhận thùng bắp cải Cầu Đất, lá xanh cuộn chắc nịch. Cảm ơn các bác nông dân đã chăm sóc tận tâm dù thời tiết khắc nghiệt.',
       time: '1 giờ trước',
       heart: 38,
     },
     {
       id: '3',
       sender: 'Bác sĩ Thu Hằng (Bệnh viện ĐHYD)',
-      message: 'Rau củ xấu mã giữ trọn vẹn chất chống oxy hóa tự nhiên. Rất ủng hộ dự án CapNong vì nông sản sạch và bền vững.',
+      message:
+        'Rau củ xấu mã giữ trọn vẹn chất chống oxy hóa tự nhiên. Rất ủng hộ dự án CapNong vì nông sản sạch và bền vững.',
       time: '3 giờ trước',
       heart: 52,
     },
-  ]);
+  ])
 
-  const [newNoteSender, setNewNoteSender] = useState('');
-  const [newNoteMessage, setNewNoteMessage] = useState('');
-  const [noteNotice, setNoteNotice] = useState('');
+  const [newNoteSender, setNewNoteSender] = useState('')
+  const [newNoteMessage, setNewNoteMessage] = useState('')
+  const [noteNotice, setNoteNotice] = useState('')
 
   // Post Data
   const [posts, setPosts] = useState<ForumPost[]>([
@@ -124,8 +129,16 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
       relatedProductName: 'Bắp Cải Xanh Cầu Đất (Loại 2kg)',
       relatedProductPrice: '14.000đ/kg',
       comments: [
-        { user: 'Thảo My', text: 'Nhà em vừa luộc ăn trưa nay, giòn ngọt xuất sắc chú Bảy ơi!', time: '1 giờ trước' },
-        { user: 'Bếp Xanh Quán', text: 'Đã đặt 50kg về nấu súp cho quán cơm thiện nguyện, ủng hộ bà con.', time: '3 giờ trước' },
+        {
+          user: 'Thảo My',
+          text: 'Nhà em vừa luộc ăn trưa nay, giòn ngọt xuất sắc chú Bảy ơi!',
+          time: '1 giờ trước',
+        },
+        {
+          user: 'Bếp Xanh Quán',
+          text: 'Đã đặt 50kg về nấu súp cho quán cơm thiện nguyện, ủng hộ bà con.',
+          time: '3 giờ trước',
+        },
       ],
     },
     {
@@ -150,12 +163,17 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
       relatedProductName: 'Bưởi Da Xanh Rám Vỏ (1.2kg – 1.5kg)',
       relatedProductPrice: '28.000đ/trái',
       comments: [
-        { user: 'Ngọc Trâm', text: 'Bưởi cô Ba ngọt lịm, múi đỏ hồng mọng nước ăn ghiền luôn!', time: 'Hôm qua' },
+        {
+          user: 'Ngọc Trâm',
+          text: 'Bưởi cô Ba ngọt lịm, múi đỏ hồng mọng nước ăn ghiền luôn!',
+          time: 'Hôm qua',
+        },
       ],
     },
     {
       id: 'post-3',
-      title: 'Báo Nông Nghiệp Việt Nam: "Mô Hình Nông Sản Xấu Mã Giúp Giảm 60% Thất Thoát Thực Phẩm"',
+      title:
+        'Báo Nông Nghiệp Việt Nam: "Mô Hình Nông Sản Xấu Mã Giúp Giảm 60% Thất Thoát Thực Phẩm"',
       author: 'Ban Biên Tập & Tin Tức CapNong',
       authorRole: 'Chuyên mục Báo Chí & Nông Nghiệp Số',
       location: 'Toàn quốc',
@@ -172,7 +190,11 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
       likes: 195,
       commentsCount: 12,
       comments: [
-        { user: 'Hoàng Nam', text: 'Mô hình rất nhân văn, chúc CapNong ngày càng phát triển!', time: '2 ngày trước' },
+        {
+          user: 'Hoàng Nam',
+          text: 'Mô hình rất nhân văn, chúc CapNong ngày càng phát triển!',
+          time: '2 ngày trước',
+        },
       ],
     },
     {
@@ -198,28 +220,30 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
       relatedProductName: 'Cà Rốt 2 Nhánh Đà Lạt (Túi 1kg)',
       relatedProductPrice: '18.000đ/kg',
       comments: [
-        { user: 'Mẹ Bắp', text: 'Áp dụng mẹo quấn giấy báo của Bác Tư, cà rốt để 3 tuần vẫn giòn rụm.', time: '2 ngày trước' },
+        {
+          user: 'Mẹ Bắp',
+          text: 'Áp dụng mẹo quấn giấy báo của Bác Tư, cà rốt để 3 tuần vẫn giòn rụm.',
+          time: '2 ngày trước',
+        },
       ],
     },
-  ]);
+  ])
 
   // Handle Likes
   const handleLikePost = (postId: string) => {
-    setPosts((prev) =>
-      prev.map((p) => (p.id === postId ? { ...p, likes: p.likes + 1 } : p))
-    );
-  };
+    setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, likes: p.likes + 1 } : p)))
+  }
 
   // Handle Add Comment
   const handleAddComment = (e: FormEvent) => {
-    e.preventDefault();
-    if (!commentText.trim() || !commentingPost) return;
+    e.preventDefault()
+    if (!commentText.trim() || !commentingPost) return
 
     const newComment = {
       user: 'Khách tham quan',
       text: commentText.trim(),
       time: 'Vừa xong',
-    };
+    }
 
     setPosts((prev) =>
       prev.map((p) =>
@@ -229,21 +253,27 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
               commentsCount: p.commentsCount + 1,
               comments: [newComment, ...p.comments],
             }
-          : p
-      )
-    );
+          : p,
+      ),
+    )
 
     setCommentingPost((prev) =>
-      prev ? { ...prev, comments: [newComment, ...prev.comments], commentsCount: prev.commentsCount + 1 } : null
-    );
+      prev
+        ? {
+            ...prev,
+            comments: [newComment, ...prev.comments],
+            commentsCount: prev.commentsCount + 1,
+          }
+        : null,
+    )
 
-    setCommentText('');
-  };
+    setCommentText('')
+  }
 
   // Handle Post New Note to Farmer
   const handleSendNote = (e: FormEvent) => {
-    e.preventDefault();
-    if (!newNoteMessage.trim()) return;
+    e.preventDefault()
+    if (!newNoteMessage.trim()) return
 
     const newNote = {
       id: Date.now().toString(),
@@ -251,30 +281,30 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
       message: newNoteMessage.trim(),
       time: 'Vừa xong',
       heart: 1,
-    };
+    }
 
-    setNotes([newNote, ...notes]);
-    setNewNoteSender('');
-    setNewNoteMessage('');
-    setNoteNotice('Lời nhắn của bạn đã được gửi lên bảng tin tri ân nông dân!');
-    setTimeout(() => setNoteNotice(''), 4000);
-  };
+    setNotes([newNote, ...notes])
+    setNewNoteSender('')
+    setNewNoteMessage('')
+    setNoteNotice('Lời nhắn của bạn đã được gửi lên bảng tin tri ân nông dân!')
+    setTimeout(() => setNoteNotice(''), 4000)
+  }
 
   // Filter Posts
   const filteredPosts = posts.filter((post) => {
-    const matchCat = selectedCategory === 'all' || post.category === selectedCategory;
+    const matchCat = selectedCategory === 'all' || post.category === selectedCategory
     const matchRegion =
-      selectedRegion === 'all' || post.location.toLowerCase().includes(selectedRegion.toLowerCase());
+      selectedRegion === 'all' || post.location.toLowerCase().includes(selectedRegion.toLowerCase())
     const matchSearch =
       !searchQuery ||
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.summary.toLowerCase().includes(searchQuery.toLowerCase());
+      post.summary.toLowerCase().includes(searchQuery.toLowerCase())
 
-    return matchCat && matchRegion && matchSearch;
-  });
+    return matchCat && matchRegion && matchSearch
+  })
 
-  const featuredPost = posts.find((p) => p.featured) || posts[0];
+  const featuredPost = posts.find((p) => p.featured) || posts[0]
 
   return (
     <div className="w-full bg-[#fcf9f1] text-[#1f241a] min-h-screen">
@@ -300,7 +330,8 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
           </h1>
 
           <p className="text-xs sm:text-sm md:text-base text-white/85 font-normal max-w-xl mx-auto leading-relaxed drop-shadow">
-            Nơi kết nối trực tiếp những câu chuyện mùa vụ chân thật, nhật ký cứu trợ nông sản và những lời nhắn gửi yêu thương giữa khách hàng và người nông dân Việt.
+            Nơi kết nối trực tiếp những câu chuyện mùa vụ chân thật, nhật ký cứu trợ nông sản và
+            những lời nhắn gửi yêu thương giữa khách hàng và người nông dân Việt.
           </p>
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-white/90 font-medium mt-1 shadow-sm">
@@ -321,7 +352,10 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
           {/* Search Bar & Region Filters */}
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-2xl mx-auto mt-2">
             <div className="relative flex-1 w-full">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8c9486]" />
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8c9486]"
+              />
               <input
                 type="text"
                 value={searchQuery}
@@ -346,13 +380,15 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
 
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            {([
-              { id: 'all', label: 'Tất cả bài viết' },
-              { id: 'rescue', label: '🚨 Nhật ký giải cứu' },
-              { id: 'story', label: '📖 Phóng sự người nông dân' },
-              { id: 'news', label: '📰 Báo chí & Tin tức' },
-              { id: 'tips', label: '🌱 Mẹo canh tác & Bảo quản' },
-            ] as const).map((tab) => (
+            {(
+              [
+                { id: 'all', label: 'Tất cả bài viết' },
+                { id: 'rescue', label: '🚨 Nhật ký giải cứu' },
+                { id: 'story', label: '📖 Phóng sự người nông dân' },
+                { id: 'news', label: '📰 Báo chí & Tin tức' },
+                { id: 'tips', label: '🌱 Mẹo canh tác & Bảo quản' },
+              ] as const
+            ).map((tab) => (
               <button
                 key={tab.id}
                 type="button"
@@ -581,12 +617,16 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
                 Gửi Lời Động Viên Đến Những Người Nông Dân
               </h2>
               <p className="text-xs sm:text-sm text-white/80 max-w-xl">
-                Những lời động viên chân thành từ khách hàng là nguồn động lực to lớn giúp bà con nông dân yên tâm canh tác sạch và giữ vững chất lượng.
+                Những lời động viên chân thành từ khách hàng là nguồn động lực to lớn giúp bà con
+                nông dân yên tâm canh tác sạch và giữ vững chất lượng.
               </p>
             </div>
 
             {/* Input Form to Post Note */}
-            <form onSubmit={handleSendNote} className="bg-white/10 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-white/20 flex flex-col gap-3">
+            <form
+              onSubmit={handleSendNote}
+              className="bg-white/10 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-white/20 flex flex-col gap-3"
+            >
               {noteNotice && (
                 <div className="p-3 bg-[#eaf5e1] text-[#2c5f11] rounded-2xl text-xs font-bold flex items-center gap-2 animate-fadeIn">
                   <CheckCircle2 size={16} />
@@ -631,9 +671,7 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
                   key={note.id}
                   className="bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex flex-col justify-between gap-2 shadow-sm"
                 >
-                  <p className="text-xs text-white/90 leading-relaxed italic">
-                    "{note.message}"
-                  </p>
+                  <p className="text-xs text-white/90 leading-relaxed italic">"{note.message}"</p>
                   <div className="flex items-center justify-between text-[11px] text-white/70 pt-2 border-t border-white/15">
                     <strong className="text-[#ffea79]">{note.sender}</strong>
                     <span>{note.time}</span>
@@ -703,8 +741,8 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
                     <button
                       type="button"
                       onClick={() => {
-                        onAdd(readingPost.relatedProductId!);
-                        setReadingPost(null);
+                        onAdd(readingPost.relatedProductId!)
+                        setReadingPost(null)
                       }}
                       className="px-4 py-2 rounded-full bg-[#326318] hover:bg-[#254b12] text-white font-bold text-xs shadow cursor-pointer"
                     >
@@ -777,5 +815,5 @@ export default function FarmerStoriesPage({ onAdd, onInfo }: FarmerStoriesPagePr
         </div>
       )}
     </div>
-  );
+  )
 }

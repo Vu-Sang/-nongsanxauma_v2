@@ -1,21 +1,21 @@
-import React, { useState, type FormEvent } from 'react';
-import { ChefHat, Plus, X } from 'lucide-react';
-import type { FarmerProduct } from './types';
+import React, { useState, type FormEvent } from 'react'
+import { ChefHat, Plus, X } from 'lucide-react'
+import type { FarmerProduct } from './types'
 
 interface ComboBuilderProps {
-  onAddCombo: (combo: FarmerProduct) => void;
-  onClose: () => void;
-  onInfo?: (msg: string) => void;
+  onAddCombo: (combo: FarmerProduct) => void
+  onClose: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function ComboBuilder({ onAddCombo, onClose, onInfo }: ComboBuilderProps) {
-  const [comboName, setComboName] = useState('');
-  const [comboPrice, setComboPrice] = useState('149000');
-  const [comboWeight, setComboWeight] = useState('4.5kg');
+  const [comboName, setComboName] = useState('')
+  const [comboPrice, setComboPrice] = useState('149000')
+  const [comboWeight, setComboWeight] = useState('4.5kg')
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!comboName.trim()) return;
+    e.preventDefault()
+    if (!comboName.trim()) return
 
     const newCombo: FarmerProduct = {
       id: Date.now().toString(),
@@ -28,13 +28,14 @@ export default function ComboBuilder({ onAddCombo, onClose, onInfo }: ComboBuild
       stock: 20,
       unit: 'combo',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=300&q=80',
-    };
+      image:
+        'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=300&q=80',
+    }
 
-    onAddCombo(newCombo);
-    onClose();
-    onInfo?.(`Đã tạo combo mới: ${newCombo.name}`);
-  };
+    onAddCombo(newCombo)
+    onClose()
+    onInfo?.(`Đã tạo combo mới: ${newCombo.name}`)
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -53,13 +54,17 @@ export default function ComboBuilder({ onAddCombo, onClose, onInfo }: ComboBuild
           </div>
           <div>
             <h3 className="text-xl font-black text-[#1c2216]">Tạo Combo Nông Sản</h3>
-            <p className="text-xs text-[#7e8779]">Ghép nhiều loại rau củ thành set món ăn tiện lợi</p>
+            <p className="text-xs text-[#7e8779]">
+              Ghép nhiều loại rau củ thành set món ăn tiện lợi
+            </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="block text-xs font-bold text-[#353d2f] mb-1">Tên combo món ăn *</label>
+            <label className="block text-xs font-bold text-[#353d2f] mb-1">
+              Tên combo món ăn *
+            </label>
             <input
               type="text"
               required
@@ -72,7 +77,9 @@ export default function ComboBuilder({ onAddCombo, onClose, onInfo }: ComboBuild
 
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Giá bán combo (đ) *</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Giá bán combo (đ) *
+              </label>
               <input
                 type="number"
                 required
@@ -82,7 +89,9 @@ export default function ComboBuilder({ onAddCombo, onClose, onInfo }: ComboBuild
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Trọng lượng tổng</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Trọng lượng tổng
+              </label>
               <input
                 type="text"
                 value={comboWeight}
@@ -102,5 +111,5 @@ export default function ComboBuilder({ onAddCombo, onClose, onInfo }: ComboBuild
         </form>
       </div>
     </div>
-  );
+  )
 }

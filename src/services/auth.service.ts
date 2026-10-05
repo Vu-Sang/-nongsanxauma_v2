@@ -1,1 +1,1 @@
-export type { UserResponse, RoleResponse } from './index';
+export type { UserResponse, RoleResponse } from './index'

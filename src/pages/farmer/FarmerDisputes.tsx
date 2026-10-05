@@ -1,5 +1,5 @@
-import React from 'react';
-import { Gavel, AlertTriangle } from 'lucide-react';
+import React from 'react'
+import { Gavel, AlertTriangle } from 'lucide-react'
 
 export default function FarmerDisputes() {
   return (
@@ -10,7 +10,9 @@ export default function FarmerDisputes() {
         </div>
         <div>
           <h3 className="text-xl font-black text-[#1c2216]">Trung Tâm Trợ Giúp &amp; Khiếu Nại</h3>
-          <p className="text-xs text-[#7e8779]">Giải quyết vướng mắc về vận chuyển, đơn hàng và chất lượng</p>
+          <p className="text-xs text-[#7e8779]">
+            Giải quyết vướng mắc về vận chuyển, đơn hàng và chất lượng
+          </p>
         </div>
       </div>
 
@@ -22,5 +24,5 @@ export default function FarmerDisputes() {
         </p>
       </div>
     </div>
-  );
+  )
 }

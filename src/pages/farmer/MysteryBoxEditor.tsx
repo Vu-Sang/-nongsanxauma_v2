@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { Gift, X } from 'lucide-react';
-import type { FarmerProduct } from './types';
+import React, { useState } from 'react'
+import { Gift, X } from 'lucide-react'
+import type { FarmerProduct } from './types'
 
 interface MysteryBoxEditorProps {
-  box?: FarmerProduct | null;
-  onSave: (updated: FarmerProduct) => void;
-  onClose: () => void;
+  box?: FarmerProduct | null
+  onSave: (updated: FarmerProduct) => void
+  onClose: () => void
 }
 
 export default function MysteryBoxEditor({ box, onSave, onClose }: MysteryBoxEditorProps) {
-  const [name, setName] = useState(box?.name || '');
-  const [price, setPrice] = useState(box?.price?.toString() || '79000');
+  const [name, setName] = useState(box?.name || '')
+  const [price, setPrice] = useState(box?.price?.toString() || '79000')
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -50,9 +50,9 @@ export default function MysteryBoxEditor({ box, onSave, onClose }: MysteryBoxEdi
             type="button"
             onClick={() => {
               if (box) {
-                onSave({ ...box, name, price: Number(price) || box.price });
+                onSave({ ...box, name, price: Number(price) || box.price })
               }
-              onClose();
+              onClose()
             }}
             className="w-full py-3.5 rounded-2xl bg-[#8a4e1d] hover:bg-[#6c3911] text-white font-black text-xs uppercase tracking-wider transition-all shadow-md mt-4 cursor-pointer"
           >
@@ -61,5 +61,5 @@ export default function MysteryBoxEditor({ box, onSave, onClose }: MysteryBoxEdi
         </div>
       </div>
     </div>
-  );
+  )
 }

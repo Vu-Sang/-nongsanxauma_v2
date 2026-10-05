@@ -1,5 +1,5 @@
-import type { HTMLAttributes } from 'react';
-import { cn } from '../../lib/cn';
+import type { HTMLAttributes } from 'react'
+import { cn } from '../../lib/cn'
 
 /**
  * Khối placeholder có hiệu ứng shimmer. Tự tắt animation khi người dùng
@@ -18,7 +18,7 @@ export function Skeleton({ className, ...rest }: HTMLAttributes<HTMLDivElement>)
       )}
       {...rest}
     />
-  );
+  )
 }
 
 /** Các dòng chữ giả, dòng cuối ngắn hơn cho tự nhiên. */
@@ -29,7 +29,7 @@ export function SkeletonText({ lines = 2, className }: { lines?: number; classNa
         <Skeleton key={i} className={cn('h-3', i === lines - 1 ? 'w-2/3' : 'w-full')} />
       ))}
     </div>
-  );
+  )
 }
 
 /** Hàng bảng giả cho các trang admin, thay cho spinner chiếm cả trang. */
@@ -37,7 +37,11 @@ export function TableSkeleton({ rows = 6, columns = 5 }: { rows?: number; column
   return (
     <div role="status" aria-label="Đang tải dữ liệu" className="divide-y divide-line">
       {Array.from({ length: rows }, (_, r) => (
-        <div key={r} className="grid gap-4 px-4 py-4" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+        <div
+          key={r}
+          className="grid gap-4 px-4 py-4"
+          style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+        >
           {Array.from({ length: columns }, (_, c) => (
             <Skeleton key={c} className={cn('h-4', c === 0 ? 'w-3/4' : 'w-1/2')} />
           ))}
@@ -45,5 +49,5 @@ export function TableSkeleton({ rows = 6, columns = 5 }: { rows?: number; column
       ))}
       <span className="sr-only">Đang tải dữ liệu…</span>
     </div>
-  );
+  )
 }

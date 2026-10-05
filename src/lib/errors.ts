@@ -5,13 +5,16 @@
  * như "Failed to fetch" không hiện cho người dùng mà dùng câu fallback tiếng Việt.
  */
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
+  return typeof value === 'object' && value !== null
 }
 
-export function getErrorMessage(error: unknown, fallback = 'Đã có lỗi xảy ra. Vui lòng thử lại.'): string {
+export function getErrorMessage(
+  error: unknown,
+  fallback = 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+): string {
   if (isRecord(error) && isRecord(error.data)) {
-    const { message } = error.data;
-    if (typeof message === 'string' && message.trim()) return message;
+    const { message } = error.data
+    if (typeof message === 'string' && message.trim()) return message
   }
-  return fallback;
+  return fallback
 }

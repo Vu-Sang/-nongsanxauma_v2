@@ -1,10 +1,10 @@
-import React from 'react';
-import { CheckCircle2, Home } from 'lucide-react';
+import React from 'react'
+import { CheckCircle2, Home } from 'lucide-react'
 
 export interface SubmissionSuccessProps {
-  title?: string;
-  desc?: string;
-  onDone?: () => void;
+  title?: string
+  desc?: string
+  onDone?: () => void
 }
 
 export default function SubmissionSuccess({ title, desc, onDone }: SubmissionSuccessProps) {
@@ -14,7 +14,9 @@ export default function SubmissionSuccess({ title, desc, onDone }: SubmissionSuc
         <CheckCircle2 size={32} />
       </div>
       <h3 className="text-xl font-black text-[#1c2216]">{title || 'Thành Công!'}</h3>
-      <p className="text-xs text-[#6e7768]">{desc || 'Hành động của bạn đã được ghi nhận vào hệ thống.'}</p>
+      <p className="text-xs text-[#6e7768]">
+        {desc || 'Hành động của bạn đã được ghi nhận vào hệ thống.'}
+      </p>
       {onDone && (
         <button
           type="button"
@@ -25,5 +27,5 @@ export default function SubmissionSuccess({ title, desc, onDone }: SubmissionSuc
         </button>
       )}
     </div>
-  );
+  )
 }

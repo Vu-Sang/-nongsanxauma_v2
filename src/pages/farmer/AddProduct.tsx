@@ -1,24 +1,24 @@
-import React, { useState, type FormEvent } from 'react';
-import { Plus, Upload, X, ShieldCheck } from 'lucide-react';
-import type { FarmerProduct } from './types';
+import React, { useState, type FormEvent } from 'react'
+import { Plus, Upload, X, ShieldCheck } from 'lucide-react'
+import type { FarmerProduct } from './types'
 
 interface AddProductProps {
-  onAddProduct: (prod: FarmerProduct) => void;
-  onClose: () => void;
-  onInfo?: (msg: string) => void;
+  onAddProduct: (prod: FarmerProduct) => void
+  onClose: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProductProps) {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [stock, setStock] = useState('');
-  const [unit, setUnit] = useState('kg');
-  const [region, setRegion] = useState('Đà Lạt & Lâm Đồng');
-  const [farmingType, setFarmingType] = useState('Hữu cơ Organic');
+  const [name, setName] = useState('')
+  const [price, setPrice] = useState('')
+  const [stock, setStock] = useState('')
+  const [unit, setUnit] = useState('kg')
+  const [region, setRegion] = useState('Đà Lạt & Lâm Đồng')
+  const [farmingType, setFarmingType] = useState('Hữu cơ Organic')
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !price) return;
+    e.preventDefault()
+    if (!name.trim() || !price) return
 
     const newProd: FarmerProduct = {
       id: Date.now().toString(),
@@ -31,13 +31,14 @@ export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProduct
       stock: Number(stock) || 50,
       unit,
       region,
-      image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=200&q=80',
-    };
+      image:
+        'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=200&q=80',
+    }
 
-    onAddProduct(newProd);
-    onClose();
-    onInfo?.(`Đã đăng bán thành công: ${newProd.name}`);
-  };
+    onAddProduct(newProd)
+    onClose()
+    onInfo?.(`Đã đăng bán thành công: ${newProd.name}`)
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -51,7 +52,9 @@ export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProduct
         </button>
 
         <h3 className="text-xl font-black text-[#1c2216] mb-1">Đăng Bán Nông Sản Mới</h3>
-        <p className="text-xs text-[#757f70] mb-4">Điền thông tin nông sản thu hoạch để niêm yết lên sàn CapNong</p>
+        <p className="text-xs text-[#757f70] mb-4">
+          Điền thông tin nông sản thu hoạch để niêm yết lên sàn CapNong
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
@@ -68,7 +71,9 @@ export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProduct
 
           <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Giá bán (đ/kg) *</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Giá bán (đ/kg) *
+              </label>
               <input
                 type="number"
                 required
@@ -79,7 +84,9 @@ export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProduct
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Số lượng tồn kho (kg) *</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Số lượng tồn kho (kg) *
+              </label>
               <input
                 type="number"
                 required
@@ -105,7 +112,9 @@ export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProduct
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#353d2f] mb-1">Phương thức canh tác</label>
+              <label className="block text-xs font-bold text-[#353d2f] mb-1">
+                Phương thức canh tác
+              </label>
               <select
                 value={farmingType}
                 onChange={(e) => setFarmingType(e.target.value)}
@@ -127,5 +136,5 @@ export default function AddProduct({ onAddProduct, onClose, onInfo }: AddProduct
         </form>
       </div>
     </div>
-  );
+  )
 }

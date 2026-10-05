@@ -1,8 +1,8 @@
-import React from 'react';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import React from 'react'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 interface TripJoinRequestSendProps {
-  onBack: () => void;
+  onBack: () => void
 }
 
 export default function TripJoinRequestSend({ onBack }: TripJoinRequestSendProps) {
@@ -18,7 +18,9 @@ export default function TripJoinRequestSend({ onBack }: TripJoinRequestSendProps
         </button>
         <h3 className="text-xl font-black text-[#1c2216]">Gửi Nông Sản Ghép Chuyến</h3>
       </div>
-      <p className="text-xs text-[#626c5e]">Chọn danh mục nông sản đã thu hoạch cần ghép xe tải lạnh đi kho tổng.</p>
+      <p className="text-xs text-[#626c5e]">
+        Chọn danh mục nông sản đã thu hoạch cần ghép xe tải lạnh đi kho tổng.
+      </p>
     </div>
-  );
+  )
 }

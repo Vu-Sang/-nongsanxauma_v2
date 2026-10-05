@@ -1,9 +1,12 @@
-import { PlayCircle, ShoppingBasket } from 'lucide-react';
-import heroFarmerImg from '../assets/hero-farmer.jpg';
+import { PlayCircle, ShoppingBasket } from 'lucide-react'
+import heroFarmerImg from '../assets/hero-farmer.jpg'
 
 export default function Hero() {
   return (
-    <section aria-labelledby="hero-title" className="relative w-full overflow-hidden bg-surface-container-low min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] xl:min-h-[680px] flex items-center">
+    <section
+      aria-labelledby="hero-title"
+      className="relative w-full overflow-hidden bg-surface-container-low min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] xl:min-h-[680px] flex items-center"
+    >
       {/* Hero Image Background with Ambient Dark-to-Warm Gradient Overlays */}
       <div className="absolute inset-0 z-0">
         <img
@@ -30,14 +33,18 @@ export default function Hero() {
           </div>
 
           {/* Headline */}
-          <h1 id="hero-title" className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-surface-bright font-extrabold tracking-tight leading-[1.18] sm:leading-[1.15]">
+          <h1
+            id="hero-title"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-surface-bright font-extrabold tracking-tight leading-[1.18] sm:leading-[1.15]"
+          >
             Nông sản xấu mã – <br />
             <span className="text-tertiary-fixed-dim inline-block">Ngon thật, rẻ thật.</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-sm sm:text-base lg:text-lg text-surface-container-high leading-relaxed max-w-xl">
-            Cứu rau củ lỡ "mất dáng" khỏi bãi rác, bảo vệ túi tiền của bạn và giúp nông dân Việt Nam bán được trọn vẹn mùa vụ. Tươi ngon, an lành và giao thần tốc mỗi ngày.
+            Cứu rau củ lỡ "mất dáng" khỏi bãi rác, bảo vệ túi tiền của bạn và giúp nông dân Việt Nam
+            bán được trọn vẹn mùa vụ. Tươi ngon, an lành và giao thần tốc mỗi ngày.
           </p>
 
           {/* CTA Buttons */}
@@ -61,20 +68,32 @@ export default function Hero() {
           {/* Trust Stats Banner */}
           <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-5 mt-2 sm:mt-4 border-t border-white/20">
             <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl lg:text-3xl text-tertiary-fixed-dim font-extrabold tracking-tight">12.000+</span>
-              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">Đơn giải cứu</span>
+              <span className="text-xl sm:text-2xl lg:text-3xl text-tertiary-fixed-dim font-extrabold tracking-tight">
+                12.000+
+              </span>
+              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">
+                Đơn giải cứu
+              </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl lg:text-3xl text-primary-fixed font-extrabold tracking-tight">500+</span>
-              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">Nông dân liên kết</span>
+              <span className="text-xl sm:text-2xl lg:text-3xl text-primary-fixed font-extrabold tracking-tight">
+                500+
+              </span>
+              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">
+                Nông dân liên kết
+              </span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl lg:text-3xl text-surface-bright font-extrabold tracking-tight">30 Tấn</span>
-              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">Tránh lãng phí</span>
+              <span className="text-xl sm:text-2xl lg:text-3xl text-surface-bright font-extrabold tracking-tight">
+                30 Tấn
+              </span>
+              <span className="text-caption sm:text-sm text-surface-container-highest mt-0.5">
+                Tránh lãng phí
+              </span>
             </div>
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }

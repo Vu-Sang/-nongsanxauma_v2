@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react'
 import {
   Leaf,
   Lock,
@@ -24,27 +24,27 @@ import {
   Sparkles,
   X,
   Check,
-} from 'lucide-react';
-import authBannerImg from '../assets/auth-shelf-banner.jpg';
+} from 'lucide-react'
+import authBannerImg from '../assets/auth-shelf-banner.jpg'
 
-export type UserRole = 'buyer' | 'shop' | 'shipper' | 'admin' | 'staff';
+export type UserRole = 'buyer' | 'shop' | 'shipper' | 'admin' | 'staff'
 
 export interface AuthUser {
-  name: string;
-  email: string;
-  phone?: string;
-  role: UserRole;
-  avatar?: string;
-  detail?: string;
-  shopName?: string;
-  kycStatus?: 'APPROVED' | 'PENDING' | 'REJECTED';
+  name: string
+  email: string
+  phone?: string
+  role: UserRole
+  avatar?: string
+  detail?: string
+  shopName?: string
+  kycStatus?: 'APPROVED' | 'PENDING' | 'REJECTED'
 }
 
 interface AuthPageProps {
-  initialMode?: 'login' | 'register' | 'kyc_pending';
-  initialRole?: 'buyer' | 'shop' | 'shipper';
-  onLoginSuccess?: (user: AuthUser) => void;
-  onInfo?: (msg: string) => void;
+  initialMode?: 'login' | 'register' | 'kyc_pending'
+  initialRole?: 'buyer' | 'shop' | 'shipper'
+  onLoginSuccess?: (user: AuthUser) => void
+  onInfo?: (msg: string) => void
 }
 
 export default function AuthPage({
@@ -53,111 +53,111 @@ export default function AuthPage({
   onLoginSuccess,
   onInfo,
 }: AuthPageProps) {
-  const [mode, setMode] = useState<'login' | 'register' | 'kyc_pending'>(initialMode);
-  const [selectedRole, setSelectedRole] = useState<'buyer' | 'shop' | 'shipper'>(initialRole);
-  const [shopRegisterStep, setShopRegisterStep] = useState<1 | 2>(1);
-  const [showReviewKycModal, setShowReviewKycModal] = useState(false);
+  const [mode, setMode] = useState<'login' | 'register' | 'kyc_pending'>(initialMode)
+  const [selectedRole, setSelectedRole] = useState<'buyer' | 'shop' | 'shipper'>(initialRole)
+  const [shopRegisterStep, setShopRegisterStep] = useState<1 | 2>(1)
+  const [showReviewKycModal, setShowReviewKycModal] = useState(false)
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
-  const [error, setError] = useState('');
-  const [successNotice, setSuccessNotice] = useState('');
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
+  const [error, setError] = useState('')
+  const [successNotice, setSuccessNotice] = useState('')
 
   // Login form state
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
 
   // Register common state (Step 1)
-  const [regFullName, setRegFullName] = useState('');
-  const [regPhone, setRegPhone] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-  const [regConfirmPassword, setRegConfirmPassword] = useState('');
+  const [regFullName, setRegFullName] = useState('')
+  const [regPhone, setRegPhone] = useState('')
+  const [regEmail, setRegEmail] = useState('')
+  const [regPassword, setRegPassword] = useState('')
+  const [regConfirmPassword, setRegConfirmPassword] = useState('')
 
   // Register Buyer / Shipper specific state
-  const [buyerAddress, setBuyerAddress] = useState('');
-  const [shipperVehicle, setShipperVehicle] = useState('Xe máy kèm thùng bảo ôn');
-  const [shipperArea, setShipperArea] = useState('TP. Hồ Chí Minh');
+  const [buyerAddress, setBuyerAddress] = useState('')
+  const [shipperVehicle, setShipperVehicle] = useState('Xe máy kèm thùng bảo ôn')
+  const [shipperArea, setShipperArea] = useState('TP. Hồ Chí Minh')
 
   // Register Shop / Farmer KYC state (Step 2)
-  const [shopName, setShopName] = useState('');
-  const [shopAddress, setShopAddress] = useState('');
-  const [shopRegion, setShopRegion] = useState('Đà Lạt & Lâm Đồng');
-  const [shopFarmingType, setShopFarmingType] = useState('Hữu cơ Organic');
-  const [shopBankName, setShopBankName] = useState('Vietcombank');
-  const [shopBankAccount, setShopBankAccount] = useState('');
-  const [shopBankHolder, setShopBankHolder] = useState('');
-  const [shopLogoPreview, setShopLogoPreview] = useState<string>('');
-  const [shopCertPreview, setShopCertPreview] = useState<string>('');
+  const [shopName, setShopName] = useState('')
+  const [shopAddress, setShopAddress] = useState('')
+  const [shopRegion, setShopRegion] = useState('Đà Lạt & Lâm Đồng')
+  const [shopFarmingType, setShopFarmingType] = useState('Hữu cơ Organic')
+  const [shopBankName, setShopBankName] = useState('Vietcombank')
+  const [shopBankAccount, setShopBankAccount] = useState('')
+  const [shopBankHolder, setShopBankHolder] = useState('')
+  const [shopLogoPreview, setShopLogoPreview] = useState<string>('')
+  const [shopCertPreview, setShopCertPreview] = useState<string>('')
 
   // Sync with URL Hash changes
   useEffect(() => {
-    const hash = window.location.hash.toLowerCase();
+    const hash = window.location.hash.toLowerCase()
     if (hash.includes('dang-ky') || hash.includes('register')) {
-      setMode('register');
+      setMode('register')
     } else if (hash.includes('dang-nhap') || hash.includes('login')) {
-      setMode('login');
+      setMode('login')
     } else if (hash.includes('kyc') || hash.includes('cho-duyet')) {
-      setMode('kyc_pending');
+      setMode('kyc_pending')
     }
 
     if (hash.includes('role=shop') || hash.includes('ban-nong-san') || hash.includes('nha-vuon')) {
-      setSelectedRole('shop');
+      setSelectedRole('shop')
     } else if (hash.includes('role=shipper') || hash.includes('giao-hang')) {
-      setSelectedRole('shipper');
+      setSelectedRole('shipper')
     } else if (hash.includes('role=buyer')) {
-      setSelectedRole('buyer');
+      setSelectedRole('buyer')
     }
-  }, []);
+  }, [])
 
   // Standard Login Submit
   const handleLoginSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
     if (!loginEmail.trim()) {
-      setError('Vui lòng nhập Email hoặc Số điện thoại của bạn');
-      return;
+      setError('Vui lòng nhập Email hoặc Số điện thoại của bạn')
+      return
     }
     if (!loginPassword || loginPassword.length < 6) {
-      setError('Mật khẩu cần tối thiểu 6 ký tự');
-      return;
+      setError('Mật khẩu cần tối thiểu 6 ký tự')
+      return
     }
 
     // Detect if logging in as shop
     const isShopAccount =
       loginEmail.toLowerCase().includes('shop') ||
       loginEmail.toLowerCase().includes('vuon') ||
-      loginEmail.toLowerCase().includes('farmer');
+      loginEmail.toLowerCase().includes('farmer')
 
-    const isEmail = loginEmail.includes('@');
+    const isEmail = loginEmail.includes('@')
     const user: AuthUser = {
       name: isShopAccount
         ? 'Nông Trại Cầu Đất Farm'
         : isEmail
-        ? loginEmail.split('@')[0]
-        : 'Thành viên CapNong',
+          ? loginEmail.split('@')[0]
+          : 'Thành viên CapNong',
       email: isEmail ? loginEmail : `${loginEmail}@capnong.vn`,
       phone: isEmail ? '0912 345 678' : loginEmail,
       role: isShopAccount ? 'shop' : 'buyer',
       detail: isShopAccount ? 'Chủ gian hàng nông sản' : 'Thành viên đang hoạt động',
       shopName: isShopAccount ? 'Nông Trại Cầu Đất' : undefined,
       kycStatus: isShopAccount ? 'APPROVED' : undefined,
-    };
+    }
 
     setSuccessNotice(
       isShopAccount
         ? 'Đăng nhập Gian Hàng thành công! Đang chuyển đến bảng quản lý...'
-        : 'Đăng nhập thành công! Đang chuyển hướng...'
-    );
+        : 'Đăng nhập thành công! Đang chuyển hướng...',
+    )
 
     if (onLoginSuccess) {
       setTimeout(() => {
-        onLoginSuccess(user);
-      }, 600);
+        onLoginSuccess(user)
+      }, 600)
     }
-  };
+  }
 
   // Quick Demo Login for Shop
   const handleQuickShopLogin = () => {
@@ -169,14 +169,14 @@ export default function AuthPage({
       shopName: 'HTX Nông Sản Cầu Đất',
       detail: 'Đà Lạt · VietGAP & Hữu cơ',
       kycStatus: 'APPROVED',
-    };
-    setSuccessNotice('Đăng nhập nhanh với tài khoản Nhà Vườn thành công!');
+    }
+    setSuccessNotice('Đăng nhập nhanh với tài khoản Nhà Vườn thành công!')
     if (onLoginSuccess) {
       setTimeout(() => {
-        onLoginSuccess(shopUser);
-      }, 500);
+        onLoginSuccess(shopUser)
+      }, 500)
     }
-  };
+  }
 
   // Quick Demo Login for Admin
   const handleQuickAdminLogin = () => {
@@ -187,14 +187,14 @@ export default function AuthPage({
       role: 'admin',
       detail: 'Ban Quản Trị Trung Tâm CapNong',
       kycStatus: 'APPROVED',
-    };
-    setSuccessNotice('Đăng nhập Quản Trị Viên thành công! Đang chuyển tới Admin Portal...');
+    }
+    setSuccessNotice('Đăng nhập Quản Trị Viên thành công! Đang chuyển tới Admin Portal...')
     if (onLoginSuccess) {
       setTimeout(() => {
-        onLoginSuccess(adminUser);
-      }, 500);
+        onLoginSuccess(adminUser)
+      }, 500)
     }
-  };
+  }
 
   // Google Login
   const handleGoogleLogin = () => {
@@ -203,83 +203,84 @@ export default function AuthPage({
       email: 'thutrang.capnong@gmail.com',
       phone: '0912 345 678',
       role: selectedRole,
-      detail: selectedRole === 'shop' ? 'Đăng ký qua Google · Chờ xác thực' : 'Đăng nhập qua Google',
+      detail:
+        selectedRole === 'shop' ? 'Đăng ký qua Google · Chờ xác thực' : 'Đăng nhập qua Google',
       kycStatus: selectedRole === 'shop' ? 'PENDING' : undefined,
-    };
-    setSuccessNotice('Đăng nhập thành công qua Google!');
+    }
+    setSuccessNotice('Đăng nhập thành công qua Google!')
     if (onLoginSuccess) {
       setTimeout(() => {
-        onLoginSuccess(googleUser);
-      }, 500);
+        onLoginSuccess(googleUser)
+      }, 500)
     }
-  };
+  }
 
   // Step 1 to Step 2 validation for Shop
   const handleProceedShopStep2 = (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
     if (!regFullName.trim()) {
-      setError('Vui lòng nhập họ tên chủ nông hộ / người đại diện');
-      return;
+      setError('Vui lòng nhập họ tên chủ nông hộ / người đại diện')
+      return
     }
     if (!regPhone.trim()) {
-      setError('Vui lòng cung cấp số điện thoại liên hệ');
-      return;
+      setError('Vui lòng cung cấp số điện thoại liên hệ')
+      return
     }
     if (!regPassword || regPassword.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự');
-      return;
+      setError('Mật khẩu phải có ít nhất 6 ký tự')
+      return
     }
     if (regPassword !== regConfirmPassword) {
-      setError('Mật khẩu xác nhận không trùng khớp');
-      return;
+      setError('Mật khẩu xác nhận không trùng khớp')
+      return
     }
 
-    setShopRegisterStep(2);
-  };
+    setShopRegisterStep(2)
+  }
 
   // Final Register Submit
   const handleRegisterSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
     if (selectedRole === 'shop') {
       if (!shopName.trim()) {
-        setError('Vui lòng nhập tên nhà vườn hoặc tên gian hàng của bạn');
-        return;
+        setError('Vui lòng nhập tên nhà vườn hoặc tên gian hàng của bạn')
+        return
       }
       if (!shopAddress.trim()) {
-        setError('Vui lòng cung cấp địa chỉ nông trại / kho xuất hàng');
-        return;
+        setError('Vui lòng cung cấp địa chỉ nông trại / kho xuất hàng')
+        return
       }
       if (!shopBankAccount.trim()) {
-        setError('Vui lòng cung cấp số tài khoản ngân hàng để quyết toán');
-        return;
+        setError('Vui lòng cung cấp số tài khoản ngân hàng để quyết toán')
+        return
       }
 
       // Transition to KYC Pending Screen for Shop
-      setMode('kyc_pending');
-      setSuccessNotice('Hồ sơ gian hàng đã nộp thành công! Hệ thống đang chờ phê duyệt.');
-      return;
+      setMode('kyc_pending')
+      setSuccessNotice('Hồ sơ gian hàng đã nộp thành công! Hệ thống đang chờ phê duyệt.')
+      return
     }
 
     // Buyer & Shipper
     if (!regFullName.trim()) {
-      setError('Vui lòng nhập họ và tên của bạn');
-      return;
+      setError('Vui lòng nhập họ và tên của bạn')
+      return
     }
     if (!regPhone.trim() && !regEmail.trim()) {
-      setError('Vui lòng cung cấp số điện thoại hoặc email liên hệ');
-      return;
+      setError('Vui lòng cung cấp số điện thoại hoặc email liên hệ')
+      return
     }
     if (!regPassword || regPassword.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự');
-      return;
+      setError('Mật khẩu phải có ít nhất 6 ký tự')
+      return
     }
     if (regPassword !== regConfirmPassword) {
-      setError('Mật khẩu xác nhận không trùng khớp');
-      return;
+      setError('Mật khẩu xác nhận không trùng khớp')
+      return
     }
 
     const newUser: AuthUser = {
@@ -287,41 +288,42 @@ export default function AuthPage({
       email: regEmail || `${regPhone}@capnong.vn`,
       phone: regPhone || '0900 000 000',
       role: selectedRole,
-      detail:
-        selectedRole === 'buyer'
-          ? 'Khách hàng mới'
-          : `Tài xế · ${shipperVehicle}`,
-    };
+      detail: selectedRole === 'buyer' ? 'Khách hàng mới' : `Tài xế · ${shipperVehicle}`,
+    }
 
-    setSuccessNotice(`Đăng ký tài khoản ${getRoleLabel(selectedRole)} thành công!`);
+    setSuccessNotice(`Đăng ký tài khoản ${getRoleLabel(selectedRole)} thành công!`)
     if (onLoginSuccess) {
       setTimeout(() => {
-        onLoginSuccess(newUser);
-      }, 700);
+        onLoginSuccess(newUser)
+      }, 700)
     }
-  };
+  }
 
   function getRoleLabel(role: 'buyer' | 'shop' | 'shipper'): string {
     switch (role) {
       case 'buyer':
-        return 'Người mua (Buyer)';
+        return 'Người mua (Buyer)'
       case 'shop':
-        return 'Nhà vườn / Cửa hàng (Shop)';
+        return 'Nhà vườn / Cửa hàng (Shop)'
       case 'shipper':
-        return 'Tài xế giao hàng (Shipper)';
+        return 'Tài xế giao hàng (Shipper)'
     }
   }
 
   // Mock Upload Handler
   const handleFakeUpload = (type: 'logo' | 'cert') => {
     if (type === 'logo') {
-      setShopLogoPreview('https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=400&q=80');
-      onInfo?.('Đã tải lên Logo nông trại');
+      setShopLogoPreview(
+        'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=400&q=80',
+      )
+      onInfo?.('Đã tải lên Logo nông trại')
     } else {
-      setShopCertPreview('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=400&q=80');
-      onInfo?.('Đã tải lên Chứng nhận VietGAP/Hữu cơ');
+      setShopCertPreview(
+        'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=400&q=80',
+      )
+      onInfo?.('Đã tải lên Chứng nhận VietGAP/Hữu cơ')
     }
-  };
+  }
 
   return (
     <div className="relative min-h-[calc(100vh-80px)] w-full overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-10 font-sans">
@@ -369,7 +371,8 @@ export default function AuthPage({
             </h1>
 
             <p className="mt-4 text-white/90 text-sm sm:text-base font-normal leading-relaxed max-w-md drop-shadow-sm">
-              Giải cứu nông sản "kém sắc" nhưng vẹn nguyên dinh dưỡng, đồng hành cùng hàng nghìn nhà vườn và nông dân Việt.
+              Giải cứu nông sản "kém sắc" nhưng vẹn nguyên dinh dưỡng, đồng hành cùng hàng nghìn nhà
+              vườn và nông dân Việt.
             </p>
 
             {/* Quick Benefits Pills */}
@@ -497,8 +500,12 @@ export default function AuthPage({
                       <div className="flex items-center gap-2 text-left">
                         <Store size={18} className="text-[#8a4e1d] shrink-0" />
                         <div>
-                          <div className="text-xs font-bold text-[#5e310d]">Nhà Vườn / Cửa hàng</div>
-                          <div className="text-[10px] text-[#8c6b4e]">Đăng nhập gian hàng & duyệt KYC</div>
+                          <div className="text-xs font-bold text-[#5e310d]">
+                            Nhà Vườn / Cửa hàng
+                          </div>
+                          <div className="text-[10px] text-[#8c6b4e]">
+                            Đăng nhập gian hàng & duyệt KYC
+                          </div>
                         </div>
                       </div>
                       <button
@@ -514,8 +521,12 @@ export default function AuthPage({
                       <div className="flex items-center gap-2 text-left">
                         <ShieldCheck size={18} className="text-[#326318] shrink-0" />
                         <div>
-                          <div className="text-xs font-bold text-[#1e3a10]">Quản Trị Viên (Admin)</div>
-                          <div className="text-[10px] text-[#55694a]">Duyệt hồ sơ, nông sản & đối soát</div>
+                          <div className="text-xs font-bold text-[#1e3a10]">
+                            Quản Trị Viên (Admin)
+                          </div>
+                          <div className="text-[10px] text-[#55694a]">
+                            Duyệt hồ sơ, nông sản & đối soát
+                          </div>
                         </div>
                       </div>
                       <button
@@ -570,8 +581,8 @@ export default function AuthPage({
                   <button
                     type="button"
                     onClick={() => {
-                      setMode('register');
-                      setError('');
+                      setMode('register')
+                      setError('')
                     }}
                     className="font-extrabold text-[#326318] hover:underline cursor-pointer"
                   >
@@ -607,8 +618,8 @@ export default function AuthPage({
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedRole('buyer');
-                        setShopRegisterStep(1);
+                        setSelectedRole('buyer')
+                        setShopRegisterStep(1)
                       }}
                       className={`p-2 rounded-2xl border-2 text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
                         selectedRole === 'buyer'
@@ -640,8 +651,8 @@ export default function AuthPage({
                     <button
                       type="button"
                       onClick={() => {
-                        setSelectedRole('shipper');
-                        setShopRegisterStep(1);
+                        setSelectedRole('shipper')
+                        setShopRegisterStep(1)
                       }}
                       className={`p-2 rounded-2xl border-2 text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
                         selectedRole === 'shipper'
@@ -667,7 +678,10 @@ export default function AuthPage({
                     </div>
 
                     <div className="relative">
-                      <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                      <User
+                        size={18}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                      />
                       <input
                         type="text"
                         required
@@ -680,7 +694,10 @@ export default function AuthPage({
 
                     <div className="grid grid-cols-2 gap-2">
                       <div className="relative">
-                        <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Phone
+                          size={16}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type="tel"
                           required
@@ -691,7 +708,10 @@ export default function AuthPage({
                         />
                       </div>
                       <div className="relative">
-                        <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Mail
+                          size={16}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type="email"
                           value={regEmail}
@@ -704,7 +724,10 @@ export default function AuthPage({
 
                     <div className="grid grid-cols-2 gap-2">
                       <div className="relative">
-                        <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Lock
+                          size={16}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
@@ -715,7 +738,10 @@ export default function AuthPage({
                         />
                       </div>
                       <div className="relative">
-                        <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Lock
+                          size={16}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
                           required
@@ -759,7 +785,10 @@ export default function AuthPage({
 
                     {/* Shop Name */}
                     <div className="relative">
-                      <Store size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                      <Store
+                        size={18}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                      />
                       <input
                         type="text"
                         required
@@ -773,7 +802,10 @@ export default function AuthPage({
                     {/* Address & Region */}
                     <div className="grid grid-cols-2 gap-2">
                       <div className="relative">
-                        <MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <MapPin
+                          size={16}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type="text"
                           required
@@ -805,9 +837,13 @@ export default function AuthPage({
                         onChange={(e) => setShopFarmingType(e.target.value)}
                         className="w-full px-3 py-2 rounded-xl bg-white border border-[#dce0d8] text-xs font-bold text-[#1e2319] outline-none"
                       >
-                        <option value="Hữu cơ Organic">Hữu cơ Organic (Không phân thuốc hóa học)</option>
+                        <option value="Hữu cơ Organic">
+                          Hữu cơ Organic (Không phân thuốc hóa học)
+                        </option>
                         <option value="VietGAP">Tiêu chuẩn VietGAP / GlobalGAP</option>
-                        <option value="Vườn tự nhiên">Thu hoạch tự nhiên (Rau củ xấu mã lành tính)</option>
+                        <option value="Vườn tự nhiên">
+                          Thu hoạch tự nhiên (Rau củ xấu mã lành tính)
+                        </option>
                         <option value="Thủy canh">Thủy canh công nghệ cao</option>
                       </select>
                     </div>
@@ -887,7 +923,10 @@ export default function AuthPage({
                 {selectedRole !== 'shop' && (
                   <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                     <div className="relative">
-                      <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                      <User
+                        size={18}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                      />
                       <input
                         type="text"
                         required
@@ -900,7 +939,10 @@ export default function AuthPage({
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div className="relative">
-                        <Phone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Phone
+                          size={17}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type="tel"
                           required
@@ -911,7 +953,10 @@ export default function AuthPage({
                         />
                       </div>
                       <div className="relative">
-                        <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Mail
+                          size={17}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type="email"
                           value={regEmail}
@@ -924,7 +969,10 @@ export default function AuthPage({
 
                     {selectedRole === 'buyer' && (
                       <div className="relative">
-                        <MapPin size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <MapPin
+                          size={17}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type="text"
                           value={buyerAddress}
@@ -945,7 +993,9 @@ export default function AuthPage({
                           onChange={(e) => setShipperVehicle(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl bg-white border border-[#bad4e5] text-xs text-[#1e2319] outline-none"
                         >
-                          <option value="Xe máy kèm thùng bảo ôn">Xe máy (Có thùng bảo ôn giữ tươi)</option>
+                          <option value="Xe máy kèm thùng bảo ôn">
+                            Xe máy (Có thùng bảo ôn giữ tươi)
+                          </option>
                           <option value="Xe ba gác nông sản">Xe ba gác chở hàng nông trại</option>
                           <option value="Xe tải 500kg - 1.5 tấn">Xe tải nhỏ 500kg - 1.5 tấn</option>
                         </select>
@@ -961,7 +1011,10 @@ export default function AuthPage({
 
                     <div className="grid grid-cols-2 gap-2.5">
                       <div className="relative">
-                        <Lock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Lock
+                          size={17}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type={showPassword ? 'text' : 'password'}
                           required
@@ -981,7 +1034,10 @@ export default function AuthPage({
                       </div>
 
                       <div className="relative">
-                        <Lock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]" />
+                        <Lock
+                          size={17}
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9aa194]"
+                        />
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
                           required
@@ -1016,8 +1072,8 @@ export default function AuthPage({
                   <button
                     type="button"
                     onClick={() => {
-                      setMode('login');
-                      setError('');
+                      setMode('login')
+                      setError('')
                     }}
                     className="font-extrabold text-[#326318] hover:underline cursor-pointer"
                   >
@@ -1046,8 +1102,8 @@ export default function AuthPage({
 
                 <p className="text-xs sm:text-sm text-[#5f6859] max-w-sm mx-auto mb-6 leading-relaxed">
                   Cảm ơn bạn đã nộp hồ sơ năng lực nhà vườn. Đội ngũ thẩm định chất lượng{' '}
-                  <strong className="text-[#326318]">CapNong</strong> sẽ kiểm tra và kích hoạt gian hàng trong vòng{' '}
-                  <strong className="text-[#1c2216]">24h – 48h</strong> làm việc.
+                  <strong className="text-[#326318]">CapNong</strong> sẽ kiểm tra và kích hoạt gian
+                  hàng trong vòng <strong className="text-[#1c2216]">24h – 48h</strong> làm việc.
                 </p>
 
                 {/* Progress Mini Cards */}
@@ -1090,8 +1146,8 @@ export default function AuthPage({
                         shopName: shopName || 'Gian Hàng Nhà Vườn',
                         detail: `${shopRegion} · Hồ sơ đang thẩm định`,
                         kycStatus: 'PENDING',
-                      };
-                      if (onLoginSuccess) onLoginSuccess(shopUser);
+                      }
+                      if (onLoginSuccess) onLoginSuccess(shopUser)
                     }}
                     className="w-full py-3.5 rounded-2xl bg-[#326318] hover:bg-[#254b12] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wide shadow-md transition-all cursor-pointer"
                   >
@@ -1144,9 +1200,15 @@ export default function AuthPage({
                   1. Thông tin Chủ Vườn &amp; Liên Hệ
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[#3b4334]">
-                  <div><strong>Họ tên:</strong> {regFullName || 'Nguyễn Văn Nông Dân'}</div>
-                  <div><strong>Số điện thoại:</strong> {regPhone || '0988 123 456'}</div>
-                  <div className="col-span-2"><strong>Email:</strong> {regEmail || 'caudat.farm@capnong.vn'}</div>
+                  <div>
+                    <strong>Họ tên:</strong> {regFullName || 'Nguyễn Văn Nông Dân'}
+                  </div>
+                  <div>
+                    <strong>Số điện thoại:</strong> {regPhone || '0988 123 456'}
+                  </div>
+                  <div className="col-span-2">
+                    <strong>Email:</strong> {regEmail || 'caudat.farm@capnong.vn'}
+                  </div>
                 </div>
               </div>
 
@@ -1155,10 +1217,19 @@ export default function AuthPage({
                   2. Thông tin Gian Hàng &amp; Vùng Canh Tác
                 </div>
                 <div className="space-y-1 text-[#3b4334]">
-                  <div><strong>Tên gian hàng:</strong> {shopName || 'HTX Nông Sản Sạch Cầu Đất'}</div>
-                  <div><strong>Địa chỉ kho / vườn:</strong> {shopAddress || 'Cầu Đất, TP. Đà Lạt, Lâm Đồng'}</div>
-                  <div><strong>Khu vực:</strong> {shopRegion}</div>
-                  <div><strong>Phương thức canh tác:</strong> {shopFarmingType}</div>
+                  <div>
+                    <strong>Tên gian hàng:</strong> {shopName || 'HTX Nông Sản Sạch Cầu Đất'}
+                  </div>
+                  <div>
+                    <strong>Địa chỉ kho / vườn:</strong>{' '}
+                    {shopAddress || 'Cầu Đất, TP. Đà Lạt, Lâm Đồng'}
+                  </div>
+                  <div>
+                    <strong>Khu vực:</strong> {shopRegion}
+                  </div>
+                  <div>
+                    <strong>Phương thức canh tác:</strong> {shopFarmingType}
+                  </div>
                 </div>
               </div>
 
@@ -1167,9 +1238,16 @@ export default function AuthPage({
                   3. Tài Khoản Quyết Toán
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[#3b4334]">
-                  <div><strong>Ngân hàng:</strong> {shopBankName}</div>
-                  <div><strong>Số tài khoản:</strong> {shopBankAccount || '1029384756'}</div>
-                  <div className="col-span-2"><strong>Chủ tài khoản:</strong> {shopBankHolder || regFullName || 'NGUYEN VAN A'}</div>
+                  <div>
+                    <strong>Ngân hàng:</strong> {shopBankName}
+                  </div>
+                  <div>
+                    <strong>Số tài khoản:</strong> {shopBankAccount || '1029384756'}
+                  </div>
+                  <div className="col-span-2">
+                    <strong>Chủ tài khoản:</strong>{' '}
+                    {shopBankHolder || regFullName || 'NGUYEN VAN A'}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1187,5 +1265,5 @@ export default function AuthPage({
         </div>
       )}
     </div>
-  );
+  )
 }

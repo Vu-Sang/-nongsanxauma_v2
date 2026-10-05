@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   LayoutDashboard,
   BarChart3,
@@ -18,8 +18,8 @@ import {
   LogOut,
   Leaf,
   HelpCircle,
-} from 'lucide-react';
-import type { AuthUser } from '../AuthPage';
+} from 'lucide-react'
+import type { AuthUser } from '../AuthPage'
 import type {
   FarmerProduct,
   FarmerOrder,
@@ -27,33 +27,33 @@ import type {
   FarmerTrip,
   FarmerVoucher,
   FarmerReview,
-} from './types';
+} from './types'
 
 // Modular Subpage Components
-import Dashboard from './Dashboard';
-import Products from './Products';
-import Orders from './Orders';
-import OrderPreparation from './OrderPreparation';
-import RevenueReport from './RevenueReport';
-import Vehicles from './Vehicles';
-import Trips from './Trips';
-import TripJoinRequests from './TripJoinRequests';
-import Reviews from './Reviews';
-import Vouchers from './Vouchers';
-import Notifications from './Notifications';
-import Profile from './Profile';
-import WalletComponent from './Wallet';
-import AddProduct from './AddProduct';
-import BlindBoxTool from './BlindBoxTool';
-import ComboBuilder from './ComboBuilder';
-import FarmerDisputes from './FarmerDisputes';
-import OnboardingTour from '../onboardingtour/OnboardingTour';
+import Dashboard from './Dashboard'
+import Products from './Products'
+import Orders from './Orders'
+import OrderPreparation from './OrderPreparation'
+import RevenueReport from './RevenueReport'
+import Vehicles from './Vehicles'
+import Trips from './Trips'
+import TripJoinRequests from './TripJoinRequests'
+import Reviews from './Reviews'
+import Vouchers from './Vouchers'
+import Notifications from './Notifications'
+import Profile from './Profile'
+import WalletComponent from './Wallet'
+import AddProduct from './AddProduct'
+import BlindBoxTool from './BlindBoxTool'
+import ComboBuilder from './ComboBuilder'
+import FarmerDisputes from './FarmerDisputes'
+import OnboardingTour from '../onboardingtour/OnboardingTour'
 
 interface FarmerPortalProps {
-  user?: AuthUser | null;
-  onLogout?: () => void;
-  onNavigateStore?: () => void;
-  onInfo?: (msg: string) => void;
+  user?: AuthUser | null
+  onLogout?: () => void
+  onNavigateStore?: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function FarmerPortal({
@@ -62,22 +62,22 @@ export default function FarmerPortal({
   onNavigateStore,
   onInfo,
 }: FarmerPortalProps) {
-  const [currentTab, setCurrentTab] = useState<string>('overview');
-  const [shopActive, setShopActive] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedOrderIdForPrep, setSelectedOrderIdForPrep] = useState<string | null>(null);
+  const [currentTab, setCurrentTab] = useState<string>('overview')
+  const [shopActive, setShopActive] = useState<boolean>(true)
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedOrderIdForPrep, setSelectedOrderIdForPrep] = useState<string | null>(null)
   const [showTour, setShowTour] = useState<boolean>(() => {
-    return localStorage.getItem('capnong_farmer_tour_done') !== 'true';
-  });
+    return localStorage.getItem('capnong_farmer_tour_done') !== 'true'
+  })
 
   // Modals state
-  const [showAddProductModal, setShowAddProductModal] = useState(false);
-  const [showBlindBoxTool, setShowBlindBoxTool] = useState(false);
-  const [showComboBuilder, setShowComboBuilder] = useState(false);
-  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
-  const [showCreateTripModal, setShowCreateTripModal] = useState(false);
-  const [showCreateVoucherModal, setShowCreateVoucherModal] = useState(false);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showAddProductModal, setShowAddProductModal] = useState(false)
+  const [showBlindBoxTool, setShowBlindBoxTool] = useState(false)
+  const [showComboBuilder, setShowComboBuilder] = useState(false)
+  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false)
+  const [showCreateTripModal, setShowCreateTripModal] = useState(false)
+  const [showCreateVoucherModal, setShowCreateVoucherModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
 
   // Central Farmer Products State
   const [products, setProducts] = useState<FarmerProduct[]>([
@@ -92,7 +92,8 @@ export default function FarmerPortal({
       stock: 120,
       unit: 'kg',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=200&q=80',
+      image:
+        'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=200&q=80',
     },
     {
       id: '2',
@@ -105,7 +106,8 @@ export default function FarmerPortal({
       stock: 85,
       unit: 'kg',
       region: 'Lâm Đồng',
-      image: 'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?auto=format&fit=crop&w=200&q=80',
+      image:
+        'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?auto=format&fit=crop&w=200&q=80',
     },
     {
       id: '3',
@@ -118,7 +120,8 @@ export default function FarmerPortal({
       stock: 350,
       unit: 'kg',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1596097635121-14b63b7a0c19?auto=format&fit=crop&w=200&q=80',
+      image:
+        'https://images.unsplash.com/photo-1596097635121-14b63b7a0c19?auto=format&fit=crop&w=200&q=80',
     },
     {
       id: '4',
@@ -131,7 +134,8 @@ export default function FarmerPortal({
       stock: 60,
       unit: 'kg',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=200&q=80',
+      image:
+        'https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=200&q=80',
     },
     {
       id: 'box-1',
@@ -144,7 +148,8 @@ export default function FarmerPortal({
       stock: 45,
       unit: 'hộp',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80',
+      image:
+        'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=300&q=80',
     },
     {
       id: 'box-2',
@@ -157,7 +162,8 @@ export default function FarmerPortal({
       stock: 28,
       unit: 'thùng',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1573246123716-6b1782bfc499?auto=format&fit=crop&w=300&q=80',
+      image:
+        'https://images.unsplash.com/photo-1573246123716-6b1782bfc499?auto=format&fit=crop&w=300&q=80',
     },
     {
       id: 'box-3',
@@ -170,7 +176,8 @@ export default function FarmerPortal({
       stock: 15,
       unit: 'thùng',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=300&q=80',
+      image:
+        'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=300&q=80',
     },
     {
       id: 'box-4',
@@ -183,9 +190,10 @@ export default function FarmerPortal({
       stock: 20,
       unit: 'combo',
       region: 'Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=300&q=80',
+      image:
+        'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=300&q=80',
     },
-  ]);
+  ])
 
   // Central Farmer Orders State
   const [orders, setOrders] = useState<FarmerOrder[]>([
@@ -222,7 +230,7 @@ export default function FarmerPortal({
       time: 'Hôm qua',
       payment: 'Ví CapNong Pay',
     },
-  ]);
+  ])
 
   // Central Vehicles State
   const [vehicles, setVehicles] = useState<FarmerVehicle[]>([
@@ -240,7 +248,7 @@ export default function FarmerPortal({
       capacity: '1,500 kg',
       status: 'Đang chở hàng',
     },
-  ]);
+  ])
 
   // Central Trips State
   const [trips, setTrips] = useState<FarmerTrip[]>([
@@ -253,7 +261,7 @@ export default function FarmerPortal({
       weight: '850 kg / 1,500 kg',
       status: 'Đang chuẩn bị',
     },
-  ]);
+  ])
 
   // Central Vouchers State
   const [vouchers, setVouchers] = useState<FarmerVoucher[]>([
@@ -273,7 +281,7 @@ export default function FarmerPortal({
       expiry: 'Còn 30 ngày',
       used: 92,
     },
-  ]);
+  ])
 
   // Central Reviews State
   const [reviews] = useState<FarmerReview[]>([
@@ -283,7 +291,8 @@ export default function FarmerPortal({
       rating: 5,
       date: 'Hôm qua',
       product: 'Khoai Lang Mật Đà Lạt',
-      comment: 'Khoai nướng tươm mật ngọt lịm, củ tuy hơi cong queo nhưng ăn ngon gấp đôi hàng ngoài chợ. Sẽ ủng hộ chú Bảy tiếp!',
+      comment:
+        'Khoai nướng tươm mật ngọt lịm, củ tuy hơi cong queo nhưng ăn ngon gấp đôi hàng ngoài chợ. Sẽ ủng hộ chú Bảy tiếp!',
     },
     {
       id: '2',
@@ -291,14 +300,15 @@ export default function FarmerPortal({
       rating: 5,
       date: '2 ngày trước',
       product: 'Cải bẹ xanh thủy canh',
-      comment: 'Rau xanh mướt, tươi giòn xào thịt bò rất thơm ngon. Đóng thùng cẩn thận lót giấy ẩm rất chuẩn.',
+      comment:
+        'Rau xanh mướt, tươi giòn xào thịt bò rất thơm ngon. Đóng thùng cẩn thận lót giấy ẩm rất chuẩn.',
     },
-  ]);
+  ])
 
   // Handlers
   const handleAddNewProduct = (newProd: FarmerProduct) => {
-    setProducts([newProd, ...products]);
-  };
+    setProducts([newProd, ...products])
+  }
 
   const handleAddNewVehicle = () => {
     const newV: FarmerVehicle = {
@@ -307,11 +317,11 @@ export default function FarmerPortal({
       type: 'Xe ba gác nông trại',
       capacity: '500 kg',
       status: 'Sẵn sàng',
-    };
-    setVehicles([...vehicles, newV]);
-    setShowAddVehicleModal(false);
-    onInfo?.('Đã thêm phương tiện mới thành công');
-  };
+    }
+    setVehicles([...vehicles, newV])
+    setShowAddVehicleModal(false)
+    onInfo?.('Đã thêm phương tiện mới thành công')
+  }
 
   const handleAddNewTrip = () => {
     const newT: FarmerTrip = {
@@ -322,11 +332,11 @@ export default function FarmerPortal({
       vehicle: 'Xe tải 49A-342.18',
       weight: '600 kg',
       status: 'Đang chuẩn bị',
-    };
-    setTrips([newT, ...trips]);
-    setShowCreateTripModal(false);
-    onInfo?.('Đã tạo chuyến vận chuyển tới kho thành công');
-  };
+    }
+    setTrips([newT, ...trips])
+    setShowCreateTripModal(false)
+    onInfo?.('Đã tạo chuyến vận chuyển tới kho thành công')
+  }
 
   const handleAddNewVoucher = () => {
     const newVc: FarmerVoucher = {
@@ -336,11 +346,11 @@ export default function FarmerPortal({
       minOrder: 'Đơn từ 120.000đ',
       expiry: 'Còn 20 ngày',
       used: 0,
-    };
-    setVouchers([newVc, ...vouchers]);
-    setShowCreateVoucherModal(false);
-    onInfo?.('Đã tạo mã khuyến mãi mới thành công');
-  };
+    }
+    setVouchers([newVc, ...vouchers])
+    setShowCreateVoucherModal(false)
+    onInfo?.('Đã tạo mã khuyến mãi mới thành công')
+  }
 
   // Sidebar Menu List (13 Modules)
   const farmerMenu = [
@@ -356,7 +366,7 @@ export default function FarmerPortal({
     { name: 'Thông báo', icon: Bell, id: 'notifications' },
     { name: 'Tin nhắn', icon: Send, id: 'messages' },
     { name: 'Ví tiền', icon: Wallet, id: 'wallet' },
-  ];
+  ]
 
   return (
     <div className="flex h-screen w-full bg-[#f8faf6] text-[#1c2216] overflow-hidden font-sans">
@@ -367,8 +377,8 @@ export default function FarmerPortal({
         <div className="p-6 pb-4 border-b border-[#f1f4ed]">
           <div
             onClick={() => {
-              setCurrentTab('overview');
-              setSelectedOrderIdForPrep(null);
+              setCurrentTab('overview')
+              setSelectedOrderIdForPrep(null)
             }}
             className="flex items-center gap-3 cursor-pointer group"
           >
@@ -388,14 +398,14 @@ export default function FarmerPortal({
 
         <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1 custom-scrollbar">
           {farmerMenu.map((item) => {
-            const isActive = currentTab === item.id && !selectedOrderIdForPrep;
+            const isActive = currentTab === item.id && !selectedOrderIdForPrep
             return (
               <button
                 key={item.id}
                 id={`sidebar-item-${item.id}`}
                 onClick={() => {
-                  setCurrentTab(item.id);
-                  setSelectedOrderIdForPrep(null);
+                  setCurrentTab(item.id)
+                  setSelectedOrderIdForPrep(null)
                 }}
                 className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 cursor-pointer text-left ${
                   isActive
@@ -412,7 +422,7 @@ export default function FarmerPortal({
                 <span className="text-xs font-extrabold flex-1">{item.name}</span>
                 {isActive && <ChevronRight size={14} className="text-[#326318] opacity-70" />}
               </button>
-            );
+            )
           })}
         </nav>
 
@@ -429,13 +439,13 @@ export default function FarmerPortal({
               role="button"
               tabIndex={0}
               onClick={() => {
-                setCurrentTab('profile');
-                setSelectedOrderIdForPrep(null);
+                setCurrentTab('profile')
+                setSelectedOrderIdForPrep(null)
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  setCurrentTab('profile');
-                  setSelectedOrderIdForPrep(null);
+                  setCurrentTab('profile')
+                  setSelectedOrderIdForPrep(null)
                 }
               }}
               title="Bấm để xem và chỉnh sửa hồ sơ cá nhân"
@@ -458,14 +468,16 @@ export default function FarmerPortal({
                       : 'text-[#1c2216] group-hover:text-[#326318]'
                   }`}
                 >
-                  <span className="truncate">{user?.shopName || user?.name || 'HTX Nông Sản Cầu Đất'}</span>
+                  <span className="truncate">
+                    {user?.shopName || user?.name || 'HTX Nông Sản Cầu Đất'}
+                  </span>
                 </div>
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation();
-                    setShopActive(!shopActive);
-                    onInfo?.(shopActive ? 'Cửa hàng đã tạm nghỉ bán' : 'Cửa hàng đã mở bán');
+                    e.stopPropagation()
+                    setShopActive(!shopActive)
+                    onInfo?.(shopActive ? 'Cửa hàng đã tạm nghỉ bán' : 'Cửa hàng đã mở bán')
                   }}
                   title="Bấm để đổi trạng thái bán hàng"
                   className="flex items-center gap-1 text-[9px] font-bold text-[#326318] cursor-pointer hover:underline mt-0.5"
@@ -503,13 +515,17 @@ export default function FarmerPortal({
               Bảng Điều Khiển Nông Dân
             </h2>
             <p className="text-xs text-[#737c6e] font-medium mt-0.5">
-              Chào buổi sáng, hôm nay bạn có {orders.filter((o) => o.statusCode === 'PENDING').length} đơn hàng mới.
+              Chào buổi sáng, hôm nay bạn có{' '}
+              {orders.filter((o) => o.statusCode === 'PENDING').length} đơn hàng mới.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#929a8c]" />
+              <Search
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#929a8c]"
+              />
               <input
                 type="text"
                 value={searchQuery}
@@ -522,8 +538,8 @@ export default function FarmerPortal({
             <button
               type="button"
               onClick={() => {
-                setCurrentTab('trips');
-                setSelectedOrderIdForPrep(null);
+                setCurrentTab('trips')
+                setSelectedOrderIdForPrep(null)
               }}
               className="px-5 py-2.5 rounded-full bg-[#326318] hover:bg-[#254b12] text-white text-xs font-black uppercase tracking-wider shadow-sm hover:shadow transition-all cursor-pointer flex items-center gap-1.5"
             >
@@ -534,8 +550,8 @@ export default function FarmerPortal({
             <button
               type="button"
               onClick={() => {
-                setCurrentTab('notifications');
-                setSelectedOrderIdForPrep(null);
+                setCurrentTab('notifications')
+                setSelectedOrderIdForPrep(null)
               }}
               className="w-10 h-10 rounded-full bg-[#f4f7f1] hover:bg-[#eaf0e6] flex items-center justify-center text-[#555d4e] relative transition-colors cursor-pointer"
             >
@@ -546,8 +562,8 @@ export default function FarmerPortal({
             <button
               type="button"
               onClick={() => {
-                setShowTour(true);
-                setCurrentTab('overview');
+                setShowTour(true)
+                setCurrentTab('overview')
               }}
               title="Xem lại hướng dẫn cho nông dân"
               className="px-3.5 py-2 rounded-full bg-[#f4f7f1] hover:bg-[#e4ede0] text-xs font-bold text-[#326318] flex items-center gap-1.5 transition-colors cursor-pointer border border-[#d6dcce]"
@@ -624,13 +640,13 @@ export default function FarmerPortal({
           ) : currentTab === 'profile' ? (
             <Profile user={user} onInfo={onInfo} />
           ) : currentTab === 'wallet' ? (
-            <WalletComponent
-              onOpenWithdraw={() => setShowWithdrawModal(true)}
-              onInfo={onInfo}
-            />
+            <WalletComponent onOpenWithdraw={() => setShowWithdrawModal(true)} onInfo={onInfo} />
           ) : currentTab === 'messages' ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
-              <div id="tour-messages-search" className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4">
+              <div
+                id="tour-messages-search"
+                className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4"
+              >
                 <h4 className="text-sm font-black text-[#1c2216]">Hội thoại khách hàng</h4>
                 <div className="p-3 rounded-2xl bg-[#fafcf9] border border-[#edf1e8] flex items-center justify-between">
                   <div>
@@ -640,7 +656,10 @@ export default function FarmerPortal({
                   <span className="w-2 h-2 rounded-full bg-[#326318]" />
                 </div>
               </div>
-              <div id="tour-messages-first-conv" className="md:col-span-2 bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4">
+              <div
+                id="tour-messages-first-conv"
+                className="md:col-span-2 bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4"
+              >
                 <div className="flex items-center justify-between pb-3 border-b border-[#f1f4ed]">
                   <strong className="text-sm text-[#1c2216]">Chị Mai Lan (Quận 7)</strong>
                   <span className="text-[11px] text-[#326318] font-bold">🟢 Đang online</span>
@@ -692,5 +711,5 @@ export default function FarmerPortal({
         />
       )}
     </div>
-  );
+  )
 }

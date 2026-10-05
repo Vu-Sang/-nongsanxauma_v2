@@ -1,10 +1,10 @@
-import React from 'react';
-import { PackageCheck, CheckCircle2, ArrowLeft } from 'lucide-react';
+import React from 'react'
+import { PackageCheck, CheckCircle2, ArrowLeft } from 'lucide-react'
 
 interface OrderPreparationProps {
-  orderId?: string;
-  onBack: () => void;
-  onInfo?: (msg: string) => void;
+  orderId?: string
+  onBack: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function OrderPreparation({ orderId, onBack, onInfo }: OrderPreparationProps) {
@@ -40,15 +40,16 @@ export default function OrderPreparation({ orderId, onBack, onInfo }: OrderPrepa
         <div className="p-4 rounded-2xl bg-[#fdfaf3] border border-[#f3e4cf] space-y-1">
           <div className="font-bold text-[#8a4e1d]">Lưu ý bảo quản tươi:</div>
           <p className="text-[#646e5e]">
-            Dán mã QR kiểm định của nhà vườn lên mặt trên của thùng trước khi bàn giao cho tài xế xe lạnh.
+            Dán mã QR kiểm định của nhà vườn lên mặt trên của thùng trước khi bàn giao cho tài xế xe
+            lạnh.
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => {
-            onInfo?.(`Đã xác nhận đóng gói hoàn tất cho đơn ${orderId || 'DH-8921'}`);
-            onBack();
+            onInfo?.(`Đã xác nhận đóng gói hoàn tất cho đơn ${orderId || 'DH-8921'}`)
+            onBack()
           }}
           className="w-full py-3.5 rounded-2xl bg-[#326318] hover:bg-[#254b12] text-white font-black text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer"
         >
@@ -56,5 +57,5 @@ export default function OrderPreparation({ orderId, onBack, onInfo }: OrderPrepa
         </button>
       </div>
     </div>
-  );
+  )
 }

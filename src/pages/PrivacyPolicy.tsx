@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   ShieldCheck,
   Lock,
@@ -17,14 +17,14 @@ import {
   Sparkles,
   Cpu,
   HelpCircle,
-} from 'lucide-react';
+} from 'lucide-react'
 
 interface PrivacyPolicyProps {
-  onNavigateHome?: () => void;
+  onNavigateHome?: () => void
 }
 
 export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
-  const [activeSection, setActiveSection] = useState('muc-dich');
+  const [activeSection, setActiveSection] = useState('muc-dich')
 
   const SECTIONS = [
     { id: 'muc-dich', title: '1. Mục đích thu thập thông tin', icon: FileText },
@@ -35,15 +35,15 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
     { id: 'quyen-han', title: '6. Quyền của người dùng', icon: UserCheck },
     { id: 'ai-cookie', title: '7. Cookie & Công nghệ AI', icon: Cpu },
     { id: 'lien-he', title: '8. Liên hệ & Giải quyết khiếu nại', icon: PhoneCall },
-  ];
+  ]
 
   const scrollTo = (id: string) => {
-    setActiveSection(id);
-    const element = document.getElementById(id);
+    setActiveSection(id)
+    const element = document.getElementById(id)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-  };
+  }
 
   return (
     <div className="bg-[#fcf9f1] min-h-screen text-[#2c2416] pb-20">
@@ -58,7 +58,12 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
           <div className="flex items-center gap-2 text-xs text-white/70 mb-6">
             <button
               type="button"
-              onClick={onNavigateHome || (() => { window.location.hash = '/'; })}
+              onClick={
+                onNavigateHome ||
+                (() => {
+                  window.location.hash = '/'
+                })
+              }
               className="hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
             >
               <ArrowLeft size={14} />
@@ -78,7 +83,9 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
           </h1>
 
           <p className="text-sm sm:text-base text-white/85 max-w-3xl leading-relaxed">
-            CapNong tôn trọng và cam kết bảo vệ quyền riêng tư cá nhân của người mua hàng, nhà vườn đối tác và đơn vị vận chuyển. Mọi quy trình xử lý dữ liệu đều tuân thủ nghiêm ngặt theo Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân tại Việt Nam.
+            CapNong tôn trọng và cam kết bảo vệ quyền riêng tư cá nhân của người mua hàng, nhà vườn
+            đối tác và đơn vị vận chuyển. Mọi quy trình xử lý dữ liệu đều tuân thủ nghiêm ngặt theo
+            Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân tại Việt Nam.
           </p>
         </div>
       </div>
@@ -94,8 +101,8 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </h2>
               <nav className="space-y-1">
                 {SECTIONS.map((sec) => {
-                  const Icon = sec.icon;
-                  const isActive = activeSection === sec.id;
+                  const Icon = sec.icon
+                  const isActive = activeSection === sec.id
                   return (
                     <button
                       key={sec.id}
@@ -107,11 +114,14 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
                           : 'text-[#566050] hover:bg-[#f1f5ee] hover:text-[#1c2216]'
                       }`}
                     >
-                      <Icon size={16} className={`shrink-0 ${isActive ? 'text-white' : 'text-[#879181]'}`} />
+                      <Icon
+                        size={16}
+                        className={`shrink-0 ${isActive ? 'text-white' : 'text-[#879181]'}`}
+                      />
                       <span className="flex-1 truncate">{sec.title}</span>
                       <ChevronRight size={14} className={isActive ? 'opacity-90' : 'opacity-40'} />
                     </button>
-                  );
+                  )
                 })}
               </nav>
 
@@ -136,7 +146,10 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
           {/* Right Detailed Body Content */}
           <div className="lg:col-span-8 space-y-8">
             {/* Section 1 */}
-            <section id="muc-dich" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="muc-dich"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#326318]/10 text-[#326318] flex items-center justify-center font-bold">
                   <FileText size={20} />
@@ -147,34 +160,54 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-3 leading-relaxed">
                 <p>
-                  CapNong thu thập thông tin cá nhân của người dùng nhằm mục đích cung cấp giải pháp sàn kết nối nông nghiệp bền vững, hỗ trợ tiêu thụ nông sản tươi và các hộp túi mù giải cứu.
+                  CapNong thu thập thông tin cá nhân của người dùng nhằm mục đích cung cấp giải pháp
+                  sàn kết nối nông nghiệp bền vững, hỗ trợ tiêu thụ nông sản tươi và các hộp túi mù
+                  giải cứu.
                 </p>
                 <div className="bg-[#f7faf5] rounded-2xl p-4 border border-[#e2ebd9] space-y-2">
-                  <div className="font-black text-[#326318] text-xs uppercase">Các mục đích cốt lõi gồm:</div>
+                  <div className="font-black text-[#326318] text-xs uppercase">
+                    Các mục đích cốt lõi gồm:
+                  </div>
                   <ul className="list-disc list-inside space-y-1 text-xs text-[#525d4c]">
-                    <li>Xác thực và tạo đơn đặt hàng nông sản, túi mù trực tiếp từ các nhà vườn đối tác.</li>
-                    <li>Điều phối đội ngũ shipper giao nhận đơn hàng nông sản nhanh nhất, đảm bảo độ tươi mới và dinh dưỡng.</li>
-                    <li>Thanh toán trực tuyến và đối soát số dư tiền bán hàng minh bạch cho nông dân.</li>
-                    <li>Gửi thông báo tiến độ giao hàng, phản hồi khiếu nại và đổi trả nếu nông sản bị hư hao do vận chuyển.</li>
-                    <li>Cải tiến trải nghiệm người dùng thông qua công nghệ phân tích chất lượng nông sản AI.</li>
+                    <li>
+                      Xác thực và tạo đơn đặt hàng nông sản, túi mù trực tiếp từ các nhà vườn đối
+                      tác.
+                    </li>
+                    <li>
+                      Điều phối đội ngũ shipper giao nhận đơn hàng nông sản nhanh nhất, đảm bảo độ
+                      tươi mới và dinh dưỡng.
+                    </li>
+                    <li>
+                      Thanh toán trực tuyến và đối soát số dư tiền bán hàng minh bạch cho nông dân.
+                    </li>
+                    <li>
+                      Gửi thông báo tiến độ giao hàng, phản hồi khiếu nại và đổi trả nếu nông sản bị
+                      hư hao do vận chuyển.
+                    </li>
+                    <li>
+                      Cải tiến trải nghiệm người dùng thông qua công nghệ phân tích chất lượng nông
+                      sản AI.
+                    </li>
                   </ul>
                 </div>
               </div>
             </section>
 
             {/* Section 2 */}
-            <section id="loai-thong-tin" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="loai-thong-tin"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#2d5c99]/10 text-[#2d5c99] flex items-center justify-center font-bold">
                   <Database size={20} />
                 </div>
-                <h2 className="text-xl font-black text-[#1c2216]">
-                  2. Phạm Vi Dữ Liệu Thu Thập
-                </h2>
+                <h2 className="text-xl font-black text-[#1c2216]">2. Phạm Vi Dữ Liệu Thu Thập</h2>
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-4 leading-relaxed">
                 <p>
-                  Tùy thuộc vào vai trò của bạn trong hệ sinh thái CapNong (Người mua hàng, Nhà vườn hoặc Đối tác giao hàng), chúng tôi sẽ thu thập các trường thông tin tương ứng:
+                  Tùy thuộc vào vai trò của bạn trong hệ sinh thái CapNong (Người mua hàng, Nhà vườn
+                  hoặc Đối tác giao hàng), chúng tôi sẽ thu thập các trường thông tin tương ứng:
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -210,14 +243,18 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
                     Dành cho Tài xế vận chuyển (Shipper)
                   </div>
                   <p className="text-xs text-[#52637a]">
-                    Họ tên tài xế, số điện thoại, biển số xe, tải trọng phương tiện và vị trí tọa độ khi đang thực hiện chuyến giao nông sản từ vườn đến kho.
+                    Họ tên tài xế, số điện thoại, biển số xe, tải trọng phương tiện và vị trí tọa độ
+                    khi đang thực hiện chuyến giao nông sản từ vườn đến kho.
                   </p>
                 </div>
               </div>
             </section>
 
             {/* Section 3 */}
-            <section id="su-dung" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="su-dung"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#16a34a]/10 text-[#16a34a] flex items-center justify-center font-bold">
                   <Eye size={20} />
@@ -228,35 +265,47 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-3 leading-relaxed">
                 <p>
-                  CapNong chỉ sử dụng thông tin cá nhân trong phạm vi đã thông báo và được người dùng đồng ý. Chúng tôi thực hiện nguyên tắc:
+                  CapNong chỉ sử dụng thông tin cá nhân trong phạm vi đã thông báo và được người
+                  dùng đồng ý. Chúng tôi thực hiện nguyên tắc:
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-[#f8faf6] border border-[#e9eee5]">
                     <CheckCircle2 size={16} className="text-[#326318] shrink-0 mt-0.5" />
                     <div>
                       <div className="font-bold text-xs text-[#1c2216]">Minh bạch tuyệt đối</div>
-                      <div className="text-[11px] text-[#717a6c] mt-0.5">Không sử dụng thông tin cho mục đích ngoài các dịch vụ cung cấp trên sàn.</div>
+                      <div className="text-[11px] text-[#717a6c] mt-0.5">
+                        Không sử dụng thông tin cho mục đích ngoài các dịch vụ cung cấp trên sàn.
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-[#f8faf6] border border-[#e9eee5]">
                     <CheckCircle2 size={16} className="text-[#326318] shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-bold text-xs text-[#1c2216]">Không phát tán rác (No Spam)</div>
-                      <div className="text-[11px] text-[#717a6c] mt-0.5">Chỉ gửi thông báo trạng thái đơn hàng và các tin mùa vụ quan trọng.</div>
+                      <div className="font-bold text-xs text-[#1c2216]">
+                        Không phát tán rác (No Spam)
+                      </div>
+                      <div className="text-[11px] text-[#717a6c] mt-0.5">
+                        Chỉ gửi thông báo trạng thái đơn hàng và các tin mùa vụ quan trọng.
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-[#f8faf6] border border-[#e9eee5]">
                     <CheckCircle2 size={16} className="text-[#326318] shrink-0 mt-0.5" />
                     <div>
                       <div className="font-bold text-xs text-[#1c2216]">Giới hạn nội bộ</div>
-                      <div className="text-[11px] text-[#717a6c] mt-0.5">Shipper chỉ xem được địa chỉ và số điện thoại khi đơn hàng đang trong hành trình giao.</div>
+                      <div className="text-[11px] text-[#717a6c] mt-0.5">
+                        Shipper chỉ xem được địa chỉ và số điện thoại khi đơn hàng đang trong hành
+                        trình giao.
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-[#f8faf6] border border-[#e9eee5]">
                     <CheckCircle2 size={16} className="text-[#326318] shrink-0 mt-0.5" />
                     <div>
                       <div className="font-bold text-xs text-[#1c2216]">Bảo vệ người tiêu dùng</div>
-                      <div className="text-[11px] text-[#717a6c] mt-0.5">Ẩn một phần số điện thoại khi hiển thị đánh giá công khai trên website.</div>
+                      <div className="text-[11px] text-[#717a6c] mt-0.5">
+                        Ẩn một phần số điện thoại khi hiển thị đánh giá công khai trên website.
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -264,7 +313,10 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
             </section>
 
             {/* Section 4 */}
-            <section id="bao-ve" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="bao-ve"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#b45309]/10 text-[#b45309] flex items-center justify-center font-bold">
                   <Lock size={20} />
@@ -275,37 +327,48 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-4 leading-relaxed">
                 <p>
-                  Hạ tầng máy chủ của CapNong được thiết kế theo tiêu chuẩn an ninh thông tin nhiều lớp để phòng ngừa các cuộc tấn công mạng, rò rỉ dữ liệu hoặc xâm nhập trái phép:
+                  Hạ tầng máy chủ của CapNong được thiết kế theo tiêu chuẩn an ninh thông tin nhiều
+                  lớp để phòng ngừa các cuộc tấn công mạng, rò rỉ dữ liệu hoặc xâm nhập trái phép:
                 </p>
 
                 <div className="space-y-3">
                   <div className="p-4 rounded-2xl bg-[#fafcf9] border border-[#e6eee1]">
                     <div className="font-bold text-xs text-[#1c2216] flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-[#326318] text-white text-[10px] font-black">HTTPS / SSL</span>
+                      <span className="px-2 py-0.5 rounded-md bg-[#326318] text-white text-[10px] font-black">
+                        HTTPS / SSL
+                      </span>
                       Mã hóa toàn bộ lưu lượng web
                     </div>
                     <p className="text-xs text-[#626d5d] mt-1">
-                      Chứng chỉ số SSL 256-bit bảo đảm việc truyền dữ liệu giữa trình duyệt của bạn và hệ thống CapNong hoàn toàn bảo mật, không bị nghe lén hay sửa đổi.
+                      Chứng chỉ số SSL 256-bit bảo đảm việc truyền dữ liệu giữa trình duyệt của bạn
+                      và hệ thống CapNong hoàn toàn bảo mật, không bị nghe lén hay sửa đổi.
                     </p>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-[#fafcf9] border border-[#e6eee1]">
                     <div className="font-bold text-xs text-[#1c2216] flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-[#2d5c99] text-white text-[10px] font-black">HASH BCRYPT</span>
+                      <span className="px-2 py-0.5 rounded-md bg-[#2d5c99] text-white text-[10px] font-black">
+                        HASH BCRYPT
+                      </span>
                       Mã hóa mật khẩu một chiều
                     </div>
                     <p className="text-xs text-[#626d5d] mt-1">
-                      Mật khẩu của bạn được băm một chiều bằng thuật toán mã hóa tiên tiến. Ngay cả đội ngũ kỹ thuật của CapNong cũng không thể xem hoặc giải mã mật khẩu gốc của bạn.
+                      Mật khẩu của bạn được băm một chiều bằng thuật toán mã hóa tiên tiến. Ngay cả
+                      đội ngũ kỹ thuật của CapNong cũng không thể xem hoặc giải mã mật khẩu gốc của
+                      bạn.
                     </p>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-[#fafcf9] border border-[#e6eee1]">
                     <div className="font-bold text-xs text-[#1c2216] flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-[#b45309] text-white text-[10px] font-black">FIREWALL &amp; DDOS</span>
+                      <span className="px-2 py-0.5 rounded-md bg-[#b45309] text-white text-[10px] font-black">
+                        FIREWALL &amp; DDOS
+                      </span>
                       Hệ thống tường lửa đa tầng
                     </div>
                     <p className="text-xs text-[#626d5d] mt-1">
-                      Giám sát luồng truy cập thời gian thực 24/7, tự động chặn các lượt quét lỗ hổng và tấn công mạng từ chối dịch vụ.
+                      Giám sát luồng truy cập thời gian thực 24/7, tự động chặn các lượt quét lỗ
+                      hổng và tấn công mạng từ chối dịch vụ.
                     </p>
                   </div>
                 </div>
@@ -313,7 +376,10 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
             </section>
 
             {/* Section 5 */}
-            <section id="tai-chinh" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="tai-chinh"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#326318]/10 text-[#326318] flex items-center justify-center font-bold">
                   <ShieldCheck size={20} />
@@ -324,21 +390,34 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-3 leading-relaxed">
                 <p>
-                  Đối với các giao dịch tài chính, rút tiền về tài khoản ngân hàng của nông dân và thanh toán của khách hàng:
+                  Đối với các giao dịch tài chính, rút tiền về tài khoản ngân hàng của nông dân và
+                  thanh toán của khách hàng:
                 </p>
                 <div className="bg-[#fcf8f0] p-4 rounded-2xl border border-[#faecd5] space-y-2">
                   <div className="font-bold text-xs text-[#8a4e1d]">Cam kết bảo vệ tài chính:</div>
                   <ul className="list-disc list-inside space-y-1 text-xs text-[#6e5d48]">
-                    <li>Mọi yêu cầu rút tiền đều yêu cầu xác nhận tài khoản chính chủ qua SMS/Email OTP hoặc xác thực ngân hàng.</li>
-                    <li>Lịch sử giao dịch được ghi nhận bất biến, giúp nhà vườn dễ dàng đối soát số dư khả dụng và số dư chờ quyết toán.</li>
-                    <li>CapNong kết nối với các cổng thanh toán được Ngân hàng Nhà nước cấp phép, không lưu trữ thông tin thẻ thanh toán quốc tế (CVV/CVC) trên máy chủ.</li>
+                    <li>
+                      Mọi yêu cầu rút tiền đều yêu cầu xác nhận tài khoản chính chủ qua SMS/Email
+                      OTP hoặc xác thực ngân hàng.
+                    </li>
+                    <li>
+                      Lịch sử giao dịch được ghi nhận bất biến, giúp nhà vườn dễ dàng đối soát số dư
+                      khả dụng và số dư chờ quyết toán.
+                    </li>
+                    <li>
+                      CapNong kết nối với các cổng thanh toán được Ngân hàng Nhà nước cấp phép,
+                      không lưu trữ thông tin thẻ thanh toán quốc tế (CVV/CVC) trên máy chủ.
+                    </li>
                   </ul>
                 </div>
               </div>
             </section>
 
             {/* Section 6 */}
-            <section id="quyen-han" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="quyen-han"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#e5a00d]/10 text-[#b47a05] flex items-center justify-center font-bold">
                   <UserCheck size={20} />
@@ -349,29 +428,37 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-3 leading-relaxed">
                 <p>
-                  Người dùng có toàn quyền kiểm soát thông tin cá nhân của mình trên CapNong theo quy định pháp luật:
+                  Người dùng có toàn quyền kiểm soát thông tin cá nhân của mình trên CapNong theo
+                  quy định pháp luật:
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="p-3.5 rounded-2xl bg-[#fafcf9] border border-[#e8ece3]">
                     <div className="font-extrabold text-xs text-[#1c2216]">✏️ Quyền chỉnh sửa</div>
                     <div className="text-xs text-[#6b7565] mt-1">
-                      Cập nhật họ tên, địa chỉ, ảnh đại diện, thông tin nông trại trực tiếp trong mục Hồ sơ cá nhân.
+                      Cập nhật họ tên, địa chỉ, ảnh đại diện, thông tin nông trại trực tiếp trong
+                      mục Hồ sơ cá nhân.
                     </div>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-[#fafcf9] border border-[#e8ece3]">
-                    <div className="font-extrabold text-xs text-[#1c2216]">🗑️ Quyền xóa tài khoản</div>
+                    <div className="font-extrabold text-xs text-[#1c2216]">
+                      🗑️ Quyền xóa tài khoản
+                    </div>
                     <div className="text-xs text-[#6b7565] mt-1">
-                      Gửi yêu cầu đóng tài khoản và xóa vĩnh viễn thông tin cá nhân khỏi hệ thống máy chủ.
+                      Gửi yêu cầu đóng tài khoản và xóa vĩnh viễn thông tin cá nhân khỏi hệ thống
+                      máy chủ.
                     </div>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-[#fafcf9] border border-[#e8ece3]">
                     <div className="font-extrabold text-xs text-[#1c2216]">🔍 Quyền tra cứu</div>
                     <div className="text-xs text-[#6b7565] mt-1">
-                      Xem lại toàn bộ lịch sử đơn hàng, giao dịch ví tiền và các đóng góp giải cứu nông sản.
+                      Xem lại toàn bộ lịch sử đơn hàng, giao dịch ví tiền và các đóng góp giải cứu
+                      nông sản.
                     </div>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-[#fafcf9] border border-[#e8ece3]">
-                    <div className="font-extrabold text-xs text-[#1c2216]">🚫 Quyền từ chối thông báo</div>
+                    <div className="font-extrabold text-xs text-[#1c2216]">
+                      🚫 Quyền từ chối thông báo
+                    </div>
                     <div className="text-xs text-[#6b7565] mt-1">
                       Tắt nhận bản tin khuyến mãi mùa vụ trong phần cài đặt thông báo tài khoản.
                     </div>
@@ -381,7 +468,10 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
             </section>
 
             {/* Section 7 */}
-            <section id="ai-cookie" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="ai-cookie"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#326318]/10 text-[#326318] flex items-center justify-center font-bold">
                   <Cpu size={20} />
@@ -392,7 +482,8 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-3 leading-relaxed">
                 <p>
-                  CapNong sử dụng Cookie và các công nghệ lưu trữ cục bộ (Local Storage) nhằm mục đích duy trì phiên đăng nhập và lưu giỏ hàng của bạn khi chuyển trang.
+                  CapNong sử dụng Cookie và các công nghệ lưu trữ cục bộ (Local Storage) nhằm mục
+                  đích duy trì phiên đăng nhập và lưu giỏ hàng của bạn khi chuyển trang.
                 </p>
                 <div className="p-4 rounded-2xl bg-[#f4f8f0] border border-[#dce9d5] space-y-2">
                   <div className="font-bold text-xs text-[#326318] flex items-center gap-1.5">
@@ -400,14 +491,19 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
                     Cam kết bảo mật công nghệ AI (CapNong AI Vision):
                   </div>
                   <p className="text-xs text-[#52634d]">
-                    Khi nhà vườn chụp ảnh nông sản xấu mã để quét bằng AI (định giá giải cứu và kiểm tra độ tươi), hình ảnh chỉ được dùng để nhận diện đặc điểm nông sản. Chúng tôi không bao giờ thu thập khuôn mặt hay dữ liệu đời tư xung quanh bức ảnh.
+                    Khi nhà vườn chụp ảnh nông sản xấu mã để quét bằng AI (định giá giải cứu và kiểm
+                    tra độ tươi), hình ảnh chỉ được dùng để nhận diện đặc điểm nông sản. Chúng tôi
+                    không bao giờ thu thập khuôn mặt hay dữ liệu đời tư xung quanh bức ảnh.
                   </p>
                 </div>
               </div>
             </section>
 
             {/* Section 8 */}
-            <section id="lien-he" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24">
+            <section
+              id="lien-he"
+              className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e8ece3] shadow-sm scroll-mt-24"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-2xl bg-[#2d5c99]/10 text-[#2d5c99] flex items-center justify-center font-bold">
                   <PhoneCall size={20} />
@@ -418,29 +514,44 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
               </div>
               <div className="text-xs sm:text-sm text-[#4d5648] space-y-4 leading-relaxed">
                 <p>
-                  Nếu bạn có bất kỳ câu hỏi, góp ý hoặc phát hiện dấu hiệu vi phạm quyền riêng tư, vui lòng liên hệ ngay với Bộ phận Bảo Mật Thông Tin của CapNong:
+                  Nếu bạn có bất kỳ câu hỏi, góp ý hoặc phát hiện dấu hiệu vi phạm quyền riêng tư,
+                  vui lòng liên hệ ngay với Bộ phận Bảo Mật Thông Tin của CapNong:
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-2xl bg-[#f7faf5] border border-[#e2ebd9] flex items-start gap-3">
                     <Mail size={18} className="text-[#326318] shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-extrabold text-xs text-[#1c2216]">Email chuyên trách bảo mật</div>
-                      <a href="mailto:privacy@capnong.vn" className="text-xs font-bold text-[#326318] hover:underline mt-0.5 block">
+                      <div className="font-extrabold text-xs text-[#1c2216]">
+                        Email chuyên trách bảo mật
+                      </div>
+                      <a
+                        href="mailto:privacy@capnong.vn"
+                        className="text-xs font-bold text-[#326318] hover:underline mt-0.5 block"
+                      >
                         privacy@capnong.vn
                       </a>
-                      <div className="text-[10px] text-[#788472] mt-0.5">Phản hồi trong vòng 24 giờ làm việc</div>
+                      <div className="text-[10px] text-[#788472] mt-0.5">
+                        Phản hồi trong vòng 24 giờ làm việc
+                      </div>
                     </div>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-[#f7faf5] border border-[#e2ebd9] flex items-start gap-3">
                     <PhoneCall size={18} className="text-[#326318] shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-extrabold text-xs text-[#1c2216]">Hotline hỗ trợ khách hàng</div>
-                      <a href="tel:19001234" className="text-xs font-bold text-[#326318] hover:underline mt-0.5 block">
+                      <div className="font-extrabold text-xs text-[#1c2216]">
+                        Hotline hỗ trợ khách hàng
+                      </div>
+                      <a
+                        href="tel:19001234"
+                        className="text-xs font-bold text-[#326318] hover:underline mt-0.5 block"
+                      >
                         1900 1234
                       </a>
-                      <div className="text-[10px] text-[#788472] mt-0.5">8:00 – 21:00 hàng ngày (kể cả T7, CN)</div>
+                      <div className="text-[10px] text-[#788472] mt-0.5">
+                        8:00 – 21:00 hàng ngày (kể cả T7, CN)
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -450,7 +561,8 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
                   <div className="text-xs">
                     <span className="font-bold text-[#1c2216]">Văn phòng điều hành CapNong:</span>
                     <p className="text-[#697262] mt-0.5">
-                      Trụ sở: Hà Nội &amp; TP. Hồ Chí Minh · Trung tâm điều phối nông sản sạch Việt Nam.
+                      Trụ sở: Hà Nội &amp; TP. Hồ Chí Minh · Trung tâm điều phối nông sản sạch Việt
+                      Nam.
                     </p>
                   </div>
                 </div>
@@ -461,12 +573,19 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
             <div className="p-6 rounded-3xl bg-gradient-to-r from-[#326318] to-[#254b12] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
               <div>
                 <h3 className="text-base font-black">Khám phá các nông sản tươi đang được mùa</h3>
-                <p className="text-xs text-white/80 mt-0.5">Mua trực tiếp từ nông hộ, cùng chung tay giảm lãng phí thực phẩm.</p>
+                <p className="text-xs text-white/80 mt-0.5">
+                  Mua trực tiếp từ nông hộ, cùng chung tay giảm lãng phí thực phẩm.
+                </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="button"
-                  onClick={onNavigateHome || (() => { window.location.hash = '/'; })}
+                  onClick={
+                    onNavigateHome ||
+                    (() => {
+                      window.location.hash = '/'
+                    })
+                  }
                   className="px-5 py-2.5 rounded-full bg-white text-[#326318] hover:bg-[#f4f7f0] font-black text-xs transition-colors cursor-pointer"
                 >
                   Về trang chủ
@@ -483,5 +602,5 @@ export default function PrivacyPolicy({ onNavigateHome }: PrivacyPolicyProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

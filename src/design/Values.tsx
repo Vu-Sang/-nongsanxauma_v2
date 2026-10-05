@@ -1,3 +1,3 @@
-import RescueProcess from './RescueProcess';
+import RescueProcess from './RescueProcess'
 
-export default RescueProcess;
+export default RescueProcess

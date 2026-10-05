@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   Gift,
   ArrowRight,
@@ -15,37 +15,37 @@ import {
   Zap,
   ShieldCheck,
   SlidersHorizontal,
-} from 'lucide-react';
-import { products, money, type Product } from '../catalog';
-import { ProduceImage } from '../components/ProductCard';
-import comboHeroBanner from '../assets/combo-hero-banner.jpg';
-import comboMysteryImg from '../assets/combo-mystery.jpg';
-import comboGreenImg from '../assets/combo-green.jpg';
-import comboKitchenImg from '../assets/combo-kitchen.jpg';
-import comboHotpotImg from '../assets/combo-hotpot.jpg';
+} from 'lucide-react'
+import { products, money, type Product } from '../catalog'
+import { ProduceImage } from '../components/ProductCard'
+import comboHeroBanner from '../assets/combo-hero-banner.jpg'
+import comboMysteryImg from '../assets/combo-mystery.jpg'
+import comboGreenImg from '../assets/combo-green.jpg'
+import comboKitchenImg from '../assets/combo-kitchen.jpg'
+import comboHotpotImg from '../assets/combo-hotpot.jpg'
 
 interface CombosProps {
-  onAdd: (s: string) => void;
-  onInfo: (s: string) => void;
+  onAdd: (s: string) => void
+  onInfo: (s: string) => void
 }
 
 interface ComboItem {
-  id: string;
-  name: string;
-  image: string;
-  badgeDiscount: string;
-  badgeWeight: string;
-  badgeHighlight: string;
-  category: string;
-  portion: string;
-  feature: string;
-  price: number;
-  original: number;
-  unit: string;
-  rating: number;
-  reviews: number;
-  sold: number;
-  stock: number;
+  id: string
+  name: string
+  image: string
+  badgeDiscount: string
+  badgeWeight: string
+  badgeHighlight: string
+  category: string
+  portion: string
+  feature: string
+  price: number
+  original: number
+  unit: string
+  rating: number
+  reviews: number
+  sold: number
+  stock: number
 }
 
 const ALL_COMBOS: ComboItem[] = [
@@ -121,7 +121,7 @@ const ALL_COMBOS: ComboItem[] = [
     sold: 164,
     stock: 20,
   },
-];
+]
 
 const COMBO_CATEGORIES = [
   {
@@ -154,7 +154,7 @@ const COMBO_CATEGORIES = [
     bannerTitle: 'Tự Thiết Kế Combo Cá Nhân',
     breadcrumb: 'Tự thiết kế combo',
   },
-];
+]
 
 const SORT_OPTIONS = [
   { id: 'featured', label: 'Nổi bật' },
@@ -162,52 +162,55 @@ const SORT_OPTIONS = [
   { id: 'price-desc', label: 'Giá cao xuống thấp' },
   { id: 'discount', label: 'Tiết kiệm nhất' },
   { id: 'best-selling', label: 'Bán chạy' },
-];
+]
 
 export default function Combos({ onAdd, onInfo }: CombosProps) {
-  const [category, setCategory] = useState('all');
-  const [sort, setSort] = useState('featured');
-  const [priceRange, setPriceRange] = useState('all');
-  const [selected, setSelected] = useState<string[]>([]);
+  const [category, setCategory] = useState('all')
+  const [sort, setSort] = useState('featured')
+  const [priceRange, setPriceRange] = useState('all')
+  const [selected, setSelected] = useState<string[]>([])
 
   // Filter pipeline
-  let filteredCombos = [...ALL_COMBOS];
+  let filteredCombos = [...ALL_COMBOS]
 
   if (category === 'mystery') {
-    filteredCombos = filteredCombos.filter((c) => c.id === 'mystery');
+    filteredCombos = filteredCombos.filter((c) => c.id === 'mystery')
   } else if (category === 'family') {
-    filteredCombos = filteredCombos.filter((c) => c.category === 'Gia đình' || c.category === 'Cuối tuần');
+    filteredCombos = filteredCombos.filter(
+      (c) => c.category === 'Gia đình' || c.category === 'Cuối tuần',
+    )
   } else if (category === 'bulk') {
-    filteredCombos = filteredCombos.filter((c) => c.category === 'Thùng lớn');
+    filteredCombos = filteredCombos.filter((c) => c.category === 'Thùng lớn')
   }
 
   if (priceRange === 'under100') {
-    filteredCombos = filteredCombos.filter((c) => c.price < 100000);
+    filteredCombos = filteredCombos.filter((c) => c.price < 100000)
   } else if (priceRange === '100to200') {
-    filteredCombos = filteredCombos.filter((c) => c.price >= 100000 && c.price <= 200000);
+    filteredCombos = filteredCombos.filter((c) => c.price >= 100000 && c.price <= 200000)
   } else if (priceRange === 'over200') {
-    filteredCombos = filteredCombos.filter((c) => c.price > 200000);
+    filteredCombos = filteredCombos.filter((c) => c.price > 200000)
   }
 
   // Sort pipeline
-  if (sort === 'price-asc') filteredCombos.sort((a, b) => a.price - b.price);
-  if (sort === 'price-desc') filteredCombos.sort((a, b) => b.price - a.price);
-  if (sort === 'best-selling') filteredCombos.sort((a, b) => b.sold - a.sold);
-  if (sort === 'discount') filteredCombos.sort((a, b) => (b.original - b.price) - (a.original - a.price));
+  if (sort === 'price-asc') filteredCombos.sort((a, b) => a.price - b.price)
+  if (sort === 'price-desc') filteredCombos.sort((a, b) => b.price - a.price)
+  if (sort === 'best-selling') filteredCombos.sort((a, b) => b.sold - a.sold)
+  if (sort === 'discount')
+    filteredCombos.sort((a, b) => b.original - b.price - (a.original - a.price))
 
   const totalCustom = products
     .filter((p) => selected.includes(p.id))
-    .reduce((s, p) => s + p.price, 0);
+    .reduce((s, p) => s + p.price, 0)
 
-  const activeCategory = COMBO_CATEGORIES.find((c) => c.id === category) || COMBO_CATEGORIES[0];
+  const activeCategory = COMBO_CATEGORIES.find((c) => c.id === category) || COMBO_CATEGORIES[0]
 
   const handleResetFilters = () => {
-    setCategory('all');
-    setSort('featured');
-    setPriceRange('all');
-  };
+    setCategory('all')
+    setSort('featured')
+    setPriceRange('all')
+  }
 
-  const hasActiveFilters = category !== 'all' || priceRange !== 'all';
+  const hasActiveFilters = category !== 'all' || priceRange !== 'all'
 
   return (
     <div className="w-full bg-[#fdfcf9] min-h-screen">
@@ -233,7 +236,8 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
           </h1>
 
           <p className="text-xs sm:text-sm md:text-base text-white/85 font-normal max-w-xl mx-auto leading-relaxed drop-shadow">
-            Tiết kiệm chi phí đi chợ mỗi ngày, đón giỏ quà bất ngờ từ nông trại và giải cứu nông sản cùng CapNong.
+            Tiết kiệm chi phí đi chợ mỗi ngày, đón giỏ quà bất ngờ từ nông trại và giải cứu nông sản
+            cùng CapNong.
           </p>
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/35 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-white/90 font-medium mt-1 shadow-sm">
@@ -260,16 +264,16 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
 
               <ul className="flex flex-col divide-y divide-[#e3f2dc]">
                 {COMBO_CATEGORIES.map((c) => {
-                  const isActive = category === c.id;
+                  const isActive = category === c.id
                   return (
                     <li key={c.id}>
                       <button
                         type="button"
                         onClick={() => {
-                          setCategory(c.id);
+                          setCategory(c.id)
                           if (c.id === 'custom') {
-                            const el = document.getElementById('custom-builder');
-                            el?.scrollIntoView({ behavior: 'smooth' });
+                            const el = document.getElementById('custom-builder')
+                            el?.scrollIntoView({ behavior: 'smooth' })
                           }
                         }}
                         className={`w-full py-2.5 px-2 flex items-center justify-between text-left text-xs sm:text-sm font-semibold transition-all rounded-lg cursor-pointer ${
@@ -290,7 +294,7 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                         />
                       </button>
                     </li>
-                  );
+                  )
                 })}
               </ul>
             </div>
@@ -387,7 +391,7 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0 flex-nowrap">
                   {SORT_OPTIONS.map((s) => {
-                    const isSelected = sort === s.id;
+                    const isSelected = sort === s.id
                     return (
                       <button
                         key={s.id}
@@ -401,7 +405,7 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                       >
                         {s.label}
                       </button>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -419,7 +423,8 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
             {/* Active Summary */}
             <div className="flex items-center justify-between text-xs text-gray-500 px-1">
               <span>
-                Hiển thị <strong className="text-gray-900">{filteredCombos.length}</strong> gói combo mùa vụ
+                Hiển thị <strong className="text-gray-900">{filteredCombos.length}</strong> gói
+                combo mùa vụ
               </span>
               {category !== 'all' && (
                 <span className="bg-[#eef8ea] text-[#2b5619] font-bold px-2.5 py-0.5 rounded-full border border-[#d2ecc9]">
@@ -501,12 +506,16 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                       <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
                         <div
                           className="bg-[#4a7c2f] h-full rounded-full transition-all duration-500"
-                          style={{ width: `${Math.min(100, Math.round((c.sold / (c.sold + c.stock)) * 100))}%` }}
+                          style={{
+                            width: `${Math.min(100, Math.round((c.sold / (c.sold + c.stock)) * 100))}%`,
+                          }}
                         />
                       </div>
                       <div className="flex items-center justify-between text-[11px] text-gray-500 font-semibold">
                         <span>Đã bán {c.sold} gói</span>
-                        <span className="text-[#4a7c2f]">Còn {c.stock} {c.unit}</span>
+                        <span className="text-[#4a7c2f]">
+                          Còn {c.stock} {c.unit}
+                        </span>
                       </div>
                     </div>
 
@@ -558,14 +567,14 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
               {/* Product Selection Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {products.map((p) => {
-                  const isChosen = selected.includes(p.id);
+                  const isChosen = selected.includes(p.id)
                   return (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() =>
                         setSelected((s) =>
-                          s.includes(p.id) ? s.filter((id) => id !== p.id) : [...s, p.id]
+                          s.includes(p.id) ? s.filter((id) => id !== p.id) : [...s, p.id],
                         )
                       }
                       className={`flex flex-col p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
@@ -575,7 +584,11 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                       }`}
                     >
                       <div className="relative aspect-square w-full rounded-xl overflow-hidden mb-2.5 bg-gray-100">
-                        <ProduceImage src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                        <ProduceImage
+                          src={p.image}
+                          alt={p.name}
+                          className="w-full h-full object-cover"
+                        />
                         <div
                           className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
                             isChosen
@@ -587,15 +600,13 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                         </div>
                       </div>
 
-                      <span className="text-xs font-bold text-gray-900 line-clamp-1">
-                        {p.name}
-                      </span>
+                      <span className="text-xs font-bold text-gray-900 line-clamp-1">{p.name}</span>
                       <div className="flex items-center justify-between mt-1 text-xs">
                         <strong className="text-[#2b5619] font-bold">{money(p.price)}/kg</strong>
                         <span className="text-[10px] text-gray-500">{p.region}</span>
                       </div>
                     </button>
-                  );
+                  )
                 })}
               </div>
 
@@ -608,7 +619,9 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                   <div>
                     <span className="text-xs text-white/75 font-medium">Giỏ tự thiết kế:</span>
                     <div className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-                      <span>{selected.length} món đã chọn ({selected.length} kg)</span>
+                      <span>
+                        {selected.length} món đã chọn ({selected.length} kg)
+                      </span>
                       <span className="text-[#ffea79]">· {money(totalCustom)}</span>
                     </div>
                   </div>
@@ -618,8 +631,8 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                   type="button"
                   disabled={!selected.length}
                   onClick={() => {
-                    selected.forEach(onAdd);
-                    setSelected([]);
+                    selected.forEach(onAdd)
+                    setSelected([])
                   }}
                   className="w-full sm:w-auto px-6 py-3 bg-[#ffea79] hover:bg-[#ffd84d] disabled:opacity-50 text-[#1d4213] rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95"
                 >
@@ -640,7 +653,8 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                   Rủ bạn bè cùng giải cứu nông sản
                 </h2>
                 <p className="text-xs sm:text-sm text-white/80 max-w-md">
-                  Nhận ngay Voucher 30.000đ cho mỗi người bạn giới thiệu thành công đơn hàng Combo đầu tiên.
+                  Nhận ngay Voucher 30.000đ cho mỗi người bạn giới thiệu thành công đơn hàng Combo
+                  đầu tiên.
                 </p>
               </div>
               <button
@@ -660,7 +674,9 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                   <Gift size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">Mỗi Túi Một Bất Ngờ</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">
+                    Mỗi Túi Một Bất Ngờ
+                  </h3>
                   <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
                     Trải nghiệm ẩm thực phong phú với nhiều loại rau củ hữu cơ tươi ngon theo mùa.
                   </p>
@@ -672,7 +688,9 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                   <Leaf size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">Nông Sản Thu Hoạch Sáng</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">
+                    Nông Sản Thu Hoạch Sáng
+                  </h3>
                   <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
                     Giao thẳng từ vườn trong 2-4 giờ, đảm bảo giữ nguyên hàm lượng dinh dưỡng.
                   </p>
@@ -684,7 +702,9 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
                   <ShieldCheck size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">Đóng Gói Thân Thiện</h3>
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-900">
+                    Đóng Gói Thân Thiện
+                  </h3>
                   <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed">
                     Thùng giấy tái chế Kraft và rơm tự nhiên, hạn chế tối đa rác thải nhựa.
                   </p>
@@ -695,5 +715,5 @@ export default function Combos({ onAdd, onInfo }: CombosProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

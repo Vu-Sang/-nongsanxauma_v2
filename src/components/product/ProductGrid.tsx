@@ -1,32 +1,32 @@
-import type { ReactNode } from 'react';
-import type { Product } from '../../catalog';
-import type { AsyncStatus } from '../../hooks/useAsyncData';
-import { cn } from '../../lib/cn';
-import { EmptyState, ErrorState } from '../ui/StateViews';
-import { ProductCard, ProductCardSkeleton } from './ProductCard';
+import type { ReactNode } from 'react'
+import type { Product } from '../../catalog'
+import type { AsyncStatus } from '../../hooks/useAsyncData'
+import { cn } from '../../lib/cn'
+import { EmptyState, ErrorState } from '../ui/StateViews'
+import { ProductCard, ProductCardSkeleton } from './ProductCard'
 
 type ProductGridProps = {
-  products: readonly Product[];
-  onAdd: (id: string) => void;
+  products: readonly Product[]
+  onAdd: (id: string) => void
   /** Mặc định 'success' vì catalog hiện là dữ liệu tĩnh. Khi nối API, truyền status từ useAsyncData. */
-  status?: AsyncStatus;
-  error?: string;
-  onRetry?: () => void;
-  cart?: Readonly<Record<string, number>>;
+  status?: AsyncStatus
+  error?: string
+  onRetry?: () => void
+  cart?: Readonly<Record<string, number>>
   /** Số card skeleton hiển thị khi đang tải. */
-  skeletonCount?: number;
+  skeletonCount?: number
   /** Số card đầu tiên tải ảnh ngay (nằm trong màn hình đầu). */
-  priorityCount?: number;
-  empty?: { title: string; description?: ReactNode; action?: ReactNode };
-  columns?: 'default' | 'wide';
-  className?: string;
-};
+  priorityCount?: number
+  empty?: { title: string; description?: ReactNode; action?: ReactNode }
+  columns?: 'default' | 'wide'
+  className?: string
+}
 
 // Mobile 2 cột (đủ rộng cho card từ 360px), tablet 3, desktop 4.
 const GRID_COLUMNS = {
   default: 'grid-cols-2 md:grid-cols-3 xl:grid-cols-4',
   wide: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
-} as const;
+} as const
 
 export function ProductGrid({
   products,
@@ -41,7 +41,7 @@ export function ProductGrid({
   columns = 'default',
   className,
 }: ProductGridProps) {
-  const gridClass = cn('grid gap-3 sm:gap-5', GRID_COLUMNS[columns], className);
+  const gridClass = cn('grid gap-3 sm:gap-5', GRID_COLUMNS[columns], className)
 
   if (status === 'loading') {
     return (
@@ -51,20 +51,25 @@ export function ProductGrid({
         ))}
         <span className="sr-only">Đang tải nông sản…</span>
       </div>
-    );
+    )
   }
 
-  if (status === 'error') return <ErrorState description={error} onRetry={onRetry} />;
+  if (status === 'error') return <ErrorState description={error} onRetry={onRetry} />
 
-  if (products.length === 0) return <EmptyState {...empty} />;
+  if (products.length === 0) return <EmptyState {...empty} />
 
   return (
     <ul className={gridClass}>
       {products.map((p, i) => (
         <li key={p.id}>
-          <ProductCard product={p} onAdd={onAdd} inCartQuantity={cart?.[p.id]} priority={i < priorityCount} />
+          <ProductCard
+            product={p}
+            onAdd={onAdd}
+            inCartQuantity={cart?.[p.id]}
+            priority={i < priorityCount}
+          />
         </li>
       ))}
     </ul>
-  );
+  )
 }

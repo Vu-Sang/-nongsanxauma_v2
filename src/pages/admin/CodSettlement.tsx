@@ -1,24 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Banknote,
-  Loader2,
-  RefreshCw,
-  AlertCircle,
-  CheckCircle2,
-  Eye,
-  X,
-} from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react'
+import { Banknote, Loader2, RefreshCw, AlertCircle, CheckCircle2, Eye, X } from 'lucide-react'
 import {
   codSettlementService,
   CodPendingOrderResponse,
   getCodCollectAmount,
   getCodPrepaidAmount,
-} from '../../services/codSettlement.service';
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext';
-import { getErrorMessage } from '../../lib/errors';
+} from '../../services/codSettlement.service'
+import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+import { getErrorMessage } from '../../lib/errors'
 
 const fmtCur = (n: number) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
 
 const ORDER_STATUS_LABELS: Record<string, string> = {
   PENDING: 'Chờ xử lý',
@@ -39,7 +31,7 @@ const ORDER_STATUS_LABELS: Record<string, string> = {
   PAID: 'Đã thanh toán',
   CANCELLED: 'Đã hủy',
   FAILED: 'Thất bại',
-};
+}
 
 const COD_PAYMENT_STATUS_LABELS: Record<string, string> = {
   NOT_REQUIRED: 'Không cần ứng tiền',
@@ -47,124 +39,135 @@ const COD_PAYMENT_STATUS_LABELS: Record<string, string> = {
   PAID: 'Đã ứng tiền',
   REFUND_PENDING: 'Chờ hoàn tiền shipper',
   REFUNDED: 'Đã hoàn tiền shipper',
-};
+}
 
 const COD_PAYMENT_OPTION_LABELS: Record<string, string> = {
   CASH: 'Trả tiền mặt',
   WALLET: 'Trừ ví shipper',
-};
+}
 
 function getOrderStatusLabel(status?: string | null): string {
-  if (!status) return ORDER_STATUS_LABELS.DELIVERED;
-  return ORDER_STATUS_LABELS[status] ?? status.replace(/_/g, ' ').toLowerCase();
+  if (!status) return ORDER_STATUS_LABELS.DELIVERED
+  return ORDER_STATUS_LABELS[status] ?? status.replace(/_/g, ' ').toLowerCase()
 }
 
 function getCodPaymentStatusLabel(status?: string | null): string {
-  if (!status) return 'Chưa có trạng thái ứng tiền';
-  return COD_PAYMENT_STATUS_LABELS[status] ?? status.replace(/_/g, ' ').toLowerCase();
+  if (!status) return 'Chưa có trạng thái ứng tiền'
+  return COD_PAYMENT_STATUS_LABELS[status] ?? status.replace(/_/g, ' ').toLowerCase()
 }
 
 function getCodPaymentOptionLabel(option?: string | null): string {
-  if (!option) return 'Chưa chọn';
-  return COD_PAYMENT_OPTION_LABELS[option] ?? option;
+  if (!option) return 'Chưa chọn'
+  return COD_PAYMENT_OPTION_LABELS[option] ?? option
 }
 
 const CodSettlement: React.FC = () => {
-  const [orders, setOrders] = useState<CodPendingOrderResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [settlingId, setSettlingId] = useState<number | null>(null);
-  const [detailOrder, setDetailOrder] = useState<CodPendingOrderResponse | null>(null);
+  const [orders, setOrders] = useState<CodPendingOrderResponse[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [settlingId, setSettlingId] = useState<number | null>(null)
+  const [detailOrder, setDetailOrder] = useState<CodPendingOrderResponse | null>(null)
 
   const fetchPending = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
     try {
-      const res = await codSettlementService.getPendingCodOrders();
-      setOrders(res.result ?? []);
+      const res = await codSettlementService.getPendingCodOrders()
+      setOrders(res.result ?? [])
     } catch (err) {
-      console.error('Failed to load pending COD orders', err);
-      setError(getErrorMessage(err, 'Không thể tải danh sách COD cần đối soát.'));
+      console.error('Failed to load pending COD orders', err)
+      setError(getErrorMessage(err, 'Không thể tải danh sách COD cần đối soát.'))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    fetchPending();
-  }, [fetchPending]);
+    fetchPending()
+  }, [fetchPending])
 
   const handleSettle = async (order: CodPendingOrderResponse) => {
-    const amount = getCodCollectAmount(order);
-    if (!await globalShowConfirm(
-      `Xác nhận đã nhận ${fmtCur(amount)} từ shipper cho đơn #${order.id}?`,
-      'Đối soát COD'
-    )) return;
+    const amount = getCodCollectAmount(order)
+    if (
+      !(await globalShowConfirm(
+        `Xác nhận đã nhận ${fmtCur(amount)} từ shipper cho đơn #${order.id}?`,
+        'Đối soát COD',
+      ))
+    )
+      return
 
     try {
-      setSettlingId(order.id);
-      await codSettlementService.settleCodOrder(order.id);
-      globalShowAlert('Đối soát COD thành công', 'Thành công', 'success');
-      fetchPending();
+      setSettlingId(order.id)
+      await codSettlementService.settleCodOrder(order.id)
+      globalShowAlert('Đối soát COD thành công', 'Thành công', 'success')
+      fetchPending()
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Đối soát COD thất bại'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Đối soát COD thất bại'), 'Lỗi', 'error')
     } finally {
-      setSettlingId(null);
+      setSettlingId(null)
     }
-  };
+  }
 
   const handleConfirmCash = async (order: CodPendingOrderResponse) => {
-    const amount = getCodPrepaidAmount(order);
-    if (!await globalShowConfirm(
-      `Xác nhận đã nhận ${fmtCur(amount)} tiền mặt từ shipper cho đơn #${order.id}?`,
-      'Xác nhận tiền mặt COD'
-    )) return;
+    const amount = getCodPrepaidAmount(order)
+    if (
+      !(await globalShowConfirm(
+        `Xác nhận đã nhận ${fmtCur(amount)} tiền mặt từ shipper cho đơn #${order.id}?`,
+        'Xác nhận tiền mặt COD',
+      ))
+    )
+      return
 
     try {
-      setSettlingId(order.id);
-      await codSettlementService.confirmShipperCashPayment(order.id);
-      globalShowAlert('Đã xác nhận tiền mặt COD', 'Thành công', 'success');
-      fetchPending();
+      setSettlingId(order.id)
+      await codSettlementService.confirmShipperCashPayment(order.id)
+      globalShowAlert('Đã xác nhận tiền mặt COD', 'Thành công', 'success')
+      fetchPending()
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Xác nhận tiền mặt thất bại'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Xác nhận tiền mặt thất bại'), 'Lỗi', 'error')
     } finally {
-      setSettlingId(null);
+      setSettlingId(null)
     }
-  };
+  }
 
   const handleRefundShipper = async (order: CodPendingOrderResponse) => {
-    const amount = getCodPrepaidAmount(order);
-    if (!await globalShowConfirm(
-      `Hoàn ${fmtCur(amount)} tiền COD đã ứng cho shipper đơn #${order.id}? Phí ship không hoàn.`,
-      'Hoàn tiền shipper COD'
-    )) return;
+    const amount = getCodPrepaidAmount(order)
+    if (
+      !(await globalShowConfirm(
+        `Hoàn ${fmtCur(amount)} tiền COD đã ứng cho shipper đơn #${order.id}? Phí ship không hoàn.`,
+        'Hoàn tiền shipper COD',
+      ))
+    )
+      return
 
     try {
-      setSettlingId(order.id);
-      await codSettlementService.refundCodPrepaymentToShipper(order.id);
-      globalShowAlert('Đã hoàn tiền COD đã ứng cho shipper', 'Thành công', 'success');
-      fetchPending();
+      setSettlingId(order.id)
+      await codSettlementService.refundCodPrepaymentToShipper(order.id)
+      globalShowAlert('Đã hoàn tiền COD đã ứng cho shipper', 'Thành công', 'success')
+      fetchPending()
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Hoàn tiền thất bại'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Hoàn tiền thất bại'), 'Lỗi', 'error')
     } finally {
-      setSettlingId(null);
+      setSettlingId(null)
     }
-  };
+  }
 
   const buyerLabel = (order: CodPendingOrderResponse) =>
-    order.buyer?.fullName || order.recipientName || (order.buyerId ? `Buyer #${order.buyerId}` : '—');
+    order.buyer?.fullName ||
+    order.recipientName ||
+    (order.buyerId ? `Buyer #${order.buyerId}` : '—')
 
   const shipperLabel = (order: CodPendingOrderResponse) =>
-    order.shipper?.fullName || (order.shipper?.id ? `Shipper #${order.shipper.id}` : '—');
+    order.shipper?.fullName || (order.shipper?.id ? `Shipper #${order.shipper.id}` : '—')
 
   const getItemQuantity = (item: CodPendingOrderResponse['items'][number]) =>
-    Number(item.quantityKg ?? item.quantity ?? 0);
+    Number(item.quantityKg ?? item.quantity ?? 0)
 
   const getItemUnitPrice = (item: CodPendingOrderResponse['items'][number]) =>
-    Number(item.pricePerKg ?? item.unitPrice ?? 0);
+    Number(item.pricePerKg ?? item.unitPrice ?? 0)
 
   const getItemTotal = (item: CodPendingOrderResponse['items'][number]) =>
-    getItemQuantity(item) * getItemUnitPrice(item);
+    getItemQuantity(item) * getItemUnitPrice(item)
 
   return (
     <div className="p-8 flex flex-col gap-8 animate-in fade-in duration-500">
@@ -202,29 +205,45 @@ const CodSettlement: React.FC = () => {
         ) : orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
             <Banknote className="size-12 text-gray-200" />
-            <p className="text-sm font-black text-gray-400 uppercase">Không có đơn COD cần đối soát</p>
+            <p className="text-sm font-black text-gray-400 uppercase">
+              Không có đơn COD cần đối soát
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-gray-50/50">
                 <tr>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Mã đơn</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Buyer</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Shipper</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Số tiền COD</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Refund</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Trạng thái</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Thao tác</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Mã đơn
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Buyer
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Shipper
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">
+                    Số tiền COD
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">
+                    Refund
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">
+                    Trạng thái
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">
+                    Thao tác
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {orders.map((order) => {
-                  const codAmount = getCodCollectAmount(order);
-                  const prepaidAmount = getCodPrepaidAmount(order);
-                  const hasRefund = (order.refundAmount ?? 0) > 0;
-                  const isCashPending = order.codPaymentStatus === 'PENDING_ADMIN_CONFIRM';
-                  const isRefundPending = order.codPaymentStatus === 'REFUND_PENDING';
+                  const codAmount = getCodCollectAmount(order)
+                  const prepaidAmount = getCodPrepaidAmount(order)
+                  const hasRefund = (order.refundAmount ?? 0) > 0
+                  const isCashPending = order.codPaymentStatus === 'PENDING_ADMIN_CONFIRM'
+                  const isRefundPending = order.codPaymentStatus === 'REFUND_PENDING'
                   return (
                     <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-5">
@@ -234,13 +253,17 @@ const CodSettlement: React.FC = () => {
                       <td className="px-6 py-5">
                         <p className="text-sm font-bold text-gray-800">{buyerLabel(order)}</p>
                         {order.recipientPhone && (
-                          <p className="text-[10px] text-gray-400 font-medium">{order.recipientPhone}</p>
+                          <p className="text-[10px] text-gray-400 font-medium">
+                            {order.recipientPhone}
+                          </p>
                         )}
                       </td>
                       <td className="px-6 py-5">
                         <p className="text-sm font-bold text-gray-800">{shipperLabel(order)}</p>
                         {order.shipper?.phoneNumber && (
-                          <p className="text-[10px] text-gray-400 font-medium">{order.shipper.phoneNumber}</p>
+                          <p className="text-[10px] text-gray-400 font-medium">
+                            {order.shipper.phoneNumber}
+                          </p>
                         )}
                       </td>
                       <td className="px-6 py-5 text-right">
@@ -257,9 +280,14 @@ const CodSettlement: React.FC = () => {
                       <td className="px-6 py-5 text-right">
                         {hasRefund ? (
                           <div>
-                            <p className="text-sm font-black text-orange-600">{fmtCur(order.refundAmount!)}</p>
+                            <p className="text-sm font-black text-orange-600">
+                              {fmtCur(order.refundAmount!)}
+                            </p>
                             {order.refundReason && (
-                              <p className="text-[10px] text-gray-400 font-medium max-w-[140px] ml-auto truncate" title={order.refundReason}>
+                              <p
+                                className="text-[10px] text-gray-400 font-medium max-w-[140px] ml-auto truncate"
+                                title={order.refundReason}
+                              >
                                 {order.refundReason}
                               </p>
                             )}
@@ -273,7 +301,9 @@ const CodSettlement: React.FC = () => {
                           {getOrderStatusLabel(order.status)}
                         </span>
                         {order.codSettled === false && (
-                          <p className="text-[9px] text-gray-400 font-bold mt-1 uppercase">Chưa đối soát</p>
+                          <p className="text-[9px] text-gray-400 font-bold mt-1 uppercase">
+                            Chưa đối soát
+                          </p>
                         )}
                         {order.codPaymentStatus && (
                           <p className="text-[9px] text-amber-600 font-bold mt-1 uppercase">
@@ -283,45 +313,57 @@ const CodSettlement: React.FC = () => {
                       </td>
                       <td className="px-6 py-5 text-right">
                         <div className="flex flex-col items-end gap-2">
-                        <button
-                          onClick={() => setDetailOrder(order)}
-                          className="px-4 py-2.5 bg-blue-50 text-blue-600 text-[10px] font-black rounded-xl uppercase hover:bg-blue-100 transition-colors flex items-center gap-1.5"
-                        >
-                          <Eye className="size-3.5" />
-                          Chi tiết
-                        </button>
-                        {isCashPending ? (
                           <button
-                            onClick={() => handleConfirmCash(order)}
-                            disabled={settlingId === order.id}
-                            className="px-4 py-2.5 bg-amber-50 text-amber-700 text-[10px] font-black rounded-xl uppercase hover:bg-amber-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                            onClick={() => setDetailOrder(order)}
+                            className="px-4 py-2.5 bg-blue-50 text-blue-600 text-[10px] font-black rounded-xl uppercase hover:bg-blue-100 transition-colors flex items-center gap-1.5"
                           >
-                            {settlingId === order.id ? <Loader2 className="size-3.5 animate-spin" /> : <CheckCircle2 className="size-3.5" />}
-                            Xác nhận tiền mặt
+                            <Eye className="size-3.5" />
+                            Chi tiết
                           </button>
-                        ) : isRefundPending ? (
-                          <button
-                            onClick={() => handleRefundShipper(order)}
-                            disabled={settlingId === order.id}
-                            className="px-4 py-2.5 bg-orange-50 text-orange-700 text-[10px] font-black rounded-xl uppercase hover:bg-orange-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                          >
-                            {settlingId === order.id ? <Loader2 className="size-3.5 animate-spin" /> : <CheckCircle2 className="size-3.5" />}
-                            Hoàn shipper
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleSettle(order)}
-                            disabled={settlingId === order.id}
-                            className="px-4 py-2.5 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-xl uppercase hover:bg-emerald-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                          >
-                            {settlingId === order.id ? <Loader2 className="size-3.5 animate-spin" /> : <CheckCircle2 className="size-3.5" />}
-                            Xác nhận đã nhận tiền
-                          </button>
-                        )}
+                          {isCashPending ? (
+                            <button
+                              onClick={() => handleConfirmCash(order)}
+                              disabled={settlingId === order.id}
+                              className="px-4 py-2.5 bg-amber-50 text-amber-700 text-[10px] font-black rounded-xl uppercase hover:bg-amber-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                              {settlingId === order.id ? (
+                                <Loader2 className="size-3.5 animate-spin" />
+                              ) : (
+                                <CheckCircle2 className="size-3.5" />
+                              )}
+                              Xác nhận tiền mặt
+                            </button>
+                          ) : isRefundPending ? (
+                            <button
+                              onClick={() => handleRefundShipper(order)}
+                              disabled={settlingId === order.id}
+                              className="px-4 py-2.5 bg-orange-50 text-orange-700 text-[10px] font-black rounded-xl uppercase hover:bg-orange-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                              {settlingId === order.id ? (
+                                <Loader2 className="size-3.5 animate-spin" />
+                              ) : (
+                                <CheckCircle2 className="size-3.5" />
+                              )}
+                              Hoàn shipper
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleSettle(order)}
+                              disabled={settlingId === order.id}
+                              className="px-4 py-2.5 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-xl uppercase hover:bg-emerald-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                              {settlingId === order.id ? (
+                                <Loader2 className="size-3.5 animate-spin" />
+                              ) : (
+                                <CheckCircle2 className="size-3.5" />
+                              )}
+                              Xác nhận đã nhận tiền
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
-                  );
+                  )
                 })}
               </tbody>
             </table>
@@ -330,11 +372,16 @@ const CodSettlement: React.FC = () => {
       </div>
       {detailOrder && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setDetailOrder(null)} />
+          <div
+            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+            onClick={() => setDetailOrder(null)}
+          />
           <div className="relative z-10 w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[36px] bg-white shadow-2xl flex flex-col">
             <div className="p-7 border-b border-gray-100 flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary">Chi tiết COD</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                  Chi tiết COD
+                </p>
                 <h3 className="text-2xl font-black text-gray-900 mt-1">Đơn #{detailOrder.id}</h3>
                 <p className="text-sm text-gray-500 font-semibold mt-1">
                   {buyerLabel(detailOrder)} · {detailOrder.recipientPhone || 'Chưa có SĐT'}
@@ -351,18 +398,34 @@ const CodSettlement: React.FC = () => {
             <div className="p-7 overflow-y-auto space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="rounded-3xl bg-gray-50 border border-gray-100 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Shipper</p>
-                  <p className="text-sm font-black text-gray-900 mt-2">{shipperLabel(detailOrder)}</p>
-                  <p className="text-xs font-semibold text-gray-500 mt-1">{detailOrder.shipper?.phoneNumber || 'Chưa có SĐT'}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    Shipper
+                  </p>
+                  <p className="text-sm font-black text-gray-900 mt-2">
+                    {shipperLabel(detailOrder)}
+                  </p>
+                  <p className="text-xs font-semibold text-gray-500 mt-1">
+                    {detailOrder.shipper?.phoneNumber || 'Chưa có SĐT'}
+                  </p>
                 </div>
                 <div className="rounded-3xl bg-amber-50 border border-amber-100 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Hình thức ứng tiền</p>
-                  <p className="text-sm font-black text-amber-900 mt-2">{getCodPaymentOptionLabel(detailOrder.codPaymentOption)}</p>
-                  <p className="text-xs font-semibold text-amber-700 mt-1">{getCodPaymentStatusLabel(detailOrder.codPaymentStatus)}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">
+                    Hình thức ứng tiền
+                  </p>
+                  <p className="text-sm font-black text-amber-900 mt-2">
+                    {getCodPaymentOptionLabel(detailOrder.codPaymentOption)}
+                  </p>
+                  <p className="text-xs font-semibold text-amber-700 mt-1">
+                    {getCodPaymentStatusLabel(detailOrder.codPaymentStatus)}
+                  </p>
                 </div>
                 <div className="rounded-3xl bg-emerald-50 border border-emerald-100 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Trạng thái đơn</p>
-                  <p className="text-sm font-black text-emerald-900 mt-2">{getOrderStatusLabel(detailOrder.status)}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">
+                    Trạng thái đơn
+                  </p>
+                  <p className="text-sm font-black text-emerald-900 mt-2">
+                    {getOrderStatusLabel(detailOrder.status)}
+                  </p>
                   <p className="text-xs font-semibold text-emerald-700 mt-1">
                     {detailOrder.codSettled ? 'Đã đối soát COD' : 'Chưa đối soát COD'}
                   </p>
@@ -375,24 +438,36 @@ const CodSettlement: React.FC = () => {
                   <div className="mt-4 space-y-3 text-sm">
                     <div className="flex justify-between gap-4">
                       <span className="font-semibold text-gray-500">Tổng đơn buyer trả</span>
-                      <span className="font-black text-gray-900">{fmtCur(detailOrder.totalAmount ?? 0)}</span>
+                      <span className="font-black text-gray-900">
+                        {fmtCur(detailOrder.totalAmount ?? 0)}
+                      </span>
                     </div>
                     <div className="flex justify-between gap-4">
                       <span className="font-semibold text-gray-500">Phí ship</span>
-                      <span className="font-black text-gray-900">{fmtCur(detailOrder.shippingFee ?? 0)}</span>
+                      <span className="font-black text-gray-900">
+                        {fmtCur(detailOrder.shippingFee ?? 0)}
+                      </span>
                     </div>
                     <div className="flex justify-between gap-4">
                       <span className="font-semibold text-gray-500">Refund/hàng lỗi</span>
-                      <span className="font-black text-orange-600">-{fmtCur(detailOrder.refundAmount ?? 0)}</span>
+                      <span className="font-black text-orange-600">
+                        -{fmtCur(detailOrder.refundAmount ?? 0)}
+                      </span>
                     </div>
                     <div className="h-px bg-gray-100" />
                     <div className="flex justify-between gap-4">
-                      <span className="font-black text-amber-700">Tiền COD shipper cần ứng/xác nhận</span>
-                      <span className="font-black text-amber-700">{fmtCur(getCodPrepaidAmount(detailOrder))}</span>
+                      <span className="font-black text-amber-700">
+                        Tiền COD shipper cần ứng/xác nhận
+                      </span>
+                      <span className="font-black text-amber-700">
+                        {fmtCur(getCodPrepaidAmount(detailOrder))}
+                      </span>
                     </div>
                     <div className="flex justify-between gap-4">
                       <span className="font-black text-primary">Số tiền COD hiển thị</span>
-                      <span className="font-black text-primary">{fmtCur(getCodCollectAmount(detailOrder))}</span>
+                      <span className="font-black text-primary">
+                        {fmtCur(getCodCollectAmount(detailOrder))}
+                      </span>
                     </div>
                     {detailOrder.refundReason && (
                       <div className="rounded-2xl bg-orange-50 p-3 text-xs font-semibold text-orange-700">
@@ -404,9 +479,15 @@ const CodSettlement: React.FC = () => {
 
                 <div className="rounded-3xl border border-gray-100 p-5">
                   <h4 className="text-sm font-black text-gray-900 uppercase">Địa chỉ giao</h4>
-                  <p className="text-sm font-bold text-gray-800 mt-4">{detailOrder.recipientName}</p>
-                  <p className="text-xs font-semibold text-gray-500 mt-1">{detailOrder.recipientPhone}</p>
-                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">{detailOrder.shippingAddress}</p>
+                  <p className="text-sm font-bold text-gray-800 mt-4">
+                    {detailOrder.recipientName}
+                  </p>
+                  <p className="text-xs font-semibold text-gray-500 mt-1">
+                    {detailOrder.recipientPhone}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">
+                    {detailOrder.shippingAddress}
+                  </p>
                   {detailOrder.note && (
                     <div className="mt-4 rounded-2xl bg-gray-50 p-3 text-xs font-semibold text-gray-500">
                       Ghi chú: {detailOrder.note}
@@ -418,26 +499,37 @@ const CodSettlement: React.FC = () => {
               <div className="rounded-3xl border border-gray-100 overflow-hidden">
                 <div className="px-5 py-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
                   <h4 className="text-sm font-black text-gray-900 uppercase">Sản phẩm trong đơn</h4>
-                  <span className="text-xs font-bold text-gray-400">{detailOrder.items?.length ?? 0} dòng</span>
+                  <span className="text-xs font-bold text-gray-400">
+                    {detailOrder.items?.length ?? 0} dòng
+                  </span>
                 </div>
                 <div className="divide-y divide-gray-50">
                   {(detailOrder.items ?? []).length === 0 ? (
-                    <p className="p-5 text-sm font-semibold text-gray-400">Chưa có dữ liệu sản phẩm.</p>
+                    <p className="p-5 text-sm font-semibold text-gray-400">
+                      Chưa có dữ liệu sản phẩm.
+                    </p>
                   ) : (
                     detailOrder.items.map((item, index) => {
-                      const quantity = getItemQuantity(item);
-                      const unitPrice = getItemUnitPrice(item);
+                      const quantity = getItemQuantity(item)
+                      const unitPrice = getItemUnitPrice(item)
                       return (
-                        <div key={`${item.orderDetailId ?? item.orderMysteryBoxId ?? index}`} className="p-5 flex items-start justify-between gap-4">
+                        <div
+                          key={`${item.orderDetailId ?? item.orderMysteryBoxId ?? index}`}
+                          className="p-5 flex items-start justify-between gap-4"
+                        >
                           <div className="min-w-0">
-                            <p className="text-sm font-black text-gray-900">{item.productName || item.mysteryBoxType || 'Sản phẩm'}</p>
+                            <p className="text-sm font-black text-gray-900">
+                              {item.productName || item.mysteryBoxType || 'Sản phẩm'}
+                            </p>
                             <p className="text-xs font-semibold text-gray-500 mt-1">
                               {quantity.toLocaleString('vi-VN')} kg × {fmtCur(unitPrice)}
                             </p>
                           </div>
-                          <p className="text-sm font-black text-primary shrink-0">{fmtCur(getItemTotal(item))}</p>
+                          <p className="text-sm font-black text-primary shrink-0">
+                            {fmtCur(getItemTotal(item))}
+                          </p>
                         </div>
-                      );
+                      )
                     })
                   )}
                 </div>
@@ -447,7 +539,7 @@ const CodSettlement: React.FC = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default CodSettlement;
+export default CodSettlement

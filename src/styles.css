@@ -19,10 +19,16 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
-  button, input, select, textarea {
+  button,
+  input,
+  select,
+  textarea {
     font: inherit;
   }
-  button, a, input, select {
+  button,
+  a,
+  input,
+  select {
     -webkit-tap-highlight-color: transparent;
   }
   button {
@@ -32,10 +38,16 @@
     cursor: not-allowed;
     opacity: 0.5;
   }
-  a, button, input, select {
+  a,
+  button,
+  input,
+  select {
     outline-offset: 4px;
   }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
     outline: 2px solid #4a7c2f;
   }
   ::selection {
@@ -86,10 +98,12 @@
   .section-heading {
     @apply flex flex-wrap items-end justify-between gap-4 mb-6;
   }
-  .section-heading h2, .callout h2 {
+  .section-heading h2,
+  .callout h2 {
     @apply text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight;
   }
-  .section-heading p, .callout p {
+  .section-heading p,
+  .callout p {
     @apply mt-2 text-on-surface-variant text-xs sm:text-sm leading-relaxed;
   }
   .text-link {
@@ -320,12 +334,14 @@
   white-space: nowrap;
   text-decoration: none;
 }
-.nav-pill:hover, .nav-pill.is-hovered {
+.nav-pill:hover,
+.nav-pill.is-hovered {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(4px);
 }
-.nav-pill.is-active, .nav-pill[aria-current='page'] {
+.nav-pill.is-active,
+.nav-pill[aria-current='page'] {
   background: #ffffff !important;
   color: #2b5619 !important;
   font-weight: 800 !important;
@@ -512,7 +528,8 @@
   background: linear-gradient(110deg, #264319, #4a7c2f);
   color: white;
 }
-.combo-hero .eyebrow, .combo-hero h1 em {
+.combo-hero .eyebrow,
+.combo-hero h1 em {
   color: #ffba41;
 }
 .combo-hero p {
@@ -569,7 +586,8 @@
   display: flex;
   flex-direction: column;
 }
-.combo-cards article > img, .combo-cards article > .image-fallback {
+.combo-cards article > img,
+.combo-cards article > .image-fallback {
   height: 180px;
   width: 100%;
   object-fit: cover;
@@ -636,7 +654,8 @@
   border-color: #4a7c2f;
   background: #f1f7eb;
 }
-.builder-options img, .builder-options .image-fallback {
+.builder-options img,
+.builder-options .image-fallback {
   width: 60px;
   height: 60px;
   border-radius: 10px;
@@ -754,13 +773,15 @@
   margin: 10px 0;
   line-height: 1.8;
 }
-.footer-grid a:not(:first-child), .footer-grid button {
+.footer-grid a:not(:first-child),
+.footer-grid button {
   display: block;
   margin: 8px 0;
   text-align: left;
   color: #e5e2da;
 }
-.footer-grid button:hover, .footer-grid a:hover {
+.footer-grid button:hover,
+.footer-grid a:hover {
   text-decoration: underline;
 }
 .footer-bottom {
@@ -832,7 +853,8 @@
   border-bottom: 1px solid #ebe6da;
   padding-bottom: 14px;
 }
-.cart-item > img, .cart-item > .image-fallback {
+.cart-item > img,
+.cart-item > .image-fallback {
   width: 68px;
   height: 74px;
   object-fit: cover;
@@ -1012,7 +1034,8 @@
     padding: 10px 14px;
     font-size: 13px;
   }
-  .two-column, .mystery-box {
+  .two-column,
+  .mystery-box {
     grid-template-columns: 1fr;
     gap: 22px;
   }
@@ -1023,7 +1046,8 @@
   .two-column p {
     font-size: 13px;
   }
-  .fresh-hero, .combo-hero {
+  .fresh-hero,
+  .combo-hero {
     padding: 28px 0;
   }
   .page-hero-image {
@@ -1034,7 +1058,8 @@
     align-items: flex-start;
     padding: 20px;
   }
-  .benefit-grid, .combo-cards {
+  .benefit-grid,
+  .combo-cards {
     grid-template-columns: 1fr;
   }
   .mystery-box {
@@ -1097,12 +1122,20 @@
 
 /* Marquee Animations for Sliding Testimonials */
 @keyframes scrollMarqueeLeft {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(calc(-50% - 8px), 0, 0); }
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(calc(-50% - 8px), 0, 0);
+  }
 }
 @keyframes scrollMarqueeRight {
-  0% { transform: translate3d(calc(-50% - 8px), 0, 0); }
-  100% { transform: translate3d(0, 0, 0); }
+  0% {
+    transform: translate3d(calc(-50% - 8px), 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
 }
 .marquee-track-left {
   display: flex !important;
@@ -1118,7 +1151,8 @@
   will-change: transform;
   animation: scrollMarqueeRight 32s linear infinite !important;
 }
-.marquee-track-left:hover, .marquee-track-right:hover {
+.marquee-track-left:hover,
+.marquee-track-right:hover {
   animation-play-state: paused !important;
 }
 
@@ -1127,4 +1161,3 @@
     scroll-behavior: auto;
   }
 }
-

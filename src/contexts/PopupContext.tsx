@@ -1,104 +1,106 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AlertCircle, CheckCircle2, Info, AlertTriangle, X } from 'lucide-react';
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { AlertCircle, CheckCircle2, Info, AlertTriangle, X } from 'lucide-react'
 
-type PopupType = 'info' | 'success' | 'warning' | 'error';
+type PopupType = 'info' | 'success' | 'warning' | 'error'
 
 interface AlertOptions {
-  id: string;
-  title: string;
-  message: string;
-  type: PopupType;
-  resolve: () => void;
+  id: string
+  title: string
+  message: string
+  type: PopupType
+  resolve: () => void
 }
 
 interface ConfirmOptions {
-  id: string;
-  title: string;
-  message: string;
-  confirmText?: string;
-  cancelText?: string;
-  resolve: (value: boolean) => void;
+  id: string
+  title: string
+  message: string
+  confirmText?: string
+  cancelText?: string
+  resolve: (value: boolean) => void
 }
 
-let alertHandler: ((title: string, message: string, type: PopupType) => Promise<void>) | null = null;
-let confirmHandler: ((title: string, message?: string) => Promise<boolean>) | null = null;
+let alertHandler: ((title: string, message: string, type: PopupType) => Promise<void>) | null = null
+let confirmHandler: ((title: string, message?: string) => Promise<boolean>) | null = null
 
 export const globalShowAlert = (
   messageOrTitle: string,
   titleOrType?: string,
-  typeOrEmpty: PopupType = 'info'
+  typeOrEmpty: PopupType = 'info',
 ): Promise<void> => {
-  let title = titleOrType || 'Thông báo';
-  let message = messageOrTitle;
-  let type: PopupType = typeOrEmpty;
+  let title = titleOrType || 'Thông báo'
+  let message = messageOrTitle
+  let type: PopupType = typeOrEmpty
 
-  if (titleOrType === 'success' || titleOrType === 'error' || titleOrType === 'warning' || titleOrType === 'info') {
-    type = titleOrType as PopupType;
-    title = 'Thông báo';
+  if (
+    titleOrType === 'success' ||
+    titleOrType === 'error' ||
+    titleOrType === 'warning' ||
+    titleOrType === 'info'
+  ) {
+    type = titleOrType as PopupType
+    title = 'Thông báo'
   }
 
   if (alertHandler) {
-    return alertHandler(title, message, type);
+    return alertHandler(title, message, type)
   }
-  alert(`${title}: ${message}`);
-  return Promise.resolve();
-};
+  alert(`${title}: ${message}`)
+  return Promise.resolve()
+}
 
-export const globalShowConfirm = (
-  titleOrMessage: string,
-  message?: string
-): Promise<boolean> => {
-  const title = message ? titleOrMessage : 'Xác nhận';
-  const desc = message || titleOrMessage;
+export const globalShowConfirm = (titleOrMessage: string, message?: string): Promise<boolean> => {
+  const title = message ? titleOrMessage : 'Xác nhận'
+  const desc = message || titleOrMessage
 
   if (confirmHandler) {
-    return confirmHandler(title, desc);
+    return confirmHandler(title, desc)
   }
-  return Promise.resolve(window.confirm(`${title}\n${desc}`));
-};
+  return Promise.resolve(window.confirm(`${title}\n${desc}`))
+}
 
-const PopupContext = createContext({});
+const PopupContext = createContext({})
 
 export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [alerts, setAlerts] = useState<AlertOptions[]>([]);
-  const [confirms, setConfirms] = useState<ConfirmOptions[]>([]);
+  const [alerts, setAlerts] = useState<AlertOptions[]>([])
+  const [confirms, setConfirms] = useState<ConfirmOptions[]>([])
 
   useEffect(() => {
     alertHandler = (title, message, type) => {
       return new Promise<void>((resolve) => {
-        const id = Math.random().toString(36).substring(7);
-        setAlerts((prev) => [...prev, { id, title, message, type, resolve }]);
-      });
-    };
+        const id = Math.random().toString(36).substring(7)
+        setAlerts((prev) => [...prev, { id, title, message, type, resolve }])
+      })
+    }
 
     confirmHandler = (title, message = '') => {
       return new Promise<boolean>((resolve) => {
-        const id = Math.random().toString(36).substring(7);
-        setConfirms((prev) => [...prev, { id, title, message, resolve }]);
-      });
-    };
+        const id = Math.random().toString(36).substring(7)
+        setConfirms((prev) => [...prev, { id, title, message, resolve }])
+      })
+    }
 
     return () => {
-      alertHandler = null;
-      confirmHandler = null;
-    };
-  }, []);
+      alertHandler = null
+      confirmHandler = null
+    }
+  }, [])
 
   const closeAlert = (id: string) => {
     setAlerts((prev) => {
-      const target = prev.find((a) => a.id === id);
-      target?.resolve();
-      return prev.filter((a) => a.id !== id);
-    });
-  };
+      const target = prev.find((a) => a.id === id)
+      target?.resolve()
+      return prev.filter((a) => a.id !== id)
+    })
+  }
 
   const resolveConfirm = (id: string, result: boolean) => {
     setConfirms((prev) => {
-      const target = prev.find((c) => c.id === id);
-      target?.resolve(result);
-      return prev.filter((c) => c.id !== id);
-    });
-  };
+      const target = prev.find((c) => c.id === id)
+      target?.resolve(result)
+      return prev.filter((c) => c.id !== id)
+    })
+  }
 
   return (
     <PopupContext.Provider value={{}}>
@@ -120,7 +122,9 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-base font-bold text-gray-900">{al.title}</h3>
-                <p className="text-sm text-gray-600 mt-1.5 leading-relaxed whitespace-pre-line">{al.message}</p>
+                <p className="text-sm text-gray-600 mt-1.5 leading-relaxed whitespace-pre-line">
+                  {al.message}
+                </p>
               </div>
               <button
                 onClick={() => closeAlert(al.id)}
@@ -154,7 +158,9 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-base font-bold text-gray-900">{cf.title}</h3>
-                <p className="text-sm text-gray-600 mt-1.5 leading-relaxed whitespace-pre-line">{cf.message}</p>
+                <p className="text-sm text-gray-600 mt-1.5 leading-relaxed whitespace-pre-line">
+                  {cf.message}
+                </p>
               </div>
             </div>
             <div className="mt-6 flex items-center justify-end gap-3">
@@ -175,7 +181,7 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         </div>
       ))}
     </PopupContext.Provider>
-  );
-};
+  )
+}
 
-export const usePopup = () => useContext(PopupContext);
+export const usePopup = () => useContext(PopupContext)

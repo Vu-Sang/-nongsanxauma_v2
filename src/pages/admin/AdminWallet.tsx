@@ -1,196 +1,233 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Wallet, TrendingUp, Download, Loader2, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
-import { walletService, WithdrawRequestResponse, WalletResponse } from '../../services';
-import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext';
-import { getErrorMessage } from '../../lib/errors';
+import React, { useState, useEffect, useMemo } from 'react'
+import {
+  Wallet,
+  TrendingUp,
+  Download,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react'
+import { walletService, WithdrawRequestResponse, WalletResponse } from '../../services'
+import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
+import { getErrorMessage } from '../../lib/errors'
 
 function getWithdrawOwnerLabel(req: WithdrawRequestResponse): string {
-  if (req.shipperId) return `SHIPPER-${req.shipperId}`;
-  if (req.buyerId) return `BUYER-${req.buyerId}`;
-  if (req.shopOwnerId) return `SHOP-${req.shopOwnerId}`;
-  if (req.walletType === 'MEMBER') return `BUYER-${req.walletId}`;
-  if (req.walletType === 'SHIPPER') return `SHIPPER-${req.walletId}`;
-  if (req.walletType === 'SHOP') return `SHOP-${req.walletId}`;
-  return `WALLET-${req.walletId}`;
+  if (req.shipperId) return `SHIPPER-${req.shipperId}`
+  if (req.buyerId) return `BUYER-${req.buyerId}`
+  if (req.shopOwnerId) return `SHOP-${req.shopOwnerId}`
+  if (req.walletType === 'MEMBER') return `BUYER-${req.walletId}`
+  if (req.walletType === 'SHIPPER') return `SHIPPER-${req.walletId}`
+  if (req.walletType === 'SHOP') return `SHOP-${req.walletId}`
+  return `WALLET-${req.walletId}`
 }
 
 function getWithdrawOwnerKind(req: WithdrawRequestResponse): 'SHIPPER' | 'BUYER' | 'SHOP' {
-  if (req.shipperId || req.walletType === 'SHIPPER') return 'SHIPPER';
-  if (req.buyerId || req.walletType === 'MEMBER' || req.walletType === 'BUYER') return 'BUYER';
-  return 'SHOP';
+  if (req.shipperId || req.walletType === 'SHIPPER') return 'SHIPPER'
+  if (req.buyerId || req.walletType === 'MEMBER' || req.walletType === 'BUYER') return 'BUYER'
+  return 'SHOP'
 }
 
 function getWithdrawKindBadgeClass(kind: 'SHIPPER' | 'BUYER' | 'SHOP'): string {
-  if (kind === 'SHIPPER') return 'bg-blue-50 text-blue-600';
-  if (kind === 'BUYER') return 'bg-emerald-50 text-emerald-700';
-  return 'bg-purple-50 text-purple-600';
+  if (kind === 'SHIPPER') return 'bg-blue-50 text-blue-600'
+  if (kind === 'BUYER') return 'bg-emerald-50 text-emerald-700'
+  return 'bg-purple-50 text-purple-600'
 }
 
 const AdminWallet: React.FC = () => {
-  const [pendingRequests, setPendingRequests] = useState<WithdrawRequestResponse[]>([]);
-  const [history, setHistory] = useState<WithdrawRequestResponse[]>([]);
-  const [platformWallet, setPlatformWallet] = useState<WalletResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [pendingRequests, setPendingRequests] = useState<WithdrawRequestResponse[]>([])
+  const [history, setHistory] = useState<WithdrawRequestResponse[]>([])
+  const [platformWallet, setPlatformWallet] = useState<WalletResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-  const [qrRequest, setQrRequest] = useState<WithdrawRequestResponse | null>(null);
-  const [qrUrl, setQrUrl] = useState<string | null>(null);
-  
-  const [isConfirmTransferModalOpen, setIsConfirmTransferModalOpen] = useState(false);
-  const [confirmTransferId, setConfirmTransferId] = useState<number | null>(null);
-  const [confirmTransferFiles, setConfirmTransferFiles] = useState<File[]>([]);
-  
-  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectId, setRejectId] = useState<number | null>(null);
-  const [rejectNote, setRejectNote] = useState('');
-  const [rejectFiles, setRejectFiles] = useState<File[]>([]);
-  
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [historyFilter, setHistoryFilter] = useState<'ALL' | 'SUCCESS' | 'REJECTED' | 'PENDING'>('ALL');
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
+  const [qrRequest, setQrRequest] = useState<WithdrawRequestResponse | null>(null)
+  const [qrUrl, setQrUrl] = useState<string | null>(null)
+
+  const [isConfirmTransferModalOpen, setIsConfirmTransferModalOpen] = useState(false)
+  const [confirmTransferId, setConfirmTransferId] = useState<number | null>(null)
+  const [confirmTransferFiles, setConfirmTransferFiles] = useState<File[]>([])
+
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
+  const [rejectId, setRejectId] = useState<number | null>(null)
+  const [rejectNote, setRejectNote] = useState('')
+  const [rejectFiles, setRejectFiles] = useState<File[]>([])
+
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [historyFilter, setHistoryFilter] = useState<'ALL' | 'SUCCESS' | 'REJECTED' | 'PENDING'>(
+    'ALL',
+  )
 
   const fetchData = async () => {
     try {
-      setIsLoading(true);
+      setIsLoading(true)
       const [pendingRes, historyRes, platformWalletRes] = await Promise.all([
         walletService.getAllPendingWithdrawRequests(),
         walletService.getAllWithdrawRequests(),
-        walletService.getPlatformWallet()
-      ]);
+        walletService.getPlatformWallet(),
+      ])
 
-      if (pendingRes.result) setPendingRequests(pendingRes.result);
-      if (historyRes.result) setHistory(historyRes.result);
-      if (platformWalletRes.result) setPlatformWallet(platformWalletRes.result);
+      if (pendingRes.result) setPendingRequests(pendingRes.result)
+      if (historyRes.result) setHistory(historyRes.result)
+      if (platformWalletRes.result) setPlatformWallet(platformWalletRes.result)
     } catch (err) {
-      console.error('Failed to fetch admin wallet data', err);
-      setError('Mất kết nối tải dữ liệu hoặc chưa có dữ liệu. Vui lòng thử lại sau.');
+      console.error('Failed to fetch admin wallet data', err)
+      setError('Mất kết nối tải dữ liệu hoặc chưa có dữ liệu. Vui lòng thử lại sau.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const withdrawId = urlParams.get('withdrawId');
-    const cancel = urlParams.get('cancel');
+    const urlParams = new URLSearchParams(window.location.search)
+    const withdrawId = urlParams.get('withdrawId')
+    const cancel = urlParams.get('cancel')
 
     if (withdrawId) {
-      window.history.replaceState(null, '', window.location.pathname);
+      window.history.replaceState(null, '', window.location.pathname)
       if (cancel === 'true') {
-        globalShowAlert('Đã huỷ giao dịch chuyển khoản trên PayOS', 'Thông báo', 'info');
+        globalShowAlert('Đã huỷ giao dịch chuyển khoản trên PayOS', 'Thông báo', 'info')
       } else {
-        walletService.confirmWithdrawSuccess(Number(withdrawId), 'Đã giải ngân qua giao diện PayOS')
+        walletService
+          .confirmWithdrawSuccess(Number(withdrawId), 'Đã giải ngân qua giao diện PayOS')
           .then(() => {
-             globalShowAlert('Giải ngân PayOS thành công', 'Thành công', 'success');
-             fetchData();
+            globalShowAlert('Giải ngân PayOS thành công', 'Thành công', 'success')
+            fetchData()
           })
           .catch((err: unknown) => {
-             globalShowAlert(getErrorMessage(err, 'Lỗi khi đồng bộ kết quả PayOS'), 'Lỗi', 'error');
-             fetchData();
-          });
-        return; // Skip initial fetchData since we wait for the promise
+            globalShowAlert(getErrorMessage(err, 'Lỗi khi đồng bộ kết quả PayOS'), 'Lỗi', 'error')
+            fetchData()
+          })
+        return // Skip initial fetchData since we wait for the promise
       }
     }
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const handleApprove = async (id: number) => {
-    if (!await globalShowConfirm('Tạo thanh toán', `Bạn muốn tạo mã QR để chuyển khoản cho yêu cầu #${id}?`)) return;
+    if (
+      !(await globalShowConfirm(
+        'Tạo thanh toán',
+        `Bạn muốn tạo mã QR để chuyển khoản cho yêu cầu #${id}?`,
+      ))
+    )
+      return
 
     try {
-      setIsProcessing(true);
-      const res = await walletService.createWithdrawQr(id);
+      setIsProcessing(true)
+      const res = await walletService.createWithdrawQr(id)
       if (res.result) {
-        setQrRequest(pendingRequests.find((r) => r.id === id) ?? null);
-        setQrUrl(res.result.qrCodeUrl || null);
-        setIsQrModalOpen(true);
+        setQrRequest(pendingRequests.find((r) => r.id === id) ?? null)
+        setQrUrl(res.result.qrCodeUrl || null)
+        setIsQrModalOpen(true)
       } else {
-        globalShowAlert('Không thể tạo mã QR, vui lòng thử lại', 'Lỗi', 'error');
+        globalShowAlert('Không thể tạo mã QR, vui lòng thử lại', 'Lỗi', 'error')
       }
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Có lỗi khi tạo mã QR'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Có lỗi khi tạo mã QR'), 'Lỗi', 'error')
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
   const handleConfirmTransferClick = (id: number) => {
-    setConfirmTransferId(id);
-    setConfirmTransferFiles([]);
-    setIsConfirmTransferModalOpen(true);
-  };
+    setConfirmTransferId(id)
+    setConfirmTransferFiles([])
+    setIsConfirmTransferModalOpen(true)
+  }
 
   const handleConfirmTransferSubmit = async () => {
-    if (!confirmTransferId) return;
+    if (!confirmTransferId) return
 
     try {
-      setIsProcessing(true);
-      await walletService.confirmWithdrawSuccess(confirmTransferId, undefined, confirmTransferFiles.length > 0 ? confirmTransferFiles : undefined);
-      globalShowAlert(`Đã xác nhận chuyển khoản thành công cho yêu cầu #${confirmTransferId}`, 'Thành công', 'success');
-      setIsConfirmTransferModalOpen(false);
-      setConfirmTransferId(null);
-      setConfirmTransferFiles([]);
-      setIsQrModalOpen(false);
-      setQrUrl(null);
-      setQrRequest(null);
-      fetchData();
+      setIsProcessing(true)
+      await walletService.confirmWithdrawSuccess(
+        confirmTransferId,
+        undefined,
+        confirmTransferFiles.length > 0 ? confirmTransferFiles : undefined,
+      )
+      globalShowAlert(
+        `Đã xác nhận chuyển khoản thành công cho yêu cầu #${confirmTransferId}`,
+        'Thành công',
+        'success',
+      )
+      setIsConfirmTransferModalOpen(false)
+      setConfirmTransferId(null)
+      setConfirmTransferFiles([])
+      setIsQrModalOpen(false)
+      setQrUrl(null)
+      setQrRequest(null)
+      fetchData()
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Có lỗi khi xác nhận chuyển khoản'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Có lỗi khi xác nhận chuyển khoản'), 'Lỗi', 'error')
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
   const handleOpenReject = (id: number) => {
-    setRejectId(id);
-    setRejectNote('');
-    setRejectFiles([]);
-    setIsRejectModalOpen(true);
-  };
+    setRejectId(id)
+    setRejectNote('')
+    setRejectFiles([])
+    setIsRejectModalOpen(true)
+  }
 
   const submitReject = async () => {
     if (!rejectId || !rejectNote.trim()) {
-      globalShowAlert('Vui lòng nhập lý do từ chối', 'Lỗi', 'error');
-      return;
+      globalShowAlert('Vui lòng nhập lý do từ chối', 'Lỗi', 'error')
+      return
     }
 
     try {
-      setIsProcessing(true);
-      await walletService.rejectWithdraw(rejectId, rejectNote, rejectFiles.length > 0 ? rejectFiles : undefined);
-      globalShowAlert(`Đã từ chối yêu cầu #${rejectId}`, 'Thành công', 'success');
-      setIsRejectModalOpen(false);
-      setRejectNote('');
-      setRejectFiles([]);
-      setRejectId(null);
-      fetchData();
+      setIsProcessing(true)
+      await walletService.rejectWithdraw(
+        rejectId,
+        rejectNote,
+        rejectFiles.length > 0 ? rejectFiles : undefined,
+      )
+      globalShowAlert(`Đã từ chối yêu cầu #${rejectId}`, 'Thành công', 'success')
+      setIsRejectModalOpen(false)
+      setRejectNote('')
+      setRejectFiles([])
+      setRejectId(null)
+      fetchData()
     } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Có lỗi khi từ chối yêu cầu'), 'Lỗi', 'error');
+      globalShowAlert(getErrorMessage(err, 'Có lỗi khi từ chối yêu cầu'), 'Lỗi', 'error')
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
   // Calculate statistics from real data
-  const totalWithdrawn = history.filter(h => h.status === 'SUCCESS').reduce((sum, h) => sum + h.amount, 0);
-  const totalPending = pendingRequests.reduce((sum, req) => sum + req.amount, 0);
-  const totalRejected = history.filter(h => h.status === 'REJECTED').reduce((sum, h) => sum + h.amount, 0);
-  const totalProcessing = history.filter(h => h.status === 'PENDING').reduce((sum, h) => sum + h.amount, 0);
-  const platformTotalBalance = platformWallet?.totalBalance ?? 0;
-  const platformFrozenBalance = platformWallet?.frozenBalance ?? 0;
-  const platformAvailableBalance = Math.max(0, platformTotalBalance - platformFrozenBalance);
+  const totalWithdrawn = history
+    .filter((h) => h.status === 'SUCCESS')
+    .reduce((sum, h) => sum + h.amount, 0)
+  const totalPending = pendingRequests.reduce((sum, req) => sum + req.amount, 0)
+  const totalRejected = history
+    .filter((h) => h.status === 'REJECTED')
+    .reduce((sum, h) => sum + h.amount, 0)
+  const totalProcessing = history
+    .filter((h) => h.status === 'PENDING')
+    .reduce((sum, h) => sum + h.amount, 0)
+  const platformTotalBalance = platformWallet?.totalBalance ?? 0
+  const platformFrozenBalance = platformWallet?.frozenBalance ?? 0
+  const platformAvailableBalance = Math.max(0, platformTotalBalance - platformFrozenBalance)
 
   const filteredHistory = useMemo(() => {
-    if (historyFilter === 'ALL') return history;
-    return history.filter(tx => tx.status === historyFilter);
-  }, [history, historyFilter]);
+    if (historyFilter === 'ALL') return history
+    return history.filter((tx) => tx.status === historyFilter)
+  }, [history, historyFilter])
 
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[600px] gap-4">
         <Loader2 className="size-10 text-primary animate-spin" />
-        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Đang tải dữ liệu admin ví...</p>
+        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">
+          Đang tải dữ liệu admin ví...
+        </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -226,21 +263,27 @@ const AdminWallet: React.FC = () => {
       {/* Platform Wallet Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ví sàn - Tổng</p>
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+            Ví sàn - Tổng
+          </p>
           <h3 className="text-2xl font-black text-gray-900">
             {platformTotalBalance.toLocaleString('vi-VN')}
             <span className="text-sm font-normal text-gray-400 ml-1">đ</span>
           </h3>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">Ví sàn - Khả dụng</p>
+          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">
+            Ví sàn - Khả dụng
+          </p>
           <h3 className="text-2xl font-black text-emerald-600">
             {platformAvailableBalance.toLocaleString('vi-VN')}
             <span className="text-sm font-normal text-emerald-400 ml-1">đ</span>
           </h3>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-amber-100 shadow-sm">
-          <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2">Ví sàn - Đang giữ</p>
+          <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2">
+            Ví sàn - Đang giữ
+          </p>
           <h3 className="text-2xl font-black text-amber-600">
             {platformFrozenBalance.toLocaleString('vi-VN')}
             <span className="text-sm font-normal text-amber-400 ml-1">đ</span>
@@ -250,11 +293,13 @@ const AdminWallet: React.FC = () => {
 
       {/* Withdraw & Processing Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tổng đã giải ngân</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+            Tổng đã giải ngân
+          </p>
           <h3 className="text-2xl font-bold text-gray-900 mb-1">
-            {totalWithdrawn.toLocaleString('vi-VN')} <span className="text-sm font-normal text-gray-400">đ</span>
+            {totalWithdrawn.toLocaleString('vi-VN')}{' '}
+            <span className="text-sm font-normal text-gray-400">đ</span>
           </h3>
           <p className="text-xs text-green-600 font-semibold flex items-center gap-1">
             <TrendingUp className="size-3" />
@@ -263,25 +308,34 @@ const AdminWallet: React.FC = () => {
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Yêu cầu bị từ chối</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+            Yêu cầu bị từ chối
+          </p>
           <h3 className="text-2xl font-bold text-gray-900 mb-1">
-            {totalRejected.toLocaleString('vi-VN')} <span className="text-sm font-normal text-gray-400">đ</span>
+            {totalRejected.toLocaleString('vi-VN')}{' '}
+            <span className="text-sm font-normal text-gray-400">đ</span>
           </h3>
           <p className="text-xs text-red-600 font-semibold">Tổng tiền từ chối giải ngân</p>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Đang xử lý</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+            Đang xử lý
+          </p>
           <h3 className="text-2xl font-bold text-gray-900 mb-1">
-            {totalProcessing.toLocaleString('vi-VN')} <span className="text-sm font-normal text-gray-400">đ</span>
+            {totalProcessing.toLocaleString('vi-VN')}{' '}
+            <span className="text-sm font-normal text-gray-400">đ</span>
           </h3>
           <p className="text-xs text-amber-600 font-semibold">Trong lịch sử giải ngân</p>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Đang chờ xử lý</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+            Đang chờ xử lý
+          </p>
           <h3 className="text-2xl font-bold text-gray-900 mb-1">
-            {totalPending.toLocaleString('vi-VN')} <span className="text-sm font-normal text-gray-400">đ</span>
+            {totalPending.toLocaleString('vi-VN')}{' '}
+            <span className="text-sm font-normal text-gray-400">đ</span>
           </h3>
           <p className="text-xs text-purple-600 font-semibold">{pendingRequests.length} yêu cầu</p>
         </div>
@@ -294,7 +348,9 @@ const AdminWallet: React.FC = () => {
             <div className="size-10 bg-amber-50 rounded-xl flex items-center justify-center">
               <Wallet className="size-5 text-amber-600" />
             </div>
-            <h3 className="font-bold text-gray-800 uppercase tracking-tight text-sm">Hàng đợi yêu cầu rút tiền</h3>
+            <h3 className="font-bold text-gray-800 uppercase tracking-tight text-sm">
+              Hàng đợi yêu cầu rút tiền
+            </h3>
           </div>
           <button
             disabled
@@ -335,62 +391,73 @@ const AdminWallet: React.FC = () => {
                   <td colSpan={6} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center opacity-40">
                       <Wallet className="size-12 mb-3 text-gray-300" />
-                      <p className="text-sm font-medium text-gray-500">Không có thêm yêu cầu nào đang chờ xử lý.</p>
+                      <p className="text-sm font-medium text-gray-500">
+                        Không có thêm yêu cầu nào đang chờ xử lý.
+                      </p>
                     </div>
                   </td>
                 </tr>
               ) : (
                 pendingRequests.map((req) => {
-                  const kind = getWithdrawOwnerKind(req);
+                  const kind = getWithdrawOwnerKind(req)
                   return (
-                  <tr key={req.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-gray-900">
-                          {getWithdrawOwnerLabel(req)}
+                    <tr key={req.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-gray-900">
+                            {getWithdrawOwnerLabel(req)}
+                          </span>
+                          <span className="text-xs text-gray-400">Ví ID: {req.walletId}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2 py-1 text-xs font-bold rounded-md ${getWithdrawKindBadgeClass(kind)}`}
+                        >
+                          {kind}
                         </span>
-                        <span className="text-xs text-gray-400">Ví ID: {req.walletId}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 text-xs font-bold rounded-md ${getWithdrawKindBadgeClass(kind)}`}>
-                        {kind}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="text-sm font-bold text-gray-900">
-                        {(req.amount || 0).toLocaleString('vi-VN')} <span className="font-normal">đ</span>
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-xs leading-tight">
-                        <p className="font-bold text-gray-700">{req.bankAccountNumber || '...'}</p>
-                        <p className="text-gray-400 uppercase">{req.bankName || 'Chưa cung cấp'}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-xs text-gray-500 font-medium">
-                      {req.processedAt ? new Date(req.processedAt).toLocaleString('vi-VN') : 'Đang chờ'}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleApprove(req.id)}
-                          disabled={isProcessing}
-                          className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-colors"
-                        >
-                          DUYỆT
-                        </button>
-                        <button
-                          onClick={() => handleOpenReject(req.id)}
-                          disabled={isProcessing}
-                          className="px-4 py-2 bg-white border border-red-100 text-red-600 text-xs font-bold rounded-xl hover:bg-red-50 disabled:opacity-50 transition-colors"
-                        >
-                          TỪ CHỐI
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  );
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="text-sm font-bold text-gray-900">
+                          {(req.amount || 0).toLocaleString('vi-VN')}{' '}
+                          <span className="font-normal">đ</span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-xs leading-tight">
+                          <p className="font-bold text-gray-700">
+                            {req.bankAccountNumber || '...'}
+                          </p>
+                          <p className="text-gray-400 uppercase">
+                            {req.bankName || 'Chưa cung cấp'}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-xs text-gray-500 font-medium">
+                        {req.processedAt
+                          ? new Date(req.processedAt).toLocaleString('vi-VN')
+                          : 'Đang chờ'}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleApprove(req.id)}
+                            disabled={isProcessing}
+                            className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                          >
+                            DUYỆT
+                          </button>
+                          <button
+                            onClick={() => handleOpenReject(req.id)}
+                            disabled={isProcessing}
+                            className="px-4 py-2 bg-white border border-red-100 text-red-600 text-xs font-bold rounded-xl hover:bg-red-50 disabled:opacity-50 transition-colors"
+                          >
+                            TỪ CHỐI
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
                 })
               )}
             </tbody>
@@ -403,16 +470,30 @@ const AdminWallet: React.FC = () => {
         <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-10 bg-gray-100 rounded-xl flex items-center justify-center">
-              <svg className="size-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <svg
+                className="size-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
               </svg>
             </div>
-            <h3 className="font-bold text-gray-800 uppercase tracking-tight text-sm">Lịch sử giao dịch chi tiết</h3>
+            <h3 className="font-bold text-gray-800 uppercase tracking-tight text-sm">
+              Lịch sử giao dịch chi tiết
+            </h3>
           </div>
           <div className="flex items-center gap-2">
             <select
               value={historyFilter}
-              onChange={(e) => setHistoryFilter(e.target.value as 'ALL' | 'SUCCESS' | 'REJECTED' | 'PENDING')}
+              onChange={(e) =>
+                setHistoryFilter(e.target.value as 'ALL' | 'SUCCESS' | 'REJECTED' | 'PENDING')
+              }
               className="text-xs font-semibold border-gray-200 rounded-lg bg-gray-50 px-3 py-2 focus:ring-primary focus:border-primary"
             >
               <option value="ALL">Tất cả giao dịch</option>
@@ -435,13 +516,27 @@ const AdminWallet: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Mã GD</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Loại</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Đối tác</th>
-                <th className="px-6 py-3 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Số tiền</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Thời gian</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Trạng thái</th>
-                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Ghi chú</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Mã GD
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Loại
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Đối tác
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Số tiền
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Thời gian
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Trạng thái
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Ghi chú
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -449,10 +544,22 @@ const AdminWallet: React.FC = () => {
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center opacity-40">
-                      <svg className="size-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      <svg
+                        className="size-12 mb-3 text-gray-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
                       </svg>
-                      <p className="text-sm font-medium text-gray-500">Không có lịch sử giao dịch.</p>
+                      <p className="text-sm font-medium text-gray-500">
+                        Không có lịch sử giao dịch.
+                      </p>
                     </div>
                   </td>
                 </tr>
@@ -470,7 +577,8 @@ const AdminWallet: React.FC = () => {
                       {getWithdrawOwnerLabel(tx)}
                     </td>
                     <td className="px-6 py-4 text-right text-xs font-bold text-gray-900">
-                      {tx.status === 'SUCCESS' ? '-' : ''}{(tx.amount || 0).toLocaleString('vi-VN')} đ
+                      {tx.status === 'SUCCESS' ? '-' : ''}
+                      {(tx.amount || 0).toLocaleString('vi-VN')} đ
                     </td>
                     <td className="px-6 py-4 text-xs text-gray-400">
                       {tx.processedAt ? new Date(tx.processedAt).toLocaleString('vi-VN') : 'N/A'}
@@ -481,11 +589,15 @@ const AdminWallet: React.FC = () => {
                           tx.status === 'SUCCESS'
                             ? 'bg-green-50 text-green-600'
                             : tx.status === 'REJECTED'
-                            ? 'bg-red-50 text-red-600'
-                            : 'bg-gray-100 text-gray-500'
+                              ? 'bg-red-50 text-red-600'
+                              : 'bg-gray-100 text-gray-500'
                         }`}
                       >
-                        {tx.status === 'SUCCESS' ? 'THÀNH CÔNG' : tx.status === 'REJECTED' ? 'TỪ CHỐI' : 'ĐANG XỬ LÝ'}
+                        {tx.status === 'SUCCESS'
+                          ? 'THÀNH CÔNG'
+                          : tx.status === 'REJECTED'
+                            ? 'TỪ CHỐI'
+                            : 'ĐANG XỬ LÝ'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-xs text-gray-400 max-w-[200px] truncate">
@@ -510,9 +622,9 @@ const AdminWallet: React.FC = () => {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={() => {
-            setIsQrModalOpen(false);
-            setQrUrl(null);
-            setQrRequest(null);
+            setIsQrModalOpen(false)
+            setQrUrl(null)
+            setQrRequest(null)
           }}
         >
           <div
@@ -522,9 +634,9 @@ const AdminWallet: React.FC = () => {
             <button
               type="button"
               onClick={() => {
-                setIsQrModalOpen(false);
-                setQrUrl(null);
-                setQrRequest(null);
+                setIsQrModalOpen(false)
+                setQrUrl(null)
+                setQrRequest(null)
               }}
               className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 transition-colors"
             >
@@ -539,10 +651,19 @@ const AdminWallet: React.FC = () => {
 
             {qrRequest && (
               <div className="bg-blue-50 rounded-2xl p-4 mb-6 space-y-2">
-                <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">Thông tin chuyển khoản</p>
-                <p className="text-sm text-gray-700"><span className="font-bold">Số tiền:</span> {(qrRequest.receiveAmount ?? qrRequest.amount).toLocaleString('vi-VN')} đ</p>
-                <p className="text-sm text-gray-700"><span className="font-bold">Tài khoản:</span> {qrRequest.bankAccountNumber}</p>
-                <p className="text-sm text-gray-700"><span className="font-bold">Ngân hàng:</span> {qrRequest.bankName}</p>
+                <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                  Thông tin chuyển khoản
+                </p>
+                <p className="text-sm text-gray-700">
+                  <span className="font-bold">Số tiền:</span>{' '}
+                  {(qrRequest.receiveAmount ?? qrRequest.amount).toLocaleString('vi-VN')} đ
+                </p>
+                <p className="text-sm text-gray-700">
+                  <span className="font-bold">Tài khoản:</span> {qrRequest.bankAccountNumber}
+                </p>
+                <p className="text-sm text-gray-700">
+                  <span className="font-bold">Ngân hàng:</span> {qrRequest.bankName}
+                </p>
               </div>
             )}
 
@@ -555,9 +676,9 @@ const AdminWallet: React.FC = () => {
               </button>
               <button
                 onClick={() => {
-                  setIsQrModalOpen(false);
-                  setQrUrl(null);
-                  setQrRequest(null);
+                  setIsQrModalOpen(false)
+                  setQrUrl(null)
+                  setQrRequest(null)
                 }}
                 className="px-6 py-4 bg-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-200 transition-all"
               >
@@ -572,7 +693,9 @@ const AdminWallet: React.FC = () => {
       {isConfirmTransferModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-2xl font-black text-gray-900 mb-2">Xác Nhận Chuyển Khoản Thành Công</h3>
+            <h3 className="text-2xl font-black text-gray-900 mb-2">
+              Xác Nhận Chuyển Khoản Thành Công
+            </h3>
             <p className="text-sm text-gray-500 mb-6">Hãy tải lên ảnh chứng minh chuyển khoản</p>
 
             {/* File Upload Section - Optional */}
@@ -586,8 +709,8 @@ const AdminWallet: React.FC = () => {
                   multiple
                   accept="image/*"
                   onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    setConfirmTransferFiles(files);
+                    const files = Array.from(e.target.files || [])
+                    setConfirmTransferFiles(files)
                   }}
                   className="hidden"
                   id="confirm-transfer-file-input"
@@ -599,7 +722,9 @@ const AdminWallet: React.FC = () => {
                   {confirmTransferFiles.length > 0 && (
                     <div className="mt-3 space-y-1">
                       {confirmTransferFiles.map((file, idx) => (
-                        <p key={idx} className="text-xs text-gray-600">{file.name}</p>
+                        <p key={idx} className="text-xs text-gray-600">
+                          {file.name}
+                        </p>
                       ))}
                     </div>
                   )}
@@ -617,9 +742,9 @@ const AdminWallet: React.FC = () => {
               </button>
               <button
                 onClick={() => {
-                  setIsConfirmTransferModalOpen(false);
-                  setConfirmTransferId(null);
-                  setConfirmTransferFiles([]);
+                  setIsConfirmTransferModalOpen(false)
+                  setConfirmTransferId(null)
+                  setConfirmTransferFiles([])
                 }}
                 disabled={isProcessing}
                 className="px-6 py-4 bg-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-200 transition-all disabled:opacity-50"
@@ -636,7 +761,9 @@ const AdminWallet: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-2xl font-black text-gray-900 mb-2">Từ chối Yêu Cầu #{rejectId}</h3>
-            <p className="text-sm text-gray-500 mb-6">Xin vui lòng nhập lý do từ chối để thông báo cho người dùng.</p>
+            <p className="text-sm text-gray-500 mb-6">
+              Xin vui lòng nhập lý do từ chối để thông báo cho người dùng.
+            </p>
 
             <textarea
               value={rejectNote}
@@ -656,8 +783,8 @@ const AdminWallet: React.FC = () => {
                   multiple
                   accept="image/*"
                   onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    setRejectFiles(files);
+                    const files = Array.from(e.target.files || [])
+                    setRejectFiles(files)
                   }}
                   className="hidden"
                   id="reject-file-input"
@@ -669,7 +796,9 @@ const AdminWallet: React.FC = () => {
                   {rejectFiles.length > 0 && (
                     <div className="mt-3 space-y-1">
                       {rejectFiles.map((file, idx) => (
-                        <p key={idx} className="text-xs text-gray-600">{file.name}</p>
+                        <p key={idx} className="text-xs text-gray-600">
+                          {file.name}
+                        </p>
                       ))}
                     </div>
                   )}
@@ -687,10 +816,10 @@ const AdminWallet: React.FC = () => {
               </button>
               <button
                 onClick={() => {
-                  setIsRejectModalOpen(false);
-                  setRejectNote('');
-                  setRejectFiles([]);
-                  setRejectId(null);
+                  setIsRejectModalOpen(false)
+                  setRejectNote('')
+                  setRejectFiles([])
+                  setRejectId(null)
                 }}
                 disabled={isProcessing}
                 className="px-6 py-4 bg-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-200 transition-all disabled:opacity-50"
@@ -702,7 +831,7 @@ const AdminWallet: React.FC = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default AdminWallet;
+export default AdminWallet

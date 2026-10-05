@@ -1,15 +1,26 @@
-import { Star, Heart, Zap, Award, Target, Sprout, Gift, ShieldCheck, Compass, type LucideIcon } from 'lucide-react';
+import {
+  Star,
+  Heart,
+  Zap,
+  Award,
+  Target,
+  Sprout,
+  Gift,
+  ShieldCheck,
+  Compass,
+  type LucideIcon,
+} from 'lucide-react'
 
 interface TestimonialCard {
-  id: string;
-  tag: string;
-  tagIcon: LucideIcon;
-  tagStyle: string;
-  quote: string;
-  author: string;
-  role: string;
-  avatarBg: string;
-  avatarText: string;
+  id: string
+  tag: string
+  tagIcon: LucideIcon
+  tagStyle: string
+  quote: string
+  author: string
+  role: string
+  avatarBg: string
+  avatarText: string
 }
 
 const ROW_1: TestimonialCard[] = [
@@ -18,7 +29,8 @@ const ROW_1: TestimonialCard[] = [
     tag: 'TIN CẬY 100%',
     tagIcon: Heart,
     tagStyle: 'text-[#e11d48] bg-[#ffe4e6] border-[#fecdd3]',
-    quote: 'Từ ngày mua ở CapNong, tiền chợ nhà mình giảm hẳn 30% mà bữa nào cũng đầy ắp rau củ sạch. Củ quả xấu mã một xíu nhưng ăn giòn ngọt tự nhiên, rất an tâm.',
+    quote:
+      'Từ ngày mua ở CapNong, tiền chợ nhà mình giảm hẳn 30% mà bữa nào cũng đầy ắp rau củ sạch. Củ quả xấu mã một xíu nhưng ăn giòn ngọt tự nhiên, rất an tâm.',
     author: 'Thu Trang',
     role: 'Mẹ bé Bắp · Hà Nội',
     avatarBg: 'bg-[#f43f5e]',
@@ -29,7 +41,8 @@ const ROW_1: TestimonialCard[] = [
     tag: 'TIỆN LỢI & SIÊU NHANH',
     tagIcon: Zap,
     tagStyle: 'text-[#0284c7] bg-[#e0f2fe] border-[#bae6fd]',
-    quote: 'Hệ thống gợi ý combo tuần rất thông minh. Đặt buổi sáng là trưa shipper xanh giao tận cửa. Cà chua bi cực kỳ đậm vị, thơm ngon vô cùng.',
+    quote:
+      'Hệ thống gợi ý combo tuần rất thông minh. Đặt buổi sáng là trưa shipper xanh giao tận cửa. Cà chua bi cực kỳ đậm vị, thơm ngon vô cùng.',
     author: 'Minh Tuấn',
     role: 'Bếp trưởng Cơm Chay · TP.HCM',
     avatarBg: 'bg-[#0284c7]',
@@ -40,7 +53,8 @@ const ROW_1: TestimonialCard[] = [
     tag: 'CHẤT LƯỢNG 5 SAO',
     tagIcon: Award,
     tagStyle: 'text-[#7c3aed] bg-[#ede9fe] border-[#ddd6fe]',
-    quote: 'Các đánh giá và điểm độ tươi AI trên nền tảng rất chân thực. Mua bưởi da xanh vỏ rám nhưng ruột hồng mọng nước, ăn ngọt lịm!',
+    quote:
+      'Các đánh giá và điểm độ tươi AI trên nền tảng rất chân thực. Mua bưởi da xanh vỏ rám nhưng ruột hồng mọng nước, ăn ngọt lịm!',
     author: 'Ngọc Lan',
     role: 'Gen Z Sống Xanh · Đà Nẵng',
     avatarBg: 'bg-[#8b5cf6]',
@@ -51,13 +65,14 @@ const ROW_1: TestimonialCard[] = [
     tag: 'MINH BẠCH GIÁ GỐC',
     tagIcon: Target,
     tagStyle: 'text-[#d97706] bg-[#fef3c7] border-[#fde68a]',
-    quote: 'Giá cả công khai minh bạch từ nhà vườn, không qua nhiều tầng trung gian. Cảm giác vừa tiết kiệm vừa giúp ích được bà con nông dân.',
+    quote:
+      'Giá cả công khai minh bạch từ nhà vườn, không qua nhiều tầng trung gian. Cảm giác vừa tiết kiệm vừa giúp ích được bà con nông dân.',
     author: 'Quốc Hưng',
     role: 'Dân văn phòng · Cầu Giấy',
     avatarBg: 'bg-[#f59e0b]',
     avatarText: 'QH',
   },
-];
+]
 
 const ROW_2: TestimonialCard[] = [
   {
@@ -65,7 +80,8 @@ const ROW_2: TestimonialCard[] = [
     tag: 'TÚI MÙ BẤT NGỜ',
     tagIcon: Gift,
     tagStyle: 'text-[#ea580c] bg-[#ffedd5] border-[#fed7aa]',
-    quote: 'Túi Mù 79k mở ra đủ 5kg rau lá và củ quả tươi roi rói thu hoạch sáng sớm. Khui hộp như mở quà bí mật, cả nhà ai cũng thích thú!',
+    quote:
+      'Túi Mù 79k mở ra đủ 5kg rau lá và củ quả tươi roi rói thu hoạch sáng sớm. Khui hộp như mở quà bí mật, cả nhà ai cũng thích thú!',
     author: 'Bảo Châu',
     role: 'Gia đình 4 người · Bình Thạnh',
     avatarBg: 'bg-[#f97316]',
@@ -76,7 +92,8 @@ const ROW_2: TestimonialCard[] = [
     tag: 'ỦNG HỘ NHÀ VƯỜN',
     tagIcon: Sprout,
     tagStyle: 'text-[#16a34a] bg-[#dcfce7] border-[#bbf7d0]',
-    quote: 'Biết rõ từng bó rau xuất xứ từ vườn nào ở Đơn Dương hay Gia Lai. Nông sản thật, người thật, mua sắm rất có ý nghĩa xã hội.',
+    quote:
+      'Biết rõ từng bó rau xuất xứ từ vườn nào ở Đơn Dương hay Gia Lai. Nông sản thật, người thật, mua sắm rất có ý nghĩa xã hội.',
     author: 'Bác Hoàng Nam',
     role: 'Cán bộ hưu trí · Ba Đình',
     avatarBg: 'bg-[#10b981]',
@@ -87,7 +104,8 @@ const ROW_2: TestimonialCard[] = [
     tag: 'AI QUÉT ĐỘ TƯƠI',
     tagIcon: Compass,
     tagStyle: 'text-[#0d9488] bg-[#ccfbf1] border-[#99f6e4]',
-    quote: 'Tính năng quét ảnh AI nhận diện khuyết tật và độ tươi cực đỉnh! Tự động lên thực đơn tuần cân đối dinh dưỡng cho cả gia đình.',
+    quote:
+      'Tính năng quét ảnh AI nhận diện khuyết tật và độ tươi cực đỉnh! Tự động lên thực đơn tuần cân đối dinh dưỡng cho cả gia đình.',
     author: 'Thanh Thảo',
     role: 'Food Blogger · TP.HCM',
     avatarBg: 'bg-[#14b8a6]',
@@ -98,13 +116,14 @@ const ROW_2: TestimonialCard[] = [
     tag: 'ĐỔI TRẢ TẬN TÂM',
     tagIcon: ShieldCheck,
     tagStyle: 'text-[#4f46e5] bg-[#e0e7ff] border-[#c7d2fe]',
-    quote: 'Có 1 lần củ dền bị cấn nhẹ trong lúc ship, gửi video là được hoàn tiền bù ngay trong 1 giờ. Dịch vụ chăm sóc khách hàng 10/10.',
+    quote:
+      'Có 1 lần củ dền bị cấn nhẹ trong lúc ship, gửi video là được hoàn tiền bù ngay trong 1 giờ. Dịch vụ chăm sóc khách hàng 10/10.',
     author: 'Văn Đức',
     role: 'Kỹ sư phần mềm · Hà Nội',
     avatarBg: 'bg-[#6366f1]',
     avatarText: 'VĐ',
   },
-];
+]
 
 export default function Testimonials() {
   return (
@@ -126,7 +145,8 @@ export default function Testimonials() {
           </div>
 
           <p className="text-xs sm:text-sm lg:text-base text-[#52594d] leading-relaxed">
-            Kết nối yêu thương, chung tay giảm lãng phí thực phẩm. Khám phá lý do hàng ngàn gia đình luôn tin tưởng và lựa chọn CapNong mỗi ngày.
+            Kết nối yêu thương, chung tay giảm lãng phí thực phẩm. Khám phá lý do hàng ngàn gia đình
+            luôn tin tưởng và lựa chọn CapNong mỗi ngày.
           </p>
 
           {/* Avatar Stack + Counter */}
@@ -167,8 +187,8 @@ export default function Testimonials() {
           <div className="overflow-hidden w-full">
             <div className="marquee-track-left">
               {[...ROW_1, ...ROW_1].map((item, idx, all) => {
-                const ROWLEN = all.length / 2;
-                const TagIcon = item.tagIcon;
+                const ROWLEN = all.length / 2
+                const TagIcon = item.tagIcon
                 return (
                   <div
                     key={`${item.id}-${idx}`}
@@ -208,13 +228,11 @@ export default function Testimonials() {
                         <span className="text-xs font-bold text-[#1e293b] truncate">
                           {item.author}
                         </span>
-                        <span className="text-caption text-[#64748b] truncate">
-                          {item.role}
-                        </span>
+                        <span className="text-caption text-[#64748b] truncate">{item.role}</span>
                       </div>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
@@ -223,8 +241,8 @@ export default function Testimonials() {
           <div className="overflow-hidden w-full">
             <div className="marquee-track-right">
               {[...ROW_2, ...ROW_2].map((item, idx, all) => {
-                const ROWLEN = all.length / 2;
-                const TagIcon = item.tagIcon;
+                const ROWLEN = all.length / 2
+                const TagIcon = item.tagIcon
                 return (
                   <div
                     key={`${item.id}-${idx}`}
@@ -264,18 +282,16 @@ export default function Testimonials() {
                         <span className="text-xs font-bold text-[#1e293b] truncate">
                           {item.author}
                         </span>
-                        <span className="text-caption text-[#64748b] truncate">
-                          {item.role}
-                        </span>
+                        <span className="text-caption text-[#64748b] truncate">{item.role}</span>
                       </div>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }

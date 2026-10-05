@@ -1,11 +1,11 @@
-import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { ArrowRight, Camera, Sprout, Utensils, type LucideIcon } from 'lucide-react';
-import aiVisionImg from '../assets/ai-vision.jpg';
-import aiMealImg from '../assets/ai-meal.jpg';
-import aiFarmerImg from '../assets/ai-farmer.jpg';
-import { money, products, type Product } from '../catalog';
-import { discountPercent } from '../components/product/ProductCard';
-import { cn } from '../lib/cn';
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { ArrowRight, Camera, Sprout, Utensils, type LucideIcon } from 'lucide-react'
+import aiVisionImg from '../assets/ai-vision.jpg'
+import aiMealImg from '../assets/ai-meal.jpg'
+import aiFarmerImg from '../assets/ai-farmer.jpg'
+import { money, products, type Product } from '../catalog'
+import { discountPercent } from '../components/product/ProductCard'
+import { cn } from '../lib/cn'
 
 /**
  * Section "Công nghệ AI" – thiết kế lại 03/10/2026.
@@ -16,17 +16,17 @@ import { cn } from '../lib/cn';
  * Số liệu trên phiếu quét lấy từ catalog nên khớp với giá đang bán.
  */
 
-type TabId = 'vision' | 'chef' | 'copilot';
+type TabId = 'vision' | 'chef' | 'copilot'
 
 type Tab = {
-  id: TabId;
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  image: string;
-  imageAlt: string;
-  cta: { label: string; href: string };
-};
+  id: TabId
+  icon: LucideIcon
+  title: string
+  description: string
+  image: string
+  imageAlt: string
+  cta: { label: string; href: string }
+}
 
 const TABS: Tab[] = [
   {
@@ -56,27 +56,55 @@ const TABS: Tab[] = [
     imageAlt: 'Đôi tay nông dân ôm bó cà rốt và củ dền vừa nhổ',
     cta: { label: 'Mở gian hàng nhà vườn', href: '#/dang-ky?role=shop' },
   },
-];
+]
 
 // Mẫu quét lấy thẳng từ catalog để giá trên phiếu khớp với giá bán
 const SCAN_SAMPLES: Product[] = ['carrot', 'cabbage', 'tomato']
   .map((id) => products.find((p) => p.id === id))
-  .filter((p): p is Product => Boolean(p));
+  .filter((p): p is Product => Boolean(p))
 
-const SHORT_NAME: Record<string, string> = { carrot: 'Cà rốt', cabbage: 'Bắp cải', tomato: 'Cà chua bi' };
+const SHORT_NAME: Record<string, string> = {
+  carrot: 'Cà rốt',
+  cabbage: 'Bắp cải',
+  tomato: 'Cà chua bi',
+}
 
 const MENUS = [
-  { id: 'eatclean', label: 'Ăn sạch', dish: 'Salad rau củ nướng sốt mè', kcal: 420, minutes: 15, cost: '18.000đ / phần', uses: 'Cà rốt, củ dền, cải bó xôi' },
-  { id: 'family', label: 'Cơm nhà', dish: 'Canh củ hầm và cải xào tỏi', kcal: 650, minutes: 20, cost: '15.000đ / người', uses: 'Khoai lang, bí đỏ, bắp cải' },
-  { id: 'detox', label: 'Nước ép', dish: 'Nước ép cần tây cà rốt', kcal: 180, minutes: 5, cost: '12.000đ / ly', uses: 'Cà rốt, cà chua bi' },
-] as const;
-type MenuId = (typeof MENUS)[number]['id'];
+  {
+    id: 'eatclean',
+    label: 'Ăn sạch',
+    dish: 'Salad rau củ nướng sốt mè',
+    kcal: 420,
+    minutes: 15,
+    cost: '18.000đ / phần',
+    uses: 'Cà rốt, củ dền, cải bó xôi',
+  },
+  {
+    id: 'family',
+    label: 'Cơm nhà',
+    dish: 'Canh củ hầm và cải xào tỏi',
+    kcal: 650,
+    minutes: 20,
+    cost: '15.000đ / người',
+    uses: 'Khoai lang, bí đỏ, bắp cải',
+  },
+  {
+    id: 'detox',
+    label: 'Nước ép',
+    dish: 'Nước ép cần tây cà rốt',
+    kcal: 180,
+    minutes: 5,
+    cost: '12.000đ / ly',
+    uses: 'Cà rốt, cà chua bi',
+  },
+] as const
+type MenuId = (typeof MENUS)[number]['id']
 
 const COPILOT_STEPS = [
   'Chụp ảnh nông sản ngay tại ruộng',
   'AI nhận diện loại, ước lượng khối lượng và đề xuất giá',
   'Duyệt tin đăng, shipper đến lấy hàng',
-];
+]
 
 /* ------------------------------------------------------------------ */
 
@@ -88,22 +116,35 @@ function TagRow({ label, children }: { label: string; children: ReactNode }) {
       <span aria-hidden className="mb-1 min-w-4 flex-1 border-b border-dotted border-[#b99d70]" />
       <dd className="text-right font-bold text-[#2b2113]">{children}</dd>
     </div>
-  );
+  )
 }
 
 /** Phiếu kiểm định giấy kraft: điểm nhấn thị giác duy nhất của section. */
-function KraftTag({ heading, title, children, footer }: { heading: string; title: string; children: ReactNode; footer?: ReactNode }) {
+function KraftTag({
+  heading,
+  title,
+  children,
+  footer,
+}: {
+  heading: string
+  title: string
+  children: ReactNode
+  footer?: ReactNode
+}) {
   return (
     <div className="relative w-full max-w-sm rounded-[18px] bg-[#efe2c6] px-6 pb-5 pt-8 text-[#2b2113] shadow-[0_18px_40px_-12px_rgb(0_0_0/0.6)] lg:-rotate-2 motion-reduce:rotate-0">
       {/* Lỗ xỏ dây của nhãn */}
-      <span aria-hidden className="absolute left-1/2 top-3 h-3 w-3 -translate-x-1/2 rounded-full bg-[#142a0e] ring-[3px] ring-[#d9c69f]" />
+      <span
+        aria-hidden
+        className="absolute left-1/2 top-3 h-3 w-3 -translate-x-1/2 rounded-full bg-[#142a0e] ring-[3px] ring-[#d9c69f]"
+      />
       <p className="text-center text-caption font-semibold text-[#8a4e1d]">{heading}</p>
       <p className="mt-1 text-center text-lg font-extrabold leading-snug">{title}</p>
       <div aria-hidden className="my-4 border-t-2 border-dashed border-[#c9b48c]" />
       <dl className="flex flex-col gap-2.5 tabular-nums">{children}</dl>
       {footer}
     </div>
-  );
+  )
 }
 
 function Chips<T extends string>({
@@ -112,10 +153,10 @@ function Chips<T extends string>({
   value,
   onChange,
 }: {
-  label: string;
-  options: readonly { id: T; label: string }[];
-  value: T;
-  onChange: (id: T) => void;
+  label: string
+  options: readonly { id: T; label: string }[]
+  value: T
+  onChange: (id: T) => void
 }) {
   return (
     <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
@@ -129,14 +170,16 @@ function Chips<T extends string>({
           className={cn(
             'h-10 rounded-full border px-4 text-sm font-semibold transition-colors',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#142a0e]',
-            o.id === value ? 'border-[#efe2c6] bg-[#efe2c6] text-[#2b2113]' : 'border-white/25 text-white/85 hover:border-white/60 hover:text-white',
+            o.id === value
+              ? 'border-[#efe2c6] bg-[#efe2c6] text-[#2b2113]'
+              : 'border-white/25 text-white/85 hover:border-white/60 hover:text-white',
           )}
         >
           {o.label}
         </button>
       ))}
     </div>
-  );
+  )
 }
 
 function ToolControls({
@@ -147,12 +190,12 @@ function ToolControls({
   onMenu,
   cta,
 }: {
-  tab: TabId;
-  sampleId: string;
-  menuId: MenuId;
-  onSample: (id: string) => void;
-  onMenu: (id: MenuId) => void;
-  cta: Tab['cta'];
+  tab: TabId
+  sampleId: string
+  menuId: MenuId
+  onSample: (id: string) => void
+  onMenu: (id: MenuId) => void
+  cta: Tab['cta']
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -194,40 +237,40 @@ function ToolControls({
         <ArrowRight size={16} aria-hidden />
       </a>
     </div>
-  );
+  )
 }
 
 /* ------------------------------------------------------------------ */
 
 interface AiFeaturesProps {
   /** Giữ để tương thích với Home; section mới không còn popup "chưa kết nối". */
-  onInfo?: (title: string) => void;
+  onInfo?: (title: string) => void
 }
 
 export default function AiFeatures(_props: AiFeaturesProps) {
-  const [tab, setTab] = useState<TabId>('vision');
-  const [sampleId, setSampleId] = useState(SCAN_SAMPLES[0]?.id ?? '');
-  const [menuId, setMenuId] = useState<MenuId>('eatclean');
+  const [tab, setTab] = useState<TabId>('vision')
+  const [sampleId, setSampleId] = useState(SCAN_SAMPLES[0]?.id ?? '')
+  const [menuId, setMenuId] = useState<MenuId>('eatclean')
   // Tăng mỗi lần đổi mẫu để chạy lại đường quét đúng 1 lần (chuyển động do người dùng kích hoạt)
-  const [scanKey, setScanKey] = useState(0);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const baseId = useId();
+  const [scanKey, setScanKey] = useState(0)
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const baseId = useId()
 
-  const active = TABS.find((t) => t.id === tab) ?? TABS[0];
-  const sample = SCAN_SAMPLES.find((p) => p.id === sampleId) ?? SCAN_SAMPLES[0];
-  const menu = MENUS.find((m) => m.id === menuId) ?? MENUS[0];
+  const active = TABS.find((t) => t.id === tab) ?? TABS[0]
+  const sample = SCAN_SAMPLES.find((p) => p.id === sampleId) ?? SCAN_SAMPLES[0]
+  const menu = MENUS.find((m) => m.id === menuId) ?? MENUS[0]
 
   const selectTab = (index: number, focus = false) => {
-    const i = (index + TABS.length) % TABS.length;
-    setTab(TABS[i].id);
-    setScanKey((k) => k + 1);
-    if (focus) tabRefs.current[i]?.focus();
-  };
+    const i = (index + TABS.length) % TABS.length
+    setTab(TABS[i].id)
+    setScanKey((k) => k + 1)
+    if (focus) tabRefs.current[i]?.focus()
+  }
 
   const pickSample = (id: string) => {
-    setSampleId(id);
-    setScanKey((k) => k + 1);
-  };
+    setSampleId(id)
+    setScanKey((k) => k + 1)
+  }
 
   // Điều hướng bàn phím chuẩn WAI-ARIA cho tablist
   const onTabKeyDown = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -238,27 +281,44 @@ export default function AiFeatures(_props: AiFeaturesProps) {
       ArrowLeft: index - 1,
       Home: 0,
       End: TABS.length - 1,
-    };
-    if (e.key in target) {
-      e.preventDefault();
-      selectTab(target[e.key], true);
     }
-  };
+    if (e.key in target) {
+      e.preventDefault()
+      selectTab(target[e.key], true)
+    }
+  }
 
   const controls = (
-    <ToolControls tab={tab} sampleId={sample?.id ?? ''} menuId={menuId} onSample={pickSample} onMenu={setMenuId} cta={active.cta} />
-  );
+    <ToolControls
+      tab={tab}
+      sampleId={sample?.id ?? ''}
+      menuId={menuId}
+      onSample={pickSample}
+      onMenu={setMenuId}
+      cta={active.cta}
+    />
+  )
 
   return (
-    <section id="cong-nghe-ai" aria-labelledby="ai-title" className="relative overflow-hidden bg-[#142a0e] py-16 text-white sm:py-20 lg:py-28">
+    <section
+      id="cong-nghe-ai"
+      aria-labelledby="ai-title"
+      className="relative overflow-hidden bg-[#142a0e] py-16 text-white sm:py-20 lg:py-28"
+    >
       {/* Quầng sáng mờ phía sau ảnh, chỉ để tách ảnh khỏi nền */}
-      <div aria-hidden className="pointer-events-none absolute -right-40 top-1/4 h-[36rem] w-[36rem] rounded-full bg-[#326318]/35 blur-3xl" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 top-1/4 h-[36rem] w-[36rem] rounded-full bg-[#326318]/35 blur-3xl"
+      />
 
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:gap-x-16 lg:px-8 xl:px-12">
         {/* ---------- Cột trái: tiêu đề, chọn công cụ, điều khiển ---------- */}
         <div className="flex flex-col gap-8 lg:col-span-5">
           <header className="flex flex-col gap-4">
-            <h2 id="ai-title" className="text-balance text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-5xl">
+            <h2
+              id="ai-title"
+              className="text-balance text-[2rem] font-extrabold leading-[1.1] tracking-tight sm:text-5xl"
+            >
               AI nhìn thấy cái ngon mà vẻ ngoài che mất
             </h2>
             <p className="max-w-md text-base leading-relaxed text-white/75">
@@ -266,15 +326,19 @@ export default function AiFeatures(_props: AiFeaturesProps) {
             </p>
           </header>
 
-          <div role="tablist" aria-label="Công cụ AI" className="grid grid-cols-3 gap-2 lg:grid-cols-1 lg:gap-1">
+          <div
+            role="tablist"
+            aria-label="Công cụ AI"
+            className="grid grid-cols-3 gap-2 lg:grid-cols-1 lg:gap-1"
+          >
             {TABS.map((t, i) => {
-              const selected = t.id === tab;
-              const Icon = t.icon;
+              const selected = t.id === tab
+              const Icon = t.icon
               return (
                 <button
                   key={t.id}
                   ref={(el) => {
-                    tabRefs.current[i] = el;
+                    tabRefs.current[i] = el
                   }}
                   id={`${baseId}-tab-${t.id}`}
                   role="tab"
@@ -293,15 +357,24 @@ export default function AiFeatures(_props: AiFeaturesProps) {
                       : 'text-white/65 hover:bg-white/5 hover:text-white lg:border-white/15 lg:hover:bg-transparent',
                   )}
                 >
-                  <Icon size={20} aria-hidden className={cn('shrink-0 lg:mt-1', selected && 'text-sun-300')} />
+                  <Icon
+                    size={20}
+                    aria-hidden
+                    className={cn('shrink-0 lg:mt-1', selected && 'text-sun-300')}
+                  />
                   <span className="flex flex-col gap-1">
                     <span className="text-sm font-bold sm:text-base lg:text-lg">{t.title}</span>
-                    <span className={cn('hidden text-sm leading-relaxed lg:block', selected ? 'text-white/80' : 'text-white/55')}>
+                    <span
+                      className={cn(
+                        'hidden text-sm leading-relaxed lg:block',
+                        selected ? 'text-white/80' : 'text-white/55',
+                      )}
+                    >
                       {t.description}
                     </span>
                   </span>
                 </button>
-              );
+              )
             })}
           </div>
 
@@ -310,28 +383,59 @@ export default function AiFeatures(_props: AiFeaturesProps) {
         </div>
 
         {/* ---------- Cột phải: ảnh + phiếu kraft ---------- */}
-        <div id={`${baseId}-panel`} role="tabpanel" aria-labelledby={`${baseId}-tab-${tab}`} className="lg:col-span-7">
-          <p className="mb-4 text-sm leading-relaxed text-white/75 lg:hidden">{active.description}</p>
+        <div
+          id={`${baseId}-panel`}
+          role="tabpanel"
+          aria-labelledby={`${baseId}-tab-${tab}`}
+          className="lg:col-span-7"
+        >
+          <p className="mb-4 text-sm leading-relaxed text-white/75 lg:hidden">
+            {active.description}
+          </p>
 
           <div className="relative">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-[#0e1f09] sm:aspect-[4/3] lg:aspect-[4/5]">
-              <img key={active.id} src={active.image} alt={active.imageAlt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
-              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#0e1f09]/85 via-transparent to-transparent" />
+              <img
+                key={active.id}
+                src={active.image}
+                alt={active.imageAlt}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-[#0e1f09]/85 via-transparent to-transparent"
+              />
 
               {tab === 'vision' && (
                 <div aria-hidden className="absolute inset-[12%]">
                   {/* Khung ngắm 4 góc */}
-                  {['left-0 top-0 border-l-2 border-t-2', 'right-0 top-0 border-r-2 border-t-2', 'bottom-0 left-0 border-b-2 border-l-2', 'bottom-0 right-0 border-b-2 border-r-2'].map((c) => (
-                    <span key={c} className={cn('absolute h-7 w-7 rounded-[3px] border-sun-300', c)} />
+                  {[
+                    'left-0 top-0 border-l-2 border-t-2',
+                    'right-0 top-0 border-r-2 border-t-2',
+                    'bottom-0 left-0 border-b-2 border-l-2',
+                    'bottom-0 right-0 border-b-2 border-r-2',
+                  ].map((c) => (
+                    <span
+                      key={c}
+                      className={cn('absolute h-7 w-7 rounded-[3px] border-sun-300', c)}
+                    />
                   ))}
                   {/* Đường quét: chạy một lần mỗi khi đổi mẫu hoặc mở tab */}
-                  <span key={scanKey} className="ai-scanline absolute inset-x-0 top-0 h-0.5 bg-sun-300 opacity-0 shadow-[0_0_16px_4px_rgb(255_234_121/0.5)] motion-reduce:hidden" />
+                  <span
+                    key={scanKey}
+                    className="ai-scanline absolute inset-x-0 top-0 h-0.5 bg-sun-300 opacity-0 shadow-[0_0_16px_4px_rgb(255_234_121/0.5)] motion-reduce:hidden"
+                  />
                 </div>
               )}
             </div>
 
             {/* Phiếu: chồng lên góc dưới trái của ảnh ở desktop; mobile nằm giữa, chờm lên mép ảnh */}
-            <div aria-live="polite" className="relative -mt-16 flex justify-center px-3 sm:-mt-24 lg:absolute lg:-bottom-12 lg:-left-20 lg:mt-0 lg:block lg:w-[22rem] lg:px-0">
+            <div
+              aria-live="polite"
+              className="relative -mt-16 flex justify-center px-3 sm:-mt-24 lg:absolute lg:-bottom-12 lg:-left-20 lg:mt-0 lg:block lg:w-[22rem] lg:px-0"
+            >
               {tab === 'vision' && sample && (
                 <KraftTag
                   heading="Phiếu kiểm định AI"
@@ -344,7 +448,9 @@ export default function AiFeatures(_props: AiFeaturesProps) {
                           <span className="sr-only">Giá gốc </span>
                           {money(sample.original)}
                         </del>
-                        <strong className="text-xl font-extrabold text-[#326318]">{money(sample.price)}</strong>
+                        <strong className="text-xl font-extrabold text-[#326318]">
+                          {money(sample.price)}
+                        </strong>
                       </span>
                     </div>
                   }
@@ -377,5 +483,5 @@ export default function AiFeatures(_props: AiFeaturesProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }

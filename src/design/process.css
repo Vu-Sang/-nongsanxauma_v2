@@ -95,7 +95,9 @@
   background: #e1e6d5;
   color: #62754d;
   margin-bottom: 16px;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.3s ease;
 }
 
 #quy-trinh .rescue-step:hover .rescue-art {
@@ -343,7 +345,9 @@
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
   white-space: nowrap;
 }
 
@@ -382,7 +386,9 @@
   background: #e1e6d5;
   color: #62754d;
   margin-bottom: 16px;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.3s ease;
 }
 
 #danh-muc .cat-item:hover .cat-art {
@@ -586,14 +592,26 @@
 
 /* AI section (CapNong AI Core): scan line chạy 1 lần khi đổi mẫu */
 @keyframes aiScan {
-  0% { top: 0; opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 #cong-nghe-ai .ai-scanline {
   animation: aiScan 1.1s ease-out 1;
 }
 @media (prefers-reduced-motion: reduce) {
-  #cong-nghe-ai .ai-scanline { animation: none; }
+  #cong-nghe-ai .ai-scanline {
+    animation: none;
+  }
 }

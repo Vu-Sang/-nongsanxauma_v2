@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react'
 import {
   Mail,
   CheckCircle2,
@@ -10,30 +10,30 @@ import {
   Zap,
   Store,
   Gift,
-} from 'lucide-react';
-import fullBannerImg from '../assets/full-ecosystem-banner.jpg';
+} from 'lucide-react'
+import fullBannerImg from '../assets/full-ecosystem-banner.jpg'
 
 interface NewsletterProps {
-  onInfo?: (title: string) => void;
+  onInfo?: (title: string) => void
 }
 
 export default function Newsletter({ onInfo }: NewsletterProps) {
-  const [contactInput, setContactInput] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
+  const [contactInput, setContactInput] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const value = contactInput.trim();
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
-    const isPhone = /^(\+84|0)(3|5|7|8|9)\d{8}$/.test(value.replace(/[\s.-]/g, ''));
+    e.preventDefault()
+    const value = contactInput.trim()
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)
+    const isPhone = /^(\+84|0)(3|5|7|8|9)\d{8}$/.test(value.replace(/[\s.-]/g, ''))
     if (!isEmail && !isPhone) {
-      setError('Vui lòng nhập email hoặc số điện thoại Việt Nam hợp lệ (VD: 0912 345 678).');
-      return;
+      setError('Vui lòng nhập email hoặc số điện thoại Việt Nam hợp lệ (VD: 0912 345 678).')
+      return
     }
-    setError('');
-    setSubmitted(true);
-  };
+    setError('')
+    setSubmitted(true)
+  }
 
   return (
     <section
@@ -74,7 +74,8 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
 
           {/* Subtitle */}
           <p className="text-xs sm:text-sm md:text-base text-white/90 max-w-2xl leading-relaxed mt-1">
-            Mỗi đơn hàng tại CapNong là một hành động thiết thực giúp giảm lãng phí thực phẩm, tăng thu nhập cho nông dân và mang lại bữa ăn chuẩn tươi cho gia đình bạn.
+            Mỗi đơn hàng tại CapNong là một hành động thiết thực giúp giảm lãng phí thực phẩm, tăng
+            thu nhập cho nông dân và mang lại bữa ăn chuẩn tươi cho gia đình bạn.
           </p>
         </div>
 
@@ -90,12 +91,11 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                 <span className="text-caption font-bold uppercase tracking-wider text-[#ffea79]">
                   01 · Người Tiêu Dùng
                 </span>
-                <h3 className="text-xl font-black text-white mt-0.5">
-                  Khách Hàng (Buyer)
-                </h3>
+                <h3 className="text-xl font-black text-white mt-0.5">Khách Hàng (Buyer)</h3>
               </div>
               <p className="text-xs sm:text-sm text-white/85 leading-relaxed">
-                Tiết kiệm 40% – 60% chi phí rau củ quả tươi hái sớm mỗi ngày, nhận ngay voucher 50.000đ cho đơn đầu tiên.
+                Tiết kiệm 40% – 60% chi phí rau củ quả tươi hái sớm mỗi ngày, nhận ngay voucher
+                50.000đ cho đơn đầu tiên.
               </p>
             </div>
 
@@ -120,12 +120,11 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                 <span className="text-caption font-bold uppercase tracking-wider text-[#a4e876]">
                   02 · Nông Dân &amp; HTX
                 </span>
-                <h3 className="text-xl font-black text-white mt-0.5">
-                  Nhà Vườn (Shop)
-                </h3>
+                <h3 className="text-xl font-black text-white mt-0.5">Nhà Vườn (Shop)</h3>
               </div>
               <p className="text-xs sm:text-sm text-white/85 leading-relaxed">
-                Tiêu thụ 100% nông sản xấu mã với giá công bằng, miễn phí sàn 0% tháng đầu, thu gom tận ruộng 24h.
+                Tiêu thụ 100% nông sản xấu mã với giá công bằng, miễn phí sàn 0% tháng đầu, thu gom
+                tận ruộng 24h.
               </p>
             </div>
 
@@ -150,12 +149,11 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                 <span className="text-caption font-bold uppercase tracking-wider text-[#ffba41]">
                   03 · Vận Chuyển Xanh
                 </span>
-                <h3 className="text-xl font-black text-white mt-0.5">
-                  Tài Xế (Shipper)
-                </h3>
+                <h3 className="text-xl font-black text-white mt-0.5">Tài Xế (Shipper)</h3>
               </div>
               <p className="text-xs sm:text-sm text-white/85 leading-relaxed">
-                Thu nhập linh hoạt 8 – 15 triệu/tháng, thuật toán AI tối ưu tuyến đường chặng ngắn, nhận đơn giao tươi liền tay.
+                Thu nhập linh hoạt 8 – 15 triệu/tháng, thuật toán AI tối ưu tuyến đường chặng ngắn,
+                nhận đơn giao tươi liền tay.
               </p>
             </div>
 
@@ -174,19 +172,31 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
         {/* Quick Email / Phone Subscription & Benefit Bar */}
         <div className="bg-black/45 backdrop-blur-md border border-white/20 rounded-3xl p-6 sm:p-8 max-w-4xl mx-auto w-full shadow-2xl">
           {submitted ? (
-            <div role="status" className="flex items-center justify-center gap-3 text-center py-2 text-[#a4e876] animate-fadeIn">
+            <div
+              role="status"
+              className="flex items-center justify-center gap-3 text-center py-2 text-[#a4e876] animate-fadeIn"
+            >
               <CheckCircle2 size={24} className="shrink-0" />
               <div className="text-sm sm:text-base font-bold text-white">
-                Cảm ơn bạn! CapNong đã ghi nhận thông tin. Đây là bản trải nghiệm nên chưa gửi voucher thật.
+                Cảm ơn bạn! CapNong đã ghi nhận thông tin. Đây là bản trải nghiệm nên chưa gửi
+                voucher thật.
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="flex flex-col sm:flex-row items-start gap-3">
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="flex flex-col sm:flex-row items-start gap-3"
+            >
               <div className="relative flex-1 w-full">
                 <label htmlFor="newsletter-contact" className="sr-only">
                   Email hoặc số điện thoại
                 </label>
-                <Mail size={18} className="absolute left-4 top-[1.6rem] -translate-y-1/2 text-white/70" aria-hidden />
+                <Mail
+                  size={18}
+                  className="absolute left-4 top-[1.6rem] -translate-y-1/2 text-white/70"
+                  aria-hidden
+                />
                 <input
                   id="newsletter-contact"
                   type="text"
@@ -195,8 +205,8 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                   required
                   value={contactInput}
                   onChange={(e) => {
-                    setContactInput(e.target.value);
-                    if (error) setError('');
+                    setContactInput(e.target.value)
+                    if (error) setError('')
                   }}
                   aria-invalid={error ? true : undefined}
                   aria-describedby={error ? 'newsletter-error' : undefined}
@@ -204,7 +214,11 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
                   className="w-full h-[3.2rem] pl-11 pr-4 rounded-2xl bg-white/15 border border-white/30 text-white placeholder-white/70 text-sm focus:outline-none focus:bg-white/25 focus:border-[#ffea79] transition-all aria-[invalid=true]:border-[#ffb4ab]"
                 />
                 {error && (
-                  <p id="newsletter-error" role="alert" className="mt-2 text-caption font-semibold text-[#ffd6d0]">
+                  <p
+                    id="newsletter-error"
+                    role="alert"
+                    className="mt-2 text-caption font-semibold text-[#ffd6d0]"
+                  >
                     {error}
                   </p>
                 )}
@@ -238,5 +252,5 @@ export default function Newsletter({ onInfo }: NewsletterProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }

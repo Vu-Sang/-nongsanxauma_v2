@@ -10,17 +10,25 @@ export default function Partners() {
               <div className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary">
                 <span className="material-symbols-outlined text-3xl">agriculture</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-on-surface">Dành cho Nông Dân &amp; HTX</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-on-surface">
+                Dành cho Nông Dân &amp; HTX
+              </h3>
               <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-                Bán hết nông sản xấu mã với giá công bằng, xóa tan nỗi lo tồn ứ "được mùa mất giá". Không mất phí sàn trong 3 tháng đầu, tiền về thẳng tài khoản sau khi hoàn tất chuyến xe.
+                Bán hết nông sản xấu mã với giá công bằng, xóa tan nỗi lo tồn ứ "được mùa mất giá".
+                Không mất phí sàn trong 3 tháng đầu, tiền về thẳng tài khoản sau khi hoàn tất chuyến
+                xe.
               </p>
               <ul className="flex flex-col gap-2 text-xs sm:text-sm text-on-surface">
                 <li className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-base">check_circle</span>
+                  <span className="material-symbols-outlined text-primary text-base">
+                    check_circle
+                  </span>
                   <span>AI tự động viết bài mô tả và phân loại chất lượng</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-base">check_circle</span>
+                  <span className="material-symbols-outlined text-primary text-base">
+                    check_circle
+                  </span>
                   <span>Hỗ trợ đóng thùng tái chế và điều phối xe tải gom hàng</span>
                 </li>
               </ul>
@@ -40,17 +48,24 @@ export default function Partners() {
               <div className="w-12 h-12 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary">
                 <span className="material-symbols-outlined text-3xl">local_shipping</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-on-surface">Dành cho Tài Xế &amp; Shipper Xanh</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-on-surface">
+                Dành cho Tài Xế &amp; Shipper Xanh
+              </h3>
               <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-                Nhận đơn cự ly ngắn từ kho trung chuyển gần nhất, ghép chuyến thông minh với thuật toán AI tối ưu đường đi. Tự do thời gian, nhận thu nhập hấp dẫn mỗi ngày.
+                Nhận đơn cự ly ngắn từ kho trung chuyển gần nhất, ghép chuyến thông minh với thuật
+                toán AI tối ưu đường đi. Tự do thời gian, nhận thu nhập hấp dẫn mỗi ngày.
               </p>
               <ul className="flex flex-col gap-2 text-xs sm:text-sm text-on-surface">
                 <li className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-secondary text-base">check_circle</span>
+                  <span className="material-symbols-outlined text-secondary text-base">
+                    check_circle
+                  </span>
                   <span>Thu nhập 300k - 600k / ca làm việc linh hoạt</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-secondary text-base">check_circle</span>
+                  <span className="material-symbols-outlined text-secondary text-base">
+                    check_circle
+                  </span>
                   <span>Chính sách thưởng theo số kg nông sản giải cứu</span>
                 </li>
               </ul>
@@ -66,5 +81,5 @@ export default function Partners() {
         </div>
       </div>
     </section>
-  );
+  )
 }

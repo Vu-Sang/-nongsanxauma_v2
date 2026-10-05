@@ -1,74 +1,89 @@
+import React, { useEffect, useState } from 'react'
+import {
+  Send,
+  Users,
+  User,
+  Sprout,
+  Truck,
+  History,
+  CheckCircle2,
+  Clock,
+  Trash2,
+  ShieldAlert,
+  AlertCircle,
+} from 'lucide-react'
+import { notificationService, NotificationItem } from '../../services'
+import { globalShowAlert } from '../../contexts/PopupContext'
 
-import React, { useEffect, useState } from 'react';
-import { Send, Users, User, Sprout, Truck, History, CheckCircle2, Clock, Trash2, ShieldAlert, AlertCircle } from 'lucide-react';
-import { notificationService, NotificationItem } from '../../services';
-import { globalShowAlert } from '../../contexts/PopupContext';
-
-type TargetOption = 'all' | 'buyer' | 'farmer' | 'shipper';
+type TargetOption = 'all' | 'buyer' | 'farmer' | 'shipper'
 
 const TARGET_MAPPING: Record<TargetOption, string[]> = {
   all: ['BUYER', 'SHOP_OWNER', 'SHIPPER'],
   buyer: ['BUYER'],
   farmer: ['SHOP_OWNER'],
   shipper: ['SHIPPER'],
-};
+}
 
 const NotificationManagement: React.FC = () => {
-  const [target, setTarget] = useState<TargetOption>('all');
-  const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
-  const [sending, setSending] = useState(false);
+  const [target, setTarget] = useState<TargetOption>('all')
+  const [title, setTitle] = useState('')
+  const [message, setMessage] = useState('')
+  const [sending, setSending] = useState(false)
 
-  const [history, setHistory] = useState<NotificationItem[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<NotificationItem[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      setLoadingHistory(true);
-      setError(null);
+      setLoadingHistory(true)
+      setError(null)
       try {
-        const response = await notificationService.getAllNotifications();
-        setHistory(response.result || []);
+        const response = await notificationService.getAllNotifications()
+        setHistory(response.result || [])
       } catch (err) {
-        console.error('Failed to load notifications', err);
-        setError('Không thể tải danh sách thông báo. Vui lòng thử lại sau.');
+        console.error('Failed to load notifications', err)
+        setError('Không thể tải danh sách thông báo. Vui lòng thử lại sau.')
       } finally {
-        setLoadingHistory(false);
+        setLoadingHistory(false)
       }
-    };
+    }
 
-    fetchNotifications();
-  }, []);
+    fetchNotifications()
+  }, [])
 
   const handleSend = async () => {
-    if (!title || !message) return;
-    setSending(true);
-    setError(null);
+    if (!title || !message) return
+    setSending(true)
+    setError(null)
     try {
       await notificationService.adminSendToGroups({
         title,
         message,
         receiverTypes: TARGET_MAPPING[target],
-      });
-      setTitle('');
-      setMessage('');
-      const response = await notificationService.getAllNotifications();
-      setHistory(response.result || []);
-      globalShowAlert('Thông báo đã được gửi thành công!', 'Thành công', 'success');
+      })
+      setTitle('')
+      setMessage('')
+      const response = await notificationService.getAllNotifications()
+      setHistory(response.result || [])
+      globalShowAlert('Thông báo đã được gửi thành công!', 'Thành công', 'success')
     } catch (err) {
-      console.error('Failed to send notification', err);
-      setError('Gửi thông báo thất bại. Vui lòng kiểm tra lại quyền Admin hoặc thử lại sau.');
+      console.error('Failed to send notification', err)
+      setError('Gửi thông báo thất bại. Vui lòng kiểm tra lại quyền Admin hoặc thử lại sau.')
     } finally {
-      setSending(false);
+      setSending(false)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col gap-8 p-8 animate-in fade-in duration-500">
       <div>
-        <h2 className="text-3xl font-black font-display text-gray-900 uppercase">Quản lý thông báo</h2>
-        <p className="text-gray-400 font-medium text-sm mt-1">Gửi thông báo đẩy đến toàn bộ người dùng hoặc các nhóm đối tượng cụ thể.</p>
+        <h2 className="text-3xl font-black font-display text-gray-900 uppercase">
+          Quản lý thông báo
+        </h2>
+        <p className="text-gray-400 font-medium text-sm mt-1">
+          Gửi thông báo đẩy đến toàn bộ người dùng hoặc các nhóm đối tượng cụ thể.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -78,12 +93,16 @@ const NotificationManagement: React.FC = () => {
             <div className="size-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
               <Send className="size-5" />
             </div>
-            <h4 className="font-black text-gray-800 uppercase tracking-tight">Soạn thông báo mới</h4>
+            <h4 className="font-black text-gray-800 uppercase tracking-tight">
+              Soạn thông báo mới
+            </h4>
           </div>
 
           <div className="space-y-8">
             <div className="flex flex-col gap-4">
-              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Đối tượng nhận</label>
+              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Đối tượng nhận
+              </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
                   { id: 'all', name: 'Tất cả', icon: Users },
@@ -94,20 +113,25 @@ const NotificationManagement: React.FC = () => {
                   <button
                     key={t.id as TargetOption}
                     onClick={() => setTarget(t.id as TargetOption)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${target === t.id
+                    className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${
+                      target === t.id
                         ? 'border-primary bg-primary/5 text-primary'
                         : 'border-gray-50 text-gray-400 hover:border-gray-100'
-                      }`}
+                    }`}
                   >
                     <t.icon className="size-5" />
-                    <span className="text-[10px] font-black uppercase tracking-tight">{t.name}</span>
+                    <span className="text-[10px] font-black uppercase tracking-tight">
+                      {t.name}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="flex flex-col gap-3">
-              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Tiêu đề thông báo</label>
+              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Tiêu đề thông báo
+              </label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -117,7 +141,9 @@ const NotificationManagement: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Nội dung chi tiết</label>
+              <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                Nội dung chi tiết
+              </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
@@ -130,17 +156,27 @@ const NotificationManagement: React.FC = () => {
             <div className="bg-orange-50/50 p-6 rounded-[28px] border border-orange-100 flex items-start gap-4">
               <ShieldAlert className="size-5 text-orange-500 shrink-0 mt-0.5" />
               <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic">
-                Hành động này sẽ gửi thông báo đẩy đến ngay lập tức. Hãy kiểm tra kỹ nội dung trước khi gửi để tránh gây phiền hà cho người dùng.
+                Hành động này sẽ gửi thông báo đẩy đến ngay lập tức. Hãy kiểm tra kỹ nội dung trước
+                khi gửi để tránh gây phiền hà cho người dùng.
               </p>
             </div>
 
             <button
               onClick={handleSend}
               disabled={sending || !title || !message}
-              className={`w-full py-5 rounded-[24px] font-black text-lg flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-xl ${sending ? 'bg-gray-200 text-gray-400' : 'bg-primary text-white shadow-primary/20 hover:bg-primary-dark'
-                }`}
+              className={`w-full py-5 rounded-[24px] font-black text-lg flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-xl ${
+                sending
+                  ? 'bg-gray-200 text-gray-400'
+                  : 'bg-primary text-white shadow-primary/20 hover:bg-primary-dark'
+              }`}
             >
-              {sending ? 'ĐANG GỬI...' : <><Send className="size-5" /> GỬI THÔNG BÁO NGAY</>}
+              {sending ? (
+                'ĐANG GỬI...'
+              ) : (
+                <>
+                  <Send className="size-5" /> GỬI THÔNG BÁO NGAY
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -203,13 +239,15 @@ const NotificationManagement: React.FC = () => {
               </div>
             )}
 
-            <button className="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:underline mx-auto">Xem báo cáo chi tiết</button>
+            <button className="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:underline mx-auto">
+              Xem báo cáo chi tiết
+            </button>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 // Add fix: Export default
-export default NotificationManagement;
+export default NotificationManagement

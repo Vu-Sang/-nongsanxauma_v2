@@ -1,5 +1,5 @@
-import React from 'react';
-import { Bell, CheckCircle2, ShieldCheck, Coins } from 'lucide-react';
+import React from 'react'
+import { Bell, CheckCircle2, ShieldCheck, Coins } from 'lucide-react'
 
 export default function Notifications() {
   const list = [
@@ -27,7 +27,7 @@ export default function Notifications() {
       icon: Bell,
       read: true,
     },
-  ];
+  ]
 
   return (
     <div className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4 animate-fadeIn max-w-3xl">
@@ -38,7 +38,10 @@ export default function Notifications() {
 
       <div id="tour-notifications-list" className="divide-y divide-[#f1f4ed]">
         {list.map((nt) => (
-          <div key={nt.id} className="py-4 flex items-start gap-4 hover:bg-[#fafcf9] px-2 rounded-2xl transition-colors">
+          <div
+            key={nt.id}
+            className="py-4 flex items-start gap-4 hover:bg-[#fafcf9] px-2 rounded-2xl transition-colors"
+          >
             <div className="w-10 h-10 rounded-2xl bg-[#326318]/10 text-[#326318] flex items-center justify-center shrink-0 mt-0.5">
               <nt.icon size={20} />
             </div>
@@ -53,5 +56,5 @@ export default function Notifications() {
         ))}
       </div>
     </div>
-  );
+  )
 }

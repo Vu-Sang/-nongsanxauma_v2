@@ -1,11 +1,11 @@
-import React from 'react';
-import { Truck, Plus, Trash2 } from 'lucide-react';
-import type { FarmerVehicle } from './types';
+import React from 'react'
+import { Truck, Plus, Trash2 } from 'lucide-react'
+import type { FarmerVehicle } from './types'
 
 interface VehiclesProps {
-  vehicles: FarmerVehicle[];
-  onOpenAddVehicle: () => void;
-  onInfo?: (msg: string) => void;
+  vehicles: FarmerVehicle[]
+  onOpenAddVehicle: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function Vehicles({ vehicles, onOpenAddVehicle, onInfo }: VehiclesProps) {
@@ -55,5 +55,5 @@ export default function Vehicles({ vehicles, onOpenAddVehicle, onInfo }: Vehicle
         ))}
       </div>
     </div>
-  );
+  )
 }

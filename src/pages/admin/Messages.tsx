@@ -1,112 +1,106 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { chatService } from '../../services/chat.service';
-import { Conversation, ChatMessage } from '../../types/chat';
-import { Send, Search, MessageSquare, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react'
+import { useAuth } from '../../contexts/AuthContext'
+import { chatService } from '../../services/chat.service'
+import { Conversation, ChatMessage } from '../../types/chat'
+import { Send, Search, MessageSquare, Loader2 } from 'lucide-react'
 
 const AdminMessages: React.FC = () => {
-  const { user } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [messageInput, setMessageInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth()
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [messageInput, setMessageInput] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [sending, setSending] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Load conversations
   useEffect(() => {
-    loadConversations();
-  }, []);
+    loadConversations()
+  }, [])
 
   // Connect WebSocket
   useEffect(() => {
-    if (!user) return;
+    if (!user) return
 
     chatService.connect(
       () => console.log('[Admin Messages] WebSocket connected'),
-      (err) => console.error('[Admin Messages] WebSocket error:', err)
-    );
+      (err) => console.error('[Admin Messages] WebSocket error:', err),
+    )
 
     return () => {
-      chatService.disconnect();
-    };
-  }, [user]);
+      chatService.disconnect()
+    }
+  }, [user])
 
   // Subscribe to selected conversation
   useEffect(() => {
-    if (!user || !selectedConversation) return;
+    if (!user || !selectedConversation) return
 
-    const userId = parseInt(user.id);
-    chatService.subscribeToConversation(
-      userId,
-      selectedConversation.otherUserId,
-      (newMessage) => {
-        setMessages((prev) => [...prev, newMessage]);
-        // Mark as read
-        chatService.markAsRead(selectedConversation.otherUserId);
-      }
-    );
+    const userId = parseInt(user.id)
+    chatService.subscribeToConversation(userId, selectedConversation.otherUserId, (newMessage) => {
+      setMessages((prev) => [...prev, newMessage])
+      // Mark as read
+      chatService.markAsRead(selectedConversation.otherUserId)
+    })
 
     return () => {
-      chatService.unsubscribeFromConversation(userId, selectedConversation.otherUserId);
-    };
-  }, [user, selectedConversation]);
+      chatService.unsubscribeFromConversation(userId, selectedConversation.otherUserId)
+    }
+  }, [user, selectedConversation])
 
   // Auto scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   const loadConversations = async () => {
     try {
-      setLoading(true);
-      const data = await chatService.getConversations();
-      setConversations(data);
+      setLoading(true)
+      const data = await chatService.getConversations()
+      setConversations(data)
     } catch (error) {
-      console.error('Failed to load conversations:', error);
+      console.error('Failed to load conversations:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const loadChatHistory = async (conversation: Conversation) => {
     try {
-      setSelectedConversation(conversation);
-      const history = await chatService.getChatHistory(conversation.otherUserId);
-      setMessages(history);
+      setSelectedConversation(conversation)
+      const history = await chatService.getChatHistory(conversation.otherUserId)
+      setMessages(history)
       // Mark as read
-      await chatService.markAsRead(conversation.otherUserId);
+      await chatService.markAsRead(conversation.otherUserId)
       // Update unread count in list
       setConversations((prev) =>
-        prev.map((c) =>
-          c.id === conversation.id ? { ...c, unreadCount: 0 } : c
-        )
-      );
+        prev.map((c) => (c.id === conversation.id ? { ...c, unreadCount: 0 } : c)),
+      )
     } catch (error) {
-      console.error('Failed to load chat history:', error);
+      console.error('Failed to load chat history:', error)
     }
-  };
+  }
 
   const handleSendMessage = () => {
-    if (!messageInput.trim() || !selectedConversation || !user) return;
+    if (!messageInput.trim() || !selectedConversation || !user) return
 
-    setSending(true);
+    setSending(true)
     chatService.sendMessage({
       receiverId: selectedConversation.otherUserId,
       content: messageInput.trim(),
-    });
+    })
 
-    setMessageInput('');
-    setSending(false);
-  };
+    setMessageInput('')
+    setSending(false)
+  }
 
   const filteredConversations = conversations.filter((c) =>
-    c.otherUserName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    c.otherUserName.toLowerCase().includes(searchQuery.toLowerCase()),
+  )
 
-  const totalUnread = conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
+  const totalUnread = conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0)
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
@@ -129,7 +123,10 @@ const AdminMessages: React.FC = () => {
 
       <div className="flex-1 flex overflow-hidden">
         {/* Conversations List */}
-        <div id="tour-messages-list" className="w-96 bg-white border-r border-gray-200 flex flex-col">
+        <div
+          id="tour-messages-list"
+          className="w-96 bg-white border-r border-gray-200 flex flex-col"
+        >
           {/* Search */}
           <div id="tour-messages-search" className="p-4 border-b border-gray-100">
             <div className="relative">
@@ -171,9 +168,7 @@ const AdminMessages: React.FC = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-bold text-gray-900 truncate">
-                          {conv.otherUserName}
-                        </h3>
+                        <h3 className="font-bold text-gray-900 truncate">{conv.otherUserName}</h3>
                         {(conv.unreadCount ?? 0) > 0 && (
                           <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
                             {conv.unreadCount}
@@ -183,9 +178,7 @@ const AdminMessages: React.FC = () => {
                       <p className="text-xs text-gray-500 font-semibold mb-1">
                         {conv.otherUserRole}
                       </p>
-                      <p className="text-sm text-gray-600 truncate">
-                        {conv.lastMessage}
-                      </p>
+                      <p className="text-sm text-gray-600 truncate">{conv.lastMessage}</p>
                       <p className="text-xs text-gray-400 mt-1">
                         {conv.lastMessageAt || conv.lastMessageTime || ''}
                       </p>
@@ -221,30 +214,21 @@ const AdminMessages: React.FC = () => {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {messages.map((msg) => {
-                  const isMe = msg.senderId === parseInt(user?.id || '0');
+                  const isMe = msg.senderId === parseInt(user?.id || '0')
                   return (
-                    <div
-                      key={msg.id}
-                      className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
-                    >
+                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-md px-4 py-3 rounded-2xl ${
-                          isMe
-                            ? 'bg-primary text-white'
-                            : 'bg-gray-100 text-gray-900'
+                          isMe ? 'bg-primary text-white' : 'bg-gray-100 text-gray-900'
                         }`}
                       >
                         <p className="text-sm">{msg.content}</p>
-                        <p
-                          className={`text-xs mt-1 ${
-                            isMe ? 'text-white/70' : 'text-gray-500'
-                          }`}
-                        >
+                        <p className={`text-xs mt-1 ${isMe ? 'text-white/70' : 'text-gray-500'}`}>
                           {msg.sentAt || msg.createdAt || ''}
                         </p>
                       </div>
                     </div>
-                  );
+                  )
                 })}
                 <div ref={messagesEndRef} />
               </div>
@@ -282,7 +266,7 @@ const AdminMessages: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminMessages;
+export default AdminMessages

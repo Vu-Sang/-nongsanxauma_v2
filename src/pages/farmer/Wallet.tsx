@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { Wallet as WalletIcon, Building2, ArrowDownRight, ArrowUpRight, History } from 'lucide-react';
+import React, { useState } from 'react'
+import {
+  Wallet as WalletIcon,
+  Building2,
+  ArrowDownRight,
+  ArrowUpRight,
+  History,
+} from 'lucide-react'
 
 interface WalletProps {
-  onOpenWithdraw: () => void;
-  onInfo?: (msg: string) => void;
+  onOpenWithdraw: () => void
+  onInfo?: (msg: string) => void
 }
 
 export default function Wallet({ onOpenWithdraw, onInfo }: WalletProps) {
@@ -29,7 +35,7 @@ export default function Wallet({ onOpenWithdraw, onInfo }: WalletProps) {
       type: 'in',
       date: '3 ngày trước',
     },
-  ]);
+  ])
 
   return (
     <div className="space-y-6 animate-fadeIn max-w-4xl">
@@ -75,7 +81,10 @@ export default function Wallet({ onOpenWithdraw, onInfo }: WalletProps) {
       </div>
 
       {/* Transactions History */}
-      <div id="tour-wallet-history" className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4">
+      <div
+        id="tour-wallet-history"
+        className="bg-white rounded-3xl p-6 border border-[#e8ece3] shadow-sm space-y-4"
+      >
         <div className="flex items-center justify-between pb-3 border-b border-[#f1f4ed]">
           <div className="flex items-center gap-2">
             <History size={18} className="text-[#326318]" />
@@ -89,9 +98,7 @@ export default function Wallet({ onOpenWithdraw, onInfo }: WalletProps) {
               <div className="flex items-center gap-3">
                 <div
                   className={`w-9 h-9 rounded-2xl flex items-center justify-center ${
-                    tx.type === 'in'
-                      ? 'bg-[#eaf5e1] text-[#326318]'
-                      : 'bg-[#fdeeed] text-[#c5221f]'
+                    tx.type === 'in' ? 'bg-[#eaf5e1] text-[#326318]' : 'bg-[#fdeeed] text-[#c5221f]'
                   }`}
                 >
                   {tx.type === 'in' ? <ArrowDownRight size={18} /> : <ArrowUpRight size={18} />}
@@ -114,5 +121,5 @@ export default function Wallet({ onOpenWithdraw, onInfo }: WalletProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
