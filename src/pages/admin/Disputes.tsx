@@ -17,31 +17,26 @@ import {
   RefreshCw,
 } from 'lucide-react'
 import { returnService, ReturnRequestResponse, ReturnStatus } from '../../services/return.service'
+import { useCheckDisputePayout, useDisputeAction, useDisputes } from '@/features/order'
 import { globalShowAlert } from '../../contexts/PopupContext'
 
 const Disputes: React.FC = () => {
-  const [disputes, setDisputes] = useState<ReturnRequestResponse[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedDispute, setSelectedDispute] = useState<ReturnRequestResponse | null>(null)
   const [adminRemark, setAdminRemark] = useState('')
-  const [submitting, setSubmitting] = useState(false)
   const [payOSQR, setPayOSQR] = useState<{ qrCodeUrl: string; checkoutUrl: string } | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [searchTerm, setSearchTerm] = useState('')
 
-  const fetchDisputes = async () => {
-    try {
-      setLoading(true)
-      const res = await returnService.getDisputes()
-      if (res.result) {
-        setDisputes(res.result)
-      }
-    } catch (err) {
-      console.error('Failed to fetch disputes:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const disputesQuery = useDisputes()
+  const disputeAction = useDisputeAction()
+  const checkPayout = useCheckDisputePayout()
+
+  const disputes = disputesQuery.data ?? []
+  // Giống bản cũ: hiện màn tải cả khi tải lại sau mỗi thao tác.
+  const loading = disputesQuery.isFetching
+  const submitting = disputeAction.isPending
+  const checkingPayout = checkPayout.isPending
+  const fetchDisputes = () => void disputesQuery.refetch()
 
   const filteredDisputes = disputes.filter((d) => {
     const matchesSearch =
@@ -79,7 +74,8 @@ const Disputes: React.FC = () => {
         }
         window.history.replaceState({}, '', window.location.pathname)
       }
-      fetchDisputes()
+      // Danh sách tự tải khi mở trang; nếu vừa ghi nhận thanh toán thì tải lại.
+      if (orderCode && status === 'PAID') fetchDisputes()
     }
 
     checkReturnUrl()
@@ -92,10 +88,10 @@ const Disputes: React.FC = () => {
       return
     }
 
-    setSubmitting(true)
     try {
       const amount = selectedDispute.refundAmount * (refundPct / 100)
-      const res = await returnService.adminAction(selectedDispute.id, {
+      const res = await disputeAction.mutateAsync({
+        id: selectedDispute.id,
         accept,
         response: adminRemark,
         refundAmount: amount,
@@ -114,34 +110,26 @@ const Disputes: React.FC = () => {
           'success',
         )
         setAdminRemark('')
-        fetchDisputes()
         setSelectedDispute(res.result.request) // Update selected dispute with the latest status
       }
     } catch (err) {
       console.error('Action failed:', err)
       globalShowAlert('Thao tác thất bại', 'Lỗi', 'error')
-    } finally {
-      setSubmitting(false)
     }
   }
 
-  const [checkingPayout, setCheckingPayout] = useState(false)
   const handleCheckPayout = async () => {
     if (!selectedDispute) return
-    setCheckingPayout(true)
     try {
-      const res = await returnService.checkPayoutStatus(selectedDispute.id)
+      const res = await checkPayout.mutateAsync(selectedDispute.id)
       if (res.result?.request?.status === 'COMPLETED') {
         globalShowAlert('Thanh toán thành công!', 'Thông báo', 'success')
-        fetchDisputes()
         setSelectedDispute(res.result.request)
       } else {
         globalShowAlert('Giao dịch đang được xử lý hoặc chưa thanh toán.', 'Thông báo', 'info')
       }
     } catch (err) {
       globalShowAlert('Không thể kiểm tra trạng thái.', 'Lỗi', 'error')
-    } finally {
-      setCheckingPayout(false)
     }
   }
 

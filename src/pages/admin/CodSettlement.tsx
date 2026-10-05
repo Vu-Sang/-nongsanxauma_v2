@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Banknote, Loader2, RefreshCw, AlertCircle, CheckCircle2, Eye, X } from 'lucide-react'
 import {
-  codSettlementService,
   CodPendingOrderResponse,
   getCodCollectAmount,
   getCodPrepaidAmount,
 } from '../../services/codSettlement.service'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 import { getErrorMessage } from '@/utils'
+import { type CodAction, useCodAction, useCodPendingOrders } from '@/features/order'
 
 const fmtCur = (n: number) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
@@ -62,95 +62,72 @@ function getCodPaymentOptionLabel(option?: string | null): string {
 }
 
 const CodSettlement: React.FC = () => {
-  const [orders, setOrders] = useState<CodPendingOrderResponse[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [settlingId, setSettlingId] = useState<number | null>(null)
   const [detailOrder, setDetailOrder] = useState<CodPendingOrderResponse | null>(null)
 
-  const fetchPending = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+  const pendingQuery = useCodPendingOrders()
+  const codAction = useCodAction()
+
+  const orders = pendingQuery.data ?? []
+  // Giống bản cũ: hiện màn tải cả khi bấm "Tải lại" và khi tải lại sau mỗi thao tác.
+  const loading = pendingQuery.isFetching
+  const error = pendingQuery.isError
+    ? getErrorMessage(pendingQuery.error, 'Không thể tải danh sách COD cần đối soát.')
+    : null
+  const settlingId = codAction.isPending ? codAction.variables.orderId : null
+  const fetchPending = () => void pendingQuery.refetch()
+
+  /** Hỏi xác nhận rồi chạy thao tác COD, báo kết quả bằng popup như trước. */
+  const runAction = async (
+    order: CodPendingOrderResponse,
+    action: CodAction,
+    confirm: [string, string],
+    success: string,
+    failure: string,
+  ) => {
+    if (!(await globalShowConfirm(...confirm))) return
     try {
-      const res = await codSettlementService.getPendingCodOrders()
-      setOrders(res.result ?? [])
+      await codAction.mutateAsync({ action, orderId: order.id })
+      globalShowAlert(success, 'Thành công', 'success')
     } catch (err) {
-      console.error('Failed to load pending COD orders', err)
-      setError(getErrorMessage(err, 'Không thể tải danh sách COD cần đối soát.'))
-    } finally {
-      setLoading(false)
+      globalShowAlert(getErrorMessage(err, failure), 'Lỗi', 'error')
     }
-  }, [])
+  }
 
-  useEffect(() => {
-    fetchPending()
-  }, [fetchPending])
-
-  const handleSettle = async (order: CodPendingOrderResponse) => {
-    const amount = getCodCollectAmount(order)
-    if (
-      !(await globalShowConfirm(
-        `Xác nhận đã nhận ${fmtCur(amount)} từ shipper cho đơn #${order.id}?`,
+  const handleSettle = (order: CodPendingOrderResponse) =>
+    runAction(
+      order,
+      'settle',
+      [
+        `Xác nhận đã nhận ${fmtCur(getCodCollectAmount(order))} từ shipper cho đơn #${order.id}?`,
         'Đối soát COD',
-      ))
+      ],
+      'Đối soát COD thành công',
+      'Đối soát COD thất bại',
     )
-      return
 
-    try {
-      setSettlingId(order.id)
-      await codSettlementService.settleCodOrder(order.id)
-      globalShowAlert('Đối soát COD thành công', 'Thành công', 'success')
-      fetchPending()
-    } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Đối soát COD thất bại'), 'Lỗi', 'error')
-    } finally {
-      setSettlingId(null)
-    }
-  }
-
-  const handleConfirmCash = async (order: CodPendingOrderResponse) => {
-    const amount = getCodPrepaidAmount(order)
-    if (
-      !(await globalShowConfirm(
-        `Xác nhận đã nhận ${fmtCur(amount)} tiền mặt từ shipper cho đơn #${order.id}?`,
+  const handleConfirmCash = (order: CodPendingOrderResponse) =>
+    runAction(
+      order,
+      'confirm-cash',
+      [
+        `Xác nhận đã nhận ${fmtCur(getCodPrepaidAmount(order))} tiền mặt từ shipper cho đơn #${order.id}?`,
         'Xác nhận tiền mặt COD',
-      ))
+      ],
+      'Đã xác nhận tiền mặt COD',
+      'Xác nhận tiền mặt thất bại',
     )
-      return
 
-    try {
-      setSettlingId(order.id)
-      await codSettlementService.confirmShipperCashPayment(order.id)
-      globalShowAlert('Đã xác nhận tiền mặt COD', 'Thành công', 'success')
-      fetchPending()
-    } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Xác nhận tiền mặt thất bại'), 'Lỗi', 'error')
-    } finally {
-      setSettlingId(null)
-    }
-  }
-
-  const handleRefundShipper = async (order: CodPendingOrderResponse) => {
-    const amount = getCodPrepaidAmount(order)
-    if (
-      !(await globalShowConfirm(
-        `Hoàn ${fmtCur(amount)} tiền COD đã ứng cho shipper đơn #${order.id}? Phí ship không hoàn.`,
+  const handleRefundShipper = (order: CodPendingOrderResponse) =>
+    runAction(
+      order,
+      'refund-shipper',
+      [
+        `Hoàn ${fmtCur(getCodPrepaidAmount(order))} tiền COD đã ứng cho shipper đơn #${order.id}? Phí ship không hoàn.`,
         'Hoàn tiền shipper COD',
-      ))
+      ],
+      'Đã hoàn tiền COD đã ứng cho shipper',
+      'Hoàn tiền thất bại',
     )
-      return
-
-    try {
-      setSettlingId(order.id)
-      await codSettlementService.refundCodPrepaymentToShipper(order.id)
-      globalShowAlert('Đã hoàn tiền COD đã ứng cho shipper', 'Thành công', 'success')
-      fetchPending()
-    } catch (err) {
-      globalShowAlert(getErrorMessage(err, 'Hoàn tiền thất bại'), 'Lỗi', 'error')
-    } finally {
-      setSettlingId(null)
-    }
-  }
 
   const buyerLabel = (order: CodPendingOrderResponse) =>
     order.buyer?.fullName ||

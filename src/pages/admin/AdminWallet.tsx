@@ -8,7 +8,13 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react'
-import { walletService, WithdrawRequestResponse, WalletResponse } from '../../services'
+import type { WithdrawRequestResponse } from '@/services'
+import {
+  useAdminWalletOverview,
+  useConfirmWithdraw,
+  useCreateWithdrawQr,
+  useRejectWithdraw,
+} from '@/features/wallet'
 import { globalShowAlert, globalShowConfirm } from '../../contexts/PopupContext'
 import { getErrorMessage } from '@/utils'
 
@@ -34,13 +40,9 @@ function getWithdrawKindBadgeClass(kind: 'SHIPPER' | 'BUYER' | 'SHOP'): string {
   return 'bg-purple-50 text-purple-600'
 }
 
-const AdminWallet: React.FC = () => {
-  const [pendingRequests, setPendingRequests] = useState<WithdrawRequestResponse[]>([])
-  const [history, setHistory] = useState<WithdrawRequestResponse[]>([])
-  const [platformWallet, setPlatformWallet] = useState<WalletResponse | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+const EMPTY_REQUESTS: WithdrawRequestResponse[] = []
 
+const AdminWallet: React.FC = () => {
   const [isQrModalOpen, setIsQrModalOpen] = useState(false)
   const [qrRequest, setQrRequest] = useState<WithdrawRequestResponse | null>(null)
   const [qrUrl, setQrUrl] = useState<string | null>(null)
@@ -54,55 +56,45 @@ const AdminWallet: React.FC = () => {
   const [rejectNote, setRejectNote] = useState('')
   const [rejectFiles, setRejectFiles] = useState<File[]>([])
 
-  const [isProcessing, setIsProcessing] = useState(false)
   const [historyFilter, setHistoryFilter] = useState<'ALL' | 'SUCCESS' | 'REJECTED' | 'PENDING'>(
     'ALL',
   )
 
-  const fetchData = async () => {
-    try {
-      setIsLoading(true)
-      const [pendingRes, historyRes, platformWalletRes] = await Promise.all([
-        walletService.getAllPendingWithdrawRequests(),
-        walletService.getAllWithdrawRequests(),
-        walletService.getPlatformWallet(),
-      ])
+  const overview = useAdminWalletOverview()
+  const createQr = useCreateWithdrawQr()
+  const confirmWithdraw = useConfirmWithdraw()
+  const rejectWithdraw = useRejectWithdraw()
 
-      if (pendingRes.result) setPendingRequests(pendingRes.result)
-      if (historyRes.result) setHistory(historyRes.result)
-      if (platformWalletRes.result) setPlatformWallet(platformWalletRes.result)
-    } catch (err) {
-      console.error('Failed to fetch admin wallet data', err)
-      setError('Mất kết nối tải dữ liệu hoặc chưa có dữ liệu. Vui lòng thử lại sau.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const pendingRequests = overview.data?.pending ?? EMPTY_REQUESTS
+  const history = overview.data?.history ?? EMPTY_REQUESTS
+  const platformWallet = overview.data?.platformWallet ?? null
+  // Giống bản cũ: hiện màn tải cả khi tải lại sau mỗi thao tác.
+  const isLoading = overview.isFetching
+  const error = overview.isError
+    ? 'Mất kết nối tải dữ liệu hoặc chưa có dữ liệu. Vui lòng thử lại sau.'
+    : null
+  const isProcessing = createQr.isPending || confirmWithdraw.isPending || rejectWithdraw.isPending
 
+  // PayOS chuyển hướng về kèm ?withdrawId=...: đồng bộ kết quả giải ngân một lần khi mở trang.
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     const withdrawId = urlParams.get('withdrawId')
     const cancel = urlParams.get('cancel')
+    if (!withdrawId) return
 
-    if (withdrawId) {
-      window.history.replaceState(null, '', window.location.pathname)
-      if (cancel === 'true') {
-        globalShowAlert('Đã huỷ giao dịch chuyển khoản trên PayOS', 'Thông báo', 'info')
-      } else {
-        walletService
-          .confirmWithdrawSuccess(Number(withdrawId), 'Đã giải ngân qua giao diện PayOS')
-          .then(() => {
-            globalShowAlert('Giải ngân PayOS thành công', 'Thành công', 'success')
-            fetchData()
-          })
-          .catch((err: unknown) => {
-            globalShowAlert(getErrorMessage(err, 'Lỗi khi đồng bộ kết quả PayOS'), 'Lỗi', 'error')
-            fetchData()
-          })
-        return // Skip initial fetchData since we wait for the promise
-      }
+    window.history.replaceState(null, '', window.location.pathname)
+    if (cancel === 'true') {
+      globalShowAlert('Đã huỷ giao dịch chuyển khoản trên PayOS', 'Thông báo', 'info')
+      return
     }
-    fetchData()
+    confirmWithdraw
+      .mutateAsync({ requestId: Number(withdrawId), note: 'Đã giải ngân qua giao diện PayOS' })
+      .then(() => globalShowAlert('Giải ngân PayOS thành công', 'Thành công', 'success'))
+      .catch((err: unknown) =>
+        globalShowAlert(getErrorMessage(err, 'Lỗi khi đồng bộ kết quả PayOS'), 'Lỗi', 'error'),
+      )
+    // Chỉ chạy một lần khi mở trang.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleApprove = async (id: number) => {
@@ -115,8 +107,7 @@ const AdminWallet: React.FC = () => {
       return
 
     try {
-      setIsProcessing(true)
-      const res = await walletService.createWithdrawQr(id)
+      const res = await createQr.mutateAsync(id)
       if (res.result) {
         setQrRequest(pendingRequests.find((r) => r.id === id) ?? null)
         setQrUrl(res.result.qrCodeUrl || null)
@@ -126,8 +117,6 @@ const AdminWallet: React.FC = () => {
       }
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Có lỗi khi tạo mã QR'), 'Lỗi', 'error')
-    } finally {
-      setIsProcessing(false)
     }
   }
 
@@ -141,12 +130,10 @@ const AdminWallet: React.FC = () => {
     if (!confirmTransferId) return
 
     try {
-      setIsProcessing(true)
-      await walletService.confirmWithdrawSuccess(
-        confirmTransferId,
-        undefined,
-        confirmTransferFiles.length > 0 ? confirmTransferFiles : undefined,
-      )
+      await confirmWithdraw.mutateAsync({
+        requestId: confirmTransferId,
+        files: confirmTransferFiles.length > 0 ? confirmTransferFiles : undefined,
+      })
       globalShowAlert(
         `Đã xác nhận chuyển khoản thành công cho yêu cầu #${confirmTransferId}`,
         'Thành công',
@@ -158,11 +145,8 @@ const AdminWallet: React.FC = () => {
       setIsQrModalOpen(false)
       setQrUrl(null)
       setQrRequest(null)
-      fetchData()
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Có lỗi khi xác nhận chuyển khoản'), 'Lỗi', 'error')
-    } finally {
-      setIsProcessing(false)
     }
   }
 
@@ -180,22 +164,18 @@ const AdminWallet: React.FC = () => {
     }
 
     try {
-      setIsProcessing(true)
-      await walletService.rejectWithdraw(
-        rejectId,
-        rejectNote,
-        rejectFiles.length > 0 ? rejectFiles : undefined,
-      )
+      await rejectWithdraw.mutateAsync({
+        requestId: rejectId,
+        note: rejectNote,
+        files: rejectFiles.length > 0 ? rejectFiles : undefined,
+      })
       globalShowAlert(`Đã từ chối yêu cầu #${rejectId}`, 'Thành công', 'success')
       setIsRejectModalOpen(false)
       setRejectNote('')
       setRejectFiles([])
       setRejectId(null)
-      fetchData()
     } catch (err) {
       globalShowAlert(getErrorMessage(err, 'Có lỗi khi từ chối yêu cầu'), 'Lỗi', 'error')
-    } finally {
-      setIsProcessing(false)
     }
   }
 
